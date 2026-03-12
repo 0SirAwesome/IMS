@@ -1978,11 +1978,226 @@ document.write(`\n<!-- ═══════════════════
 
                 <!-- FLOOR 5: SURGERY full width -->
                 <g class="hbuild locked" id="hb-surgery">
-                  <rect x="80" y="198" width="200" height="37" rx="4" fill="rgba(68,84,106,0.4)" stroke="rgba(68,84,106,0.6)" stroke-width="1.2"/>
-                  <text x="180" y="213" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(200,218,240,0.75)">🔪 Surgery</text>
-                  <text x="180" y="225" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">100h</text>
-                  <rect x="95"  y="205" width="10" height="8" rx="1.5" fill="rgba(68,84,106,0.5)" stroke="rgba(68,84,106,0.6)" stroke-width="0.8"/>
-                  <rect x="251" y="205" width="10" height="8" rx="1.5" fill="rgba(68,84,106,0.5)" stroke="rgba(68,84,106,0.6)" stroke-width="0.8"/>
+                  <defs>
+    <!-- Base shell -->
+    <linearGradient id="surg-shell" x1="180" y1="-78" x2="180" y2="26" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182B45"/>
+      <stop offset="0.52" stop-color="#101C31"/>
+      <stop offset="1" stop-color="#08111E"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="surg-edge" x1="92" y1="-70" x2="268" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#74E6FF"/>
+      <stop offset="0.44" stop-color="#F0FDFF"/>
+      <stop offset="1" stop-color="#9A92FF"/>
+    </linearGradient>
+
+    <!-- Surgical accent -->
+    <linearGradient id="surg-accent" x1="154" y1="-46" x2="206" y2="-4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D2FAFF"/>
+      <stop offset="0.46" stop-color="#8FE0FF"/>
+      <stop offset="1" stop-color="#B597FF"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="surg-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -24) rotate(90) scale(80 120)">
+      <stop offset="0" stop-color="#9AEFFF" stop-opacity="0.10"/>
+      <stop offset="0.34" stop-color="#8F70FF" stop-opacity="0.18"/>
+      <stop offset="0.62" stop-color="#5640C5" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#19103B" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Core -->
+    <radialGradient id="surg-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -28) rotate(90) scale(30 42)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.84"/>
+      <stop offset="0.42" stop-color="#C5F7FF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#A694FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="surg-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 30) rotate(90) scale(18 82)">
+      <stop offset="0" stop-color="#4BD6FF" stop-opacity="0.30"/>
+      <stop offset="0.48" stop-color="#A083FF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#4BD6FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="surg-panel" x1="116" y1="-46" x2="244" y2="2" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1A3854" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#10253A" stop-opacity="0.92"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="surg-roof" x1="106" y1="-54" x2="254" y2="-54" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#79E8FF"/>
+      <stop offset="0.50" stop-color="#F6FEFF"/>
+      <stop offset="1" stop-color="#A093FF"/>
+    </linearGradient>
+
+    <!-- Prestige strip -->
+    <linearGradient id="surg-strip" x1="142" y1="-58" x2="218" y2="-58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C8F8FF"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#D2A8FF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="surg-shadow" x="88" y="-78" width="184" height="124" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#020713" flood-opacity="0.78"/>
+    </filter>
+
+    <filter id="surg-glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+
+    <filter id="surg-core-glow" x="154" y="-52" width="52" height="52" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient aura -->
+  <ellipse cx="180" cy="-24" rx="120" ry="80" fill="url(#surg-aura)"/>
+  <ellipse cx="180" cy="30" rx="82" ry="18" fill="url(#surg-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M112 -50
+       H248
+       C257.941 -50 266 -41.941 266 -32
+       V8
+       C266 17.941 257.941 26 248 26
+       H112
+       C102.059 26 94 17.941 94 8
+       V-32
+       C94 -41.941 102.059 -50 112 -50 Z"
+    fill="none"
+    stroke="url(#surg-edge)"
+    stroke-opacity="0.18"
+    stroke-width="2"
+    filter="url(#surg-glow)"
+  />
+
+  <!-- main building -->
+  <g filter="url(#surg-shadow)">
+    <path
+      d="M112 -50
+         H248
+         C257.941 -50 266 -41.941 266 -32
+         V8
+         C266 17.941 257.941 26 248 26
+         H112
+         C102.059 26 94 17.941 94 8
+         V-32
+         C94 -41.941 102.059 -50 112 -50 Z"
+      fill="url(#surg-shell)"
+      stroke="url(#surg-edge)"
+      stroke-opacity="0.44"
+      stroke-width="1.4"
+    />
+
+    <!-- roof beam -->
+    <rect x="106" y="-54" width="148" height="6" rx="3" fill="url(#surg-roof)"/>
+
+    <!-- prestige strip -->
+    <rect x="142" y="-58" width="76" height="3.5" rx="2" fill="url(#surg-strip)"/>
+
+    <!-- reinforced pylons -->
+    <rect x="108" y="-40" width="11" height="42" rx="5.5"
+      fill="#0C1D31" stroke="rgba(192,244,255,0.18)" stroke-width="1"/>
+    <rect x="241" y="-40" width="11" height="42" rx="5.5"
+      fill="#0C1D31" stroke="rgba(192,244,255,0.18)" stroke-width="1"/>
+
+    <!-- glass panel -->
+    <rect x="126" y="-40" width="108" height="36" rx="12"
+      fill="url(#surg-panel)"
+      stroke="rgba(212,247,255,0.20)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="140" y="0" width="80" height="4" rx="2"
+      fill="rgba(102,202,255,0.14)"/>
+
+    <!-- precision tech bands -->
+    <path d="M134 -32H154" stroke="rgba(190,244,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M206 -32H226" stroke="rgba(190,244,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M136 -18H150" stroke="rgba(190,244,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M210 -18H224" stroke="rgba(190,244,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- surgical core -->
+  <ellipse cx="180" cy="-28" rx="30" ry="42" fill="url(#surg-core)"/>
+
+  <!-- Surgery icon -->
+  <g filter="url(#surg-core-glow)">
+    <!-- operating table -->
+    <rect x="166" y="-29" width="28" height="10" rx="3"
+      fill="none" stroke="url(#surg-accent)" stroke-width="1.8"/>
+    <path d="M170 -19V-13" stroke="url(#surg-accent)" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M190 -19V-13" stroke="url(#surg-accent)" stroke-width="1.6" stroke-linecap="round"/>
+
+    <!-- scalpel -->
+    <path d="M172 -41L184 -31" stroke="#ECFCFF" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M183 -32L187 -28" stroke="#ECFCFF" stroke-width="1.3" stroke-linecap="round"/>
+
+    <!-- forceps -->
+    <path d="M189 -41L179 -30" stroke="#ECFCFF" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M192 -38L181 -26" stroke="#ECFCFF" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- side monitoring nodes -->
+  <circle cx="144" cy="-24" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(196,245,255,0.30)" stroke-width="1"/>
+  <circle cx="144" cy="-24" r="2.2" fill="#C4F8FF"/>
+
+  <circle cx="216" cy="-24" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(196,245,255,0.30)" stroke-width="1"/>
+  <circle cx="216" cy="-24" r="2.2" fill="#C4F8FF"/>
+
+  <!-- connectors -->
+  <path d="M94 -14H80"
+    stroke="rgba(145,238,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M266 -14H280"
+    stroke="rgba(145,238,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M180 -50V-64"
+    stroke="rgba(170,238,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="180" y="18"
+    text-anchor="middle"
+    fill="#F4FBFF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.5"
+    font-weight="700"
+    letter-spacing="0.2">
+    Surgery
+  </text>
+
+  <text x="180" y="30"
+    text-anchor="middle"
+    fill="rgba(202,230,255,0.92)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    100h
+  </text>
                 </g>
 
                 <!-- FLOOR 6: RADIOLOGY left + PSYCHIATRY right -->
