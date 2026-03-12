@@ -7181,6 +7181,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     },10000);
 
     myPeer.on('error',err=>{
+      if (err?.type === 'not-open-yet') return;
       clearTimeout(peerOpenTimeout);
       failJoin('Cannot connect: '+(err?.type||'peer error'));
     });
@@ -7199,6 +7200,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
         setStatus('Connected!','success');
       });
       hostConn.on('error',err=>{
+        if (err?.type === 'not-open-yet') return;
         clearTimeout(joinTimeout);
         failJoin('Cannot connect: '+(err?.type||'room unavailable'));
       });
