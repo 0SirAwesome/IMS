@@ -1748,10 +1748,232 @@ document.write(`\n<!-- ═══════════════════
   </text>
                 </g>
                 <g class="hbuild locked" id="hb-icu">
-                  <rect x="188" y="238" width="92" height="36" rx="4" fill="rgba(68,114,196,0.35)" stroke="rgba(68,114,196,0.55)" stroke-width="1.2"/>
-                  <text x="234" y="252" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(68,114,196,0.9)">💉</text>
-                  <text x="234" y="263" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="rgba(200,218,240,0.7)">ICU</text>
-                  <text x="234" y="271" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">75h</text>
+                 <defs>
+    <!-- Base shell -->
+    <linearGradient id="icu-shell" x1="292" y1="12" x2="292" y2="114" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#172A44"/>
+      <stop offset="0.52" stop-color="#101C31"/>
+      <stop offset="1" stop-color="#08111E"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="icu-edge" x1="204" y1="20" x2="380" y2="116" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6AE2FF"/>
+      <stop offset="0.44" stop-color="#E0FBFF"/>
+      <stop offset="1" stop-color="#8B90FF"/>
+    </linearGradient>
+
+    <!-- ICU accent -->
+    <linearGradient id="icu-accent" x1="266" y1="42" x2="318" y2="84" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C6F8FF"/>
+      <stop offset="0.45" stop-color="#82D9FF"/>
+      <stop offset="1" stop-color="#A991FF"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="icu-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 62) rotate(90) scale(78 118)">
+      <stop offset="0" stop-color="#89E8FF" stop-opacity="0.10"/>
+      <stop offset="0.36" stop-color="#8D6BFF" stop-opacity="0.18"/>
+      <stop offset="0.62" stop-color="#5640C5" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#19103B" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Central core -->
+    <radialGradient id="icu-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 58) rotate(90) scale(30 42)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.84"/>
+      <stop offset="0.42" stop-color="#B9F4FF" stop-opacity="0.40"/>
+      <stop offset="1" stop-color="#9E90FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="icu-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 118) rotate(90) scale(18 82)">
+      <stop offset="0" stop-color="#48D5FF" stop-opacity="0.30"/>
+      <stop offset="0.48" stop-color="#9B80FF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#48D5FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="icu-panel" x1="228" y1="40" x2="356" y2="88" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#193853" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#10253A" stop-opacity="0.92"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="icu-roof" x1="218" y1="32" x2="366" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6FE4FF"/>
+      <stop offset="0.50" stop-color="#ECFDFF"/>
+      <stop offset="1" stop-color="#9A91FF"/>
+    </linearGradient>
+
+    <!-- Critical strip -->
+    <linearGradient id="icu-strip" x1="254" y1="28" x2="330" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C0F7FF"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#C9A1FF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="icu-shadow" x="202" y="12" width="180" height="122" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#020713" flood-opacity="0.76"/>
+    </filter>
+
+    <filter id="icu-glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+
+    <filter id="icu-core-glow" x="266" y="34" width="52" height="52" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient glow -->
+  <ellipse cx="292" cy="62" rx="118" ry="78" fill="url(#icu-aura)"/>
+  <ellipse cx="292" cy="118" rx="82" ry="18" fill="url(#icu-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M224 36
+       H360
+       C369.941 36 378 44.059 378 54
+       V94
+       C378 103.941 369.941 112 360 112
+       H224
+       C214.059 112 206 103.941 206 94
+       V54
+       C206 44.059 214.059 36 224 36 Z"
+    fill="none"
+    stroke="url(#icu-edge)"
+    stroke-opacity="0.18"
+    stroke-width="2"
+    filter="url(#icu-glow)"
+  />
+
+  <!-- main building -->
+  <g filter="url(#icu-shadow)">
+    <path
+      d="M224 36
+         H360
+         C369.941 36 378 44.059 378 54
+         V94
+         C378 103.941 369.941 112 360 112
+         H224
+         C214.059 112 206 103.941 206 94
+         V54
+         C206 44.059 214.059 36 224 36 Z"
+      fill="url(#icu-shell)"
+      stroke="url(#icu-edge)"
+      stroke-opacity="0.44"
+      stroke-width="1.4"
+    />
+
+    <!-- roof beam -->
+    <rect x="218" y="32" width="148" height="6" rx="3" fill="url(#icu-roof)"/>
+
+    <!-- critical strip -->
+    <rect x="254" y="28" width="76" height="3.5" rx="2" fill="url(#icu-strip)"/>
+
+    <!-- reinforced side pylons -->
+    <rect x="220" y="46" width="11" height="42" rx="5.5"
+      fill="#0C1D31" stroke="rgba(180,240,255,0.18)" stroke-width="1"/>
+    <rect x="353" y="46" width="11" height="42" rx="5.5"
+      fill="#0C1D31" stroke="rgba(180,240,255,0.18)" stroke-width="1"/>
+
+    <!-- glass -->
+    <rect x="238" y="46" width="108" height="36" rx="12"
+      fill="url(#icu-panel)"
+      stroke="rgba(205,245,255,0.20)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="252" y="86" width="80" height="4" rx="2"
+      fill="rgba(92,196,255,0.14)"/>
+
+    <!-- internal bands -->
+    <path d="M246 54H266" stroke="rgba(180,240,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M318 54H338" stroke="rgba(180,240,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M248 68H262" stroke="rgba(180,240,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M322 68H336" stroke="rgba(180,240,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- critical care core -->
+  <ellipse cx="292" cy="58" rx="30" ry="42" fill="url(#icu-core)"/>
+
+  <!-- ICU icon: central monitor / support frame -->
+  <g filter="url(#icu-core-glow)">
+    <rect x="280" y="46" width="24" height="18" rx="4"
+      fill="none" stroke="url(#icu-accent)" stroke-width="1.8"/>
+    <path
+      d="M284 55
+         H288
+         L290.4 51
+         L293.4 60
+         L296.8 49
+         L299.2 55
+         H300"
+      fill="none"
+      stroke="#ECFCFF"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      opacity="0.92"/>
+    <path d="M286 64V70" stroke="url(#icu-accent)" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M298 64V70" stroke="url(#icu-accent)" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M282 70H302" stroke="url(#icu-accent)" stroke-width="1.6" stroke-linecap="round"/>
+  </g>
+
+  <!-- side monitoring nodes -->
+  <circle cx="256" cy="62" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(185,242,255,0.30)" stroke-width="1"/>
+  <circle cx="256" cy="62" r="2.2" fill="#B9F7FF"/>
+
+  <circle cx="328" cy="62" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(185,242,255,0.30)" stroke-width="1"/>
+  <circle cx="328" cy="62" r="2.2" fill="#B9F7FF"/>
+
+  <!-- connectors -->
+  <path d="M206 72H192"
+    stroke="rgba(135,236,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M378 72H392"
+    stroke="rgba(135,236,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M292 36V22"
+    stroke="rgba(160,236,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="292" y="104"
+    text-anchor="middle"
+    fill="#F2FAFF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.5"
+    font-weight="700"
+    letter-spacing="0.2">
+    ICU
+  </text>
+
+  <text x="292" y="116"
+    text-anchor="middle"
+    fill="rgba(198,226,255,0.92)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    75h
+  </text>
                 </g>
 
                 <!-- FLOOR 5: SURGERY full width -->
