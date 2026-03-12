@@ -1,5 +1,4 @@
-(() => {
-  const html = `\n<!-- ════════════════════════ BRANCH: The Ward ════════════════════════ -->
+document.write(`\n<!-- ════════════════════════ BRANCH: The Ward ════════════════════════ -->
 <div class="page" id="page-ward">
 <div class="ward-wrap">
 
@@ -144,7 +143,7 @@
 
           <!-- Today stats strip -->
           <div class="ward-today-strip">
-            <div class="ward-today-stat"><span class="ward-today-num" id="ward-today-sessions">0</span><span class="ward-today-lbl">squad bonus (wk)</span></div>
+            <div class="ward-today-stat"><span class="ward-today-num" id="ward-today-sessions">0</span><span class="ward-today-lbl">sessions</span></div>
             <div class="ward-today-stat"><span class="ward-today-num" id="ward-today-mins">0</span><span class="ward-today-lbl">min today</span></div>
             <div class="ward-today-stat"><span class="ward-today-num" id="ward-streak-display">0</span><span class="ward-today-lbl">day streak</span></div>
           </div>
@@ -423,9 +422,4 @@
 </div>
 </div>
 <!-- ══════════════════════ /THE WARD ══════════════════════════ -->
-`;
-  const scriptTag = document.currentScript;
-  if (scriptTag) {
-    scriptTag.insertAdjacentHTML('beforebegin', html);
-  }
-})();
+`);

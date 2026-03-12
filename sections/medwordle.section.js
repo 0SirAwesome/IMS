@@ -1,5 +1,4 @@
-(() => {
-  const html = `\n<!-- ════════════════════════ BRANCH: MedWordle ════════════════════════ -->
+document.write(`\n<!-- ════════════════════════ BRANCH: MedWordle ════════════════════════ -->
 <div class="page" id="page-medwordle">
 <div class="play-page-wrap">
 
@@ -121,9 +120,4 @@
 <!-- ══════════════════════ /PLAY PAGE ═══════════════════════ -->
 
 <!-- ══════════════════════ DAILY PEARLS PAGE ══════════════════════ -->
-`;
-  const scriptTag = document.currentScript;
-  if (scriptTag) {
-    scriptTag.insertAdjacentHTML('beforebegin', html);
-  }
-})();
+`);
