@@ -13,7 +13,7 @@ This file documents the codebase structure, development conventions, and workflo
 - A Pomodoro-style study timer with P2P squad rooms (The Ward)
 - A progress tracker with streaks, achievements, and leaderboards
 
-**Current version:** `IMS v0.5.8` (see top of `index.html`)
+**Current version:** `IMS v0.5.9` (see top of `index.html`)
 
 **Live deployment:** Cloudflare Workers / Pages (`indianmedicalserver.pages.dev`)
 

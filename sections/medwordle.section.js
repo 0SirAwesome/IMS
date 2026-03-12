@@ -1,5 +1,3 @@
-(() => {
-  const html = `\n<!-- ════════════════════════ BRANCH: MedWordle ════════════════════════ -->
 document.write(`\n<!-- ════════════════════════ BRANCH: MedWordle ════════════════════════ -->
 <div class="page" id="page-medwordle">
 <div class="play-page-wrap">
@@ -115,16 +113,11 @@ document.write(`\n<!-- ═══════════════════
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.8</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.9</span>
   </footer>
 </div>
 </div>
 <!-- ══════════════════════ /PLAY PAGE ═══════════════════════ -->
 
 <!-- ══════════════════════ DAILY PEARLS PAGE ══════════════════════ -->
-`;
-  const scriptTag = document.currentScript;
-  if (scriptTag) {
-    scriptTag.insertAdjacentHTML('beforebegin', html);
-  }
-})();
+`);
