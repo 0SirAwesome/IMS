@@ -720,39 +720,816 @@ document.write(`\n<!-- ═══════════════════
 
                 <!-- MAIN BUILDING BODY — floor 1 -->
                 <g class="hbuild locked" id="hb-general">
-                  <rect x="80" y="360" width="200" height="45" rx="4" fill="rgba(91,155,213,0.35)" stroke="rgba(91,155,213,0.55)" stroke-width="1.2"/>
-                  <!-- windows -->
-                  <rect x="95"  y="370" width="14" height="10" rx="2" fill="rgba(91,155,213,0.3)" stroke="rgba(91,155,213,0.4)" stroke-width="0.8"/>
-                  <rect x="115" y="370" width="14" height="10" rx="2" fill="rgba(91,155,213,0.3)" stroke="rgba(91,155,213,0.4)" stroke-width="0.8"/>
-                  <rect x="231" y="370" width="14" height="10" rx="2" fill="rgba(91,155,213,0.3)" stroke="rgba(91,155,213,0.4)" stroke-width="0.8"/>
-                  <rect x="251" y="370" width="14" height="10" rx="2" fill="rgba(91,155,213,0.3)" stroke="rgba(91,155,213,0.4)" stroke-width="0.8"/>
-                  <text x="180" y="378" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(200,218,240,0.7)">🏥 General Ward</text>
-                  <text x="180" y="390" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">4h</text>
+                  <defs>
+    <!-- Base shell -->
+    <linearGradient id="gen-shell" x1="180" y1="210" x2="180" y2="304" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182A43"/>
+      <stop offset="0.56" stop-color="#101B2F"/>
+      <stop offset="1" stop-color="#09121E"/>
+    </linearGradient>
+
+    <!-- Cyan-blue perimeter -->
+    <linearGradient id="gen-edge" x1="88" y1="218" x2="272" y2="304" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#56D9FF"/>
+      <stop offset="0.5" stop-color="#99F5FF"/>
+      <stop offset="1" stop-color="#538FFF"/>
+    </linearGradient>
+
+    <!-- Healing accent -->
+    <linearGradient id="gen-heal" x1="138" y1="236" x2="222" y2="284" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#72E4FF"/>
+      <stop offset="0.55" stop-color="#59B8FF"/>
+      <stop offset="1" stop-color="#7C7DFF"/>
+    </linearGradient>
+
+    <!-- Purple aura -->
+    <radialGradient id="gen-purple-aura" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 262) rotate(90) scale(76 124)">
+      <stop offset="0" stop-color="#7E5DFF" stop-opacity="0.22"/>
+      <stop offset="0.55" stop-color="#4A35B6" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1A103C" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Central calm core -->
+    <radialGradient id="gen-core" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 255) rotate(90) scale(30 42)">
+      <stop offset="0" stop-color="#D9F7FF" stop-opacity="0.72"/>
+      <stop offset="0.48" stop-color="#7BD9FF" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#59A9FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="gen-ground" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 306) rotate(90) scale(18 86)">
+      <stop offset="0" stop-color="#39D0FF" stop-opacity="0.28"/>
+      <stop offset="0.46" stop-color="#7E5DFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#39D0FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="gen-panel" x1="114" y1="236" x2="246" y2="286" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16334F" stop-opacity="0.90"/>
+      <stop offset="1" stop-color="#0F2236" stop-opacity="0.90"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="gen-roof" x1="106" y1="228" x2="254" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#52D1FF"/>
+      <stop offset="0.5" stop-color="#A7F8FF"/>
+      <stop offset="1" stop-color="#52D1FF"/>
+    </linearGradient>
+
+    <!-- Upper healing strip -->
+    <linearGradient id="gen-strip" x1="142" y1="224" x2="218" y2="224" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7BE7FF"/>
+      <stop offset="0.5" stop-color="#A8F8FF"/>
+      <stop offset="1" stop-color="#7BE7FF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="gen-shadow" x="84" y="210" width="192" height="110" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#020713" flood-opacity="0.74"/>
+    </filter>
+
+    <filter id="gen-cyan-glow" x="98" y="223" width="164" height="18" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="gen-outer-neon" x="86" y="216" width="188" height="98" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="4.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="gen-core-glow" x="156" y="231" width="48" height="48" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient aura -->
+  <ellipse cx="180" cy="262" rx="124" ry="76" fill="url(#gen-purple-aura)"/>
+  <ellipse cx="180" cy="306" rx="86" ry="18" fill="url(#gen-ground)"/>
+
+  <!-- outer silhouette -->
+  <g filter="url(#gen-outer-neon)">
+    <path
+      d="M102 232
+         H258
+         C265.732 232 272 238.268 272 246
+         V288
+         C272 295.732 265.732 302 258 302
+         H102
+         C94.268 302 88 295.732 88 288
+         V246
+         C88 238.268 94.268 232 102 232
+         Z"
+      fill="none"
+      stroke="url(#gen-edge)"
+      stroke-opacity="0.16"
+      stroke-width="2"/>
+  </g>
+
+  <!-- main building -->
+  <g filter="url(#gen-shadow)">
+    <path
+      d="M102 232
+         H258
+         C265.732 232 272 238.268 272 246
+         V288
+         C272 295.732 265.732 302 258 302
+         H102
+         C94.268 302 88 295.732 88 288
+         V246
+         C88 238.268 94.268 232 102 232
+         Z"
+      fill="url(#gen-shell)"
+      stroke="url(#gen-edge)"
+      stroke-opacity="0.42"
+      stroke-width="1.4"/>
+
+    <!-- roof beam -->
+    <rect x="106" y="229" width="148" height="6" rx="3" fill="url(#gen-roof)"/>
+    <rect x="106" y="229" width="148" height="6" rx="3" filter="url(#gen-cyan-glow)" fill="url(#gen-roof)" fill-opacity="0.62"/>
+
+    <!-- top strip -->
+    <rect x="142" y="224" width="76" height="3.5" rx="1.75" fill="url(#gen-strip)"/>
+
+    <!-- side pylons -->
+    <rect x="102" y="244" width="11" height="40" rx="5.5" fill="#0C1D2F" stroke="rgba(118,228,255,0.18)" stroke-width="1"/>
+    <rect x="247" y="244" width="11" height="40" rx="5.5" fill="#0C1D2F" stroke="rgba(118,228,255,0.18)" stroke-width="1"/>
+
+    <!-- central glass -->
+    <rect x="118" y="242" width="124" height="36" rx="11" fill="url(#gen-panel)" stroke="rgba(144,241,255,0.20)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="132" y="282" width="96" height="4" rx="2" fill="rgba(64,177,255,0.14)"/>
+
+    <!-- ward window bands -->
+    <path d="M128 250H154" stroke="rgba(117,228,255,0.20)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M206 250H232" stroke="rgba(117,228,255,0.20)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M130 264H150" stroke="rgba(117,228,255,0.14)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M210 264H230" stroke="rgba(117,228,255,0.14)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- central healing core -->
+  <ellipse cx="180" cy="255" rx="30" ry="42" fill="url(#gen-core)"/>
+
+  <!-- ward icon -->
+  <g filter="url(#gen-core-glow)">
+    <rect x="175.5" y="241" width="9" height="28" rx="3" fill="url(#gen-heal)"/>
+    <rect x="166" y="250.5" width="28" height="9" rx="3" fill="url(#gen-heal)"/>
+  </g>
+
+  <!-- side monitoring nodes -->
+  <circle cx="142" cy="258" r="6.5" fill="#0D2134" stroke="rgba(136,240,255,0.28)" stroke-width="1"/>
+  <circle cx="142" cy="258" r="2.2" fill="#8EF6FF"/>
+
+  <circle cx="218" cy="258" r="6.5" fill="#0D2134" stroke="rgba(136,240,255,0.28)" stroke-width="1"/>
+  <circle cx="218" cy="258" r="2.2" fill="#8EF6FF"/>
+
+  <!-- connector stubs -->
+  <path d="M88 266H74" stroke="rgba(110,230,255,0.26)" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M272 266H286" stroke="rgba(110,230,255,0.30)" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M180 232V218" stroke="rgba(110,230,255,0.30)" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="180" y="292" text-anchor="middle" fill="#EAF6FF"
+        font-family="Inter, DM Sans, Arial, sans-serif"
+        font-size="8.6" font-weight="700" letter-spacing="0.22">
+    General Ward
+  </text>
+  <text x="180" y="304" text-anchor="middle" fill="rgba(149,223,255,0.92)"
+        font-family="JetBrains Mono, monospace"
+        font-size="5.2" font-weight="600" letter-spacing="0.5">
+    4h
+  </text>
                 </g>
 
                 <!-- FLOOR 2: PAEDS left + CARDIOLOGY right -->
                 <g class="hbuild locked" id="hb-paeds">
-                  <rect x="80" y="318" width="92" height="40" rx="4" fill="rgba(255,192,0,0.3)" stroke="rgba(255,192,0,0.5)" stroke-width="1.2"/>
-                  <text x="126" y="334" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(255,192,0,0.85)">👶</text>
-                  <text x="126" y="346" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="rgba(200,218,240,0.7)">Paediatrics</text>
-                  <text x="126" y="355" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">8h</text>
+                  <defs>
+    <!-- Base shell -->
+    <linearGradient id="paeds-shell" x1="72" y1="122" x2="72" y2="214" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1A2942"/>
+      <stop offset="0.56" stop-color="#111C30"/>
+      <stop offset="1" stop-color="#09121E"/>
+    </linearGradient>
+
+    <!-- Cyan-lilac perimeter -->
+    <linearGradient id="paeds-edge" x1="-4" y1="130" x2="148" y2="214" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#63DDFF"/>
+      <stop offset="0.46" stop-color="#ADF7FF"/>
+      <stop offset="1" stop-color="#9A8CFF"/>
+    </linearGradient>
+
+    <!-- Soft specialty accent -->
+    <linearGradient id="paeds-accent" x1="38" y1="146" x2="106" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8DEBFF"/>
+      <stop offset="0.55" stop-color="#79C9FF"/>
+      <stop offset="1" stop-color="#B78CFF"/>
+    </linearGradient>
+
+    <!-- Purple aura -->
+    <radialGradient id="paeds-purple-aura" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 172) rotate(90) scale(72 106)">
+      <stop offset="0" stop-color="#8A6BFF" stop-opacity="0.22"/>
+      <stop offset="0.55" stop-color="#5A41C6" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1A103C" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Gentle core -->
+    <radialGradient id="paeds-core" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 166) rotate(90) scale(28 40)">
+      <stop offset="0" stop-color="#EFFBFF" stop-opacity="0.74"/>
+      <stop offset="0.46" stop-color="#9AE9FF" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#8F96FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="paeds-ground" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 216) rotate(90) scale(18 72)">
+      <stop offset="0" stop-color="#42D2FF" stop-opacity="0.28"/>
+      <stop offset="0.48" stop-color="#9A7DFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#42D2FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="paeds-panel" x1="18" y1="148" x2="126" y2="194" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#183550" stop-opacity="0.90"/>
+      <stop offset="1" stop-color="#102338" stop-opacity="0.90"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="paeds-roof" x1="10" y1="140" x2="134" y2="140" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5DD4FF"/>
+      <stop offset="0.5" stop-color="#C1F8FF"/>
+      <stop offset="1" stop-color="#8E94FF"/>
+    </linearGradient>
+
+    <!-- Soft beacon strip -->
+    <linearGradient id="paeds-strip" x1="42" y1="136" x2="102" y2="136" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A4EEFF"/>
+      <stop offset="0.5" stop-color="#E0F8FF"/>
+      <stop offset="1" stop-color="#B492FF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="paeds-shadow" x="-8" y="122" width="160" height="108" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#020713" flood-opacity="0.74"/>
+    </filter>
+
+    <filter id="paeds-cyan-glow" x="2" y="134" width="140" height="18" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="paeds-outer-neon" x="-6" y="128" width="156" height="96" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="4.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="paeds-core-glow" x="50" y="144" width="44" height="44" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient aura -->
+  <ellipse cx="72" cy="172" rx="106" ry="72" fill="url(#paeds-purple-aura)"/>
+  <ellipse cx="72" cy="216" rx="72" ry="18" fill="url(#paeds-ground)"/>
+
+  <!-- outer silhouette -->
+  <g filter="url(#paeds-outer-neon)">
+    <path
+      d="M18 144
+         H126
+         C135.941 144 144 152.059 144 162
+         V198
+         C144 207.941 135.941 216 126 216
+         H18
+         C8.059 216 0 207.941 0 198
+         V162
+         C0 152.059 8.059 144 18 144
+         Z"
+      fill="none"
+      stroke="url(#paeds-edge)"
+      stroke-opacity="0.16"
+      stroke-width="2"/>
+  </g>
+
+  <!-- main building -->
+  <g filter="url(#paeds-shadow)">
+    <path
+      d="M18 144
+         H126
+         C135.941 144 144 152.059 144 162
+         V198
+         C144 207.941 135.941 216 126 216
+         H18
+         C8.059 216 0 207.941 0 198
+         V162
+         C0 152.059 8.059 144 18 144
+         Z"
+      fill="url(#paeds-shell)"
+      stroke="url(#paeds-edge)"
+      stroke-opacity="0.42"
+      stroke-width="1.4"/>
+
+    <!-- roof beam -->
+    <rect x="10" y="141" width="124" height="6" rx="3" fill="url(#paeds-roof)"/>
+    <rect x="10" y="141" width="124" height="6" rx="3" filter="url(#paeds-cyan-glow)" fill="url(#paeds-roof)" fill-opacity="0.62"/>
+
+    <!-- upper strip -->
+    <rect x="42" y="136" width="60" height="3.5" rx="1.75" fill="url(#paeds-strip)"/>
+
+    <!-- side pylons -->
+    <rect x="14" y="154" width="10" height="38" rx="5" fill="#0C1E31" stroke="rgba(143,232,255,0.18)" stroke-width="1"/>
+    <rect x="120" y="154" width="10" height="38" rx="5" fill="#0C1E31" stroke="rgba(143,232,255,0.18)" stroke-width="1"/>
+
+    <!-- central glass -->
+    <rect x="28" y="154" width="88" height="34" rx="12" fill="url(#paeds-panel)" stroke="rgba(179,241,255,0.20)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="40" y="192" width="64" height="4" rx="2" fill="rgba(85,191,255,0.14)"/>
+
+    <!-- soft internal bands -->
+    <path d="M36 162H54" stroke="rgba(142,233,255,0.20)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M90 162H108" stroke="rgba(142,233,255,0.20)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M38 176H52" stroke="rgba(142,233,255,0.14)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M92 176H106" stroke="rgba(142,233,255,0.14)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- central care icon -->
+  <ellipse cx="72" cy="166" rx="28" ry="40" fill="url(#paeds-core)"/>
+  <g filter="url(#paeds-core-glow)">
+    <path
+      d="M72 152
+         C75.6 147.2 85 148.4 85 156.8
+         C85 165.8 76.4 171.1 72 175
+         C67.6 171.1 59 165.8 59 156.8
+         C59 148.4 68.4 147.2 72 152Z"
+      fill="url(#paeds-accent)"/>
+  </g>
+
+  <!-- side monitoring nodes -->
+  <circle cx="42" cy="170" r="6.5" fill="#0D2134" stroke="rgba(155,240,255,0.28)" stroke-width="1"/>
+  <circle cx="42" cy="170" r="2.2" fill="#A8F3FF"/>
+
+  <circle cx="102" cy="170" r="6.5" fill="#0D2134" stroke="rgba(155,240,255,0.28)" stroke-width="1"/>
+  <circle cx="102" cy="170" r="2.2" fill="#A8F3FF"/>
+
+  <!-- connector stubs -->
+  <path d="M144 180H158" stroke="rgba(110,230,255,0.30)" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M72 144V130" stroke="rgba(149,223,255,0.28)" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="72" y="206" text-anchor="middle" fill="#EEF7FF"
+        font-family="Inter, DM Sans, Arial, sans-serif"
+        font-size="8.4" font-weight="700" letter-spacing="0.2">
+    Paediatrics
+  </text>
+  <text x="72" y="218" text-anchor="middle" fill="rgba(185,214,255,0.92)"
+        font-family="JetBrains Mono, monospace"
+        font-size="5.2" font-weight="600" letter-spacing="0.5">
+    8h
+  </text>
                 </g>
                 <g class="hbuild locked" id="hb-cardiology">
-                  <rect x="188" y="318" width="92" height="40" rx="4" fill="rgba(224,92,110,0.3)" stroke="rgba(224,92,110,0.5)" stroke-width="1.2"/>
-                  <text x="234" y="334" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(224,92,110,0.85)">🫀</text>
-                  <text x="234" y="346" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="rgba(200,218,240,0.7)">Cardiology</text>
-                  <text x="234" y="355" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">16h</text>
+                 <defs>
+    <!-- Base shell -->
+    <linearGradient id="card-shell" x1="292" y1="122" x2="292" y2="220" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182A44"/>
+      <stop offset="0.56" stop-color="#101C30"/>
+      <stop offset="1" stop-color="#09121E"/>
+    </linearGradient>
+
+    <!-- Cyan-electric perimeter -->
+    <linearGradient id="card-edge" x1="208" y1="130" x2="376" y2="220" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#60DDFF"/>
+      <stop offset="0.46" stop-color="#B0F7FF"/>
+      <stop offset="1" stop-color="#6E8FFF"/>
+    </linearGradient>
+
+    <!-- Cardiac accent -->
+    <linearGradient id="card-accent" x1="264" y1="150" x2="320" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8DEBFF"/>
+      <stop offset="0.48" stop-color="#73C7FF"/>
+      <stop offset="1" stop-color="#AA8DFF"/>
+    </linearGradient>
+
+    <!-- Purple aura -->
+    <radialGradient id="card-purple-aura" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 174) rotate(90) scale(78 114)">
+      <stop offset="0" stop-color="#8362FF" stop-opacity="0.22"/>
+      <stop offset="0.55" stop-color="#5840C8" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1A103C" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Electric core -->
+    <radialGradient id="card-core" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 168) rotate(90) scale(30 42)">
+      <stop offset="0" stop-color="#F1FCFF" stop-opacity="0.78"/>
+      <stop offset="0.44" stop-color="#9AEFFF" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#8B90FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="card-ground" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 222) rotate(90) scale(18 78)">
+      <stop offset="0" stop-color="#42D2FF" stop-opacity="0.28"/>
+      <stop offset="0.48" stop-color="#9B7CFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#42D2FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="card-panel" x1="228" y1="150" x2="356" y2="196" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#183651" stop-opacity="0.90"/>
+      <stop offset="1" stop-color="#102338" stop-opacity="0.90"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="card-roof" x1="218" y1="142" x2="366" y2="142" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#61D7FF"/>
+      <stop offset="0.5" stop-color="#C5FAFF"/>
+      <stop offset="1" stop-color="#8D93FF"/>
+    </linearGradient>
+
+    <!-- Pulse strip -->
+    <linearGradient id="card-strip" x1="254" y1="138" x2="330" y2="138" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A6EEFF"/>
+      <stop offset="0.5" stop-color="#F0FBFF"/>
+      <stop offset="1" stop-color="#B08DFF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="card-shadow" x="204" y="122" width="176" height="114" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#020713" flood-opacity="0.74"/>
+    </filter>
+
+    <filter id="card-cyan-glow" x="210" y="136" width="164" height="18" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="card-outer-neon" x="206" y="128" width="172" height="102" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="4.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="card-core-glow" x="266" y="145" width="52" height="48" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient aura -->
+  <ellipse cx="292" cy="174" rx="114" ry="78" fill="url(#card-purple-aura)"/>
+  <ellipse cx="292" cy="222" rx="78" ry="18" fill="url(#card-ground)"/>
+
+  <!-- outer silhouette -->
+  <g filter="url(#card-outer-neon)">
+    <path
+      d="M226 146
+         H358
+         C367.941 146 376 154.059 376 164
+         V202
+         C376 211.941 367.941 220 358 220
+         H226
+         C216.059 220 208 211.941 208 202
+         V164
+         C208 154.059 216.059 146 226 146
+         Z"
+      fill="none"
+      stroke="url(#card-edge)"
+      stroke-opacity="0.16"
+      stroke-width="2"/>
+  </g>
+
+  <!-- main building -->
+  <g filter="url(#card-shadow)">
+    <path
+      d="M226 146
+         H358
+         C367.941 146 376 154.059 376 164
+         V202
+         C376 211.941 367.941 220 358 220
+         H226
+         C216.059 220 208 211.941 208 202
+         V164
+         C208 154.059 216.059 146 226 146
+         Z"
+      fill="url(#card-shell)"
+      stroke="url(#card-edge)"
+      stroke-opacity="0.42"
+      stroke-width="1.4"/>
+
+    <!-- roof beam -->
+    <rect x="218" y="143" width="148" height="6" rx="3" fill="url(#card-roof)"/>
+    <rect x="218" y="143" width="148" height="6" rx="3" filter="url(#card-cyan-glow)" fill="url(#card-roof)" fill-opacity="0.62"/>
+
+    <!-- pulse strip -->
+    <rect x="254" y="138" width="76" height="3.5" rx="1.75" fill="url(#card-strip)"/>
+
+    <!-- side pylons -->
+    <rect x="222" y="156" width="10" height="40" rx="5" fill="#0C1E31" stroke="rgba(143,232,255,0.18)" stroke-width="1"/>
+    <rect x="352" y="156" width="10" height="40" rx="5" fill="#0C1E31" stroke="rgba(143,232,255,0.18)" stroke-width="1"/>
+
+    <!-- central glass -->
+    <rect x="238" y="156" width="108" height="36" rx="12" fill="url(#card-panel)" stroke="rgba(179,241,255,0.20)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="252" y="196" width="80" height="4" rx="2" fill="rgba(85,191,255,0.14)"/>
+
+    <!-- internal bands -->
+    <path d="M246 164H266" stroke="rgba(142,233,255,0.20)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M318 164H338" stroke="rgba(142,233,255,0.20)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M248 178H262" stroke="rgba(142,233,255,0.14)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M322 178H336" stroke="rgba(142,233,255,0.14)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- central heart/pulse core -->
+  <ellipse cx="292" cy="168" rx="30" ry="42" fill="url(#card-core)"/>
+  <g filter="url(#card-core-glow)">
+    <path
+      d="M292 156
+         C295.7 151.2 305.6 152.7 305.6 161.4
+         C305.6 170.2 297.5 174.4 292 179
+         C286.5 174.4 278.4 170.2 278.4 161.4
+         C278.4 152.7 288.3 151.2 292 156Z"
+      fill="url(#card-accent)"/>
+    <path
+      d="M274 170
+         H283
+         L286.5 165
+         L291 175
+         L296 161
+         L300 170
+         H310"
+      fill="none"
+      stroke="#DDF9FF"
+      stroke-width="1.6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      opacity="0.9"/>
+  </g>
+
+  <!-- side monitoring nodes -->
+  <circle cx="256" cy="172" r="6.5" fill="#0D2134" stroke="rgba(155,240,255,0.28)" stroke-width="1"/>
+  <circle cx="256" cy="172" r="2.2" fill="#A8F3FF"/>
+
+  <circle cx="328" cy="172" r="6.5" fill="#0D2134" stroke="rgba(155,240,255,0.28)" stroke-width="1"/>
+  <circle cx="328" cy="172" r="2.2" fill="#A8F3FF"/>
+
+  <!-- connector stubs -->
+  <path d="M208 182H194" stroke="rgba(110,230,255,0.28)" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M376 182H390" stroke="rgba(110,230,255,0.30)" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M292 146V132" stroke="rgba(149,223,255,0.28)" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="292" y="210" text-anchor="middle" fill="#EEF7FF"
+        font-family="Inter, DM Sans, Arial, sans-serif"
+        font-size="8.4" font-weight="700" letter-spacing="0.2">
+    Cardiology
+  </text>
+  <text x="292" y="222" text-anchor="middle" fill="rgba(185,214,255,0.92)"
+        font-family="JetBrains Mono, monospace"
+        font-size="5.2" font-weight="600" letter-spacing="0.5">
+    16h
+  </text>
                 </g>
 
                 <!-- FLOOR 3: NEUROLOGY full width -->
                 <g class="hbuild locked" id="hb-neurology">
-                  <rect x="80" y="277" width="200" height="38" rx="4" fill="rgba(122,90,171,0.35)" stroke="rgba(122,90,171,0.55)" stroke-width="1.2"/>
-                  <text x="180" y="292" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(200,218,240,0.75)">🧠 Neurology</text>
-                  <text x="180" y="304" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">30h</text>
-                  <rect x="95" y="284" width="10" height="8" rx="1.5" fill="rgba(122,90,171,0.3)" stroke="rgba(122,90,171,0.4)" stroke-width="0.8"/>
-                  <rect x="111" y="284" width="10" height="8" rx="1.5" fill="rgba(122,90,171,0.3)" stroke="rgba(122,90,171,0.4)" stroke-width="0.8"/>
-                  <rect x="239" y="284" width="10" height="8" rx="1.5" fill="rgba(122,90,171,0.3)" stroke="rgba(122,90,171,0.4)" stroke-width="0.8"/>
-                  <rect x="255" y="284" width="10" height="8" rx="1.5" fill="rgba(122,90,171,0.3)" stroke="rgba(122,90,171,0.4)" stroke-width="0.8"/>
+                 <defs>
+
+    <!-- Base building shell -->
+    <linearGradient id="neuro-shell" x1="180" y1="40" x2="180" y2="132" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#192B45"/>
+      <stop offset="0.56" stop-color="#111D32"/>
+      <stop offset="1" stop-color="#09121F"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="neuro-edge" x1="96" y1="50" x2="264" y2="132" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#69E0FF"/>
+      <stop offset="0.5" stop-color="#C2F6FF"/>
+      <stop offset="1" stop-color="#8A8CFF"/>
+    </linearGradient>
+
+    <!-- Neural accent -->
+    <linearGradient id="neuro-accent" x1="150" y1="68" x2="210" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A6F0FF"/>
+      <stop offset="0.46" stop-color="#7DD6FF"/>
+      <stop offset="1" stop-color="#B78CFF"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="neuro-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 86) rotate(90) scale(74 116)">
+      <stop offset="0" stop-color="#8E6CFF" stop-opacity="0.22"/>
+      <stop offset="0.5" stop-color="#5942C9" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#1B113F" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Central cognitive core -->
+    <radialGradient id="neuro-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 86) rotate(90) scale(28 40)">
+      <stop offset="0" stop-color="#F4FDFF" stop-opacity="0.78"/>
+      <stop offset="0.46" stop-color="#9BE8FF" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#A493FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="neuro-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 136) rotate(90) scale(18 84)">
+      <stop offset="0" stop-color="#46D4FF" stop-opacity="0.28"/>
+      <stop offset="0.5" stop-color="#9A7EFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#46D4FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="neuro-panel" x1="116" y1="68" x2="244" y2="110" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#193853" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#10263C" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="neuro-roof" x1="106" y1="60" x2="254" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6CE0FF"/>
+      <stop offset="0.5" stop-color="#D5FAFF"/>
+      <stop offset="1" stop-color="#9B8FFF"/>
+    </linearGradient>
+
+    <!-- Neural strip -->
+    <linearGradient id="neuro-strip" x1="142" y1="56" x2="218" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#B2F2FF"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#C49AFF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="neuro-shadow" x="92" y="40" width="180" height="114">
+      <feDropShadow dx="0" dy="9" stdDeviation="8"
+        flood-color="#020713" flood-opacity="0.74"/>
+    </filter>
+
+    <filter id="neuro-glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+
+  </defs>
+
+  <!-- ambient glow -->
+  <ellipse cx="180" cy="86" rx="114" ry="74" fill="url(#neuro-aura)"/>
+  <ellipse cx="180" cy="136" rx="86" ry="18" fill="url(#neuro-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M110 64
+       H250
+       C260 64 268 72 268 82
+       V116
+       C268 126 260 134 250 134
+       H110
+       C100 134 92 126 92 116
+       V82
+       C92 72 100 64 110 64 Z"
+    fill="none"
+    stroke="url(#neuro-edge)"
+    stroke-opacity="0.18"
+    stroke-width="2"
+    filter="url(#neuro-glow)"
+  />
+
+  <!-- main building -->
+  <g filter="url(#neuro-shadow)">
+    <path
+      d="M110 64
+         H250
+         C260 64 268 72 268 82
+         V116
+         C268 126 260 134 250 134
+         H110
+         C100 134 92 126 92 116
+         V82
+         C92 72 100 64 110 64 Z"
+      fill="url(#neuro-shell)"
+      stroke="url(#neuro-edge)"
+      stroke-opacity="0.42"
+      stroke-width="1.4"
+    />
+
+    <!-- roof beam -->
+    <rect x="106" y="60" width="148" height="6" rx="3"
+      fill="url(#neuro-roof)"/>
+
+    <!-- neural strip -->
+    <rect x="142" y="56" width="76" height="3.5" rx="2"
+      fill="url(#neuro-strip)"/>
+
+    <!-- glass -->
+    <rect x="120" y="70" width="120" height="36" rx="12"
+      fill="url(#neuro-panel)"
+      stroke="rgba(190,240,255,0.2)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="140" y="110" width="80" height="4" rx="2"
+      fill="rgba(90,190,255,0.14)"/>
+  </g>
+
+  <!-- neural core -->
+  <ellipse cx="180" cy="86" rx="28" ry="40"
+    fill="url(#neuro-core)"/>
+
+  <!-- neural network icon -->
+  <g stroke="url(#neuro-accent)" stroke-width="1.6" stroke-linecap="round">
+    <circle cx="180" cy="86" r="2.8" fill="#DDF8FF"/>
+    <circle cx="166" cy="78" r="2.4"/>
+    <circle cx="196" cy="78" r="2.4"/>
+    <circle cx="168" cy="96" r="2.4"/>
+    <circle cx="196" cy="98" r="2.4"/>
+
+    <line x1="180" y1="86" x2="166" y2="78"/>
+    <line x1="180" y1="86" x2="196" y2="78"/>
+    <line x1="180" y1="86" x2="168" y2="96"/>
+    <line x1="180" y1="86" x2="196" y2="98"/>
+  </g>
+
+  <!-- side nodes -->
+  <circle cx="146" cy="88" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(170,235,255,0.28)" stroke-width="1"/>
+  <circle cx="146" cy="88" r="2.2" fill="#A8F3FF"/>
+
+  <circle cx="214" cy="88" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(170,235,255,0.28)" stroke-width="1"/>
+  <circle cx="214" cy="88" r="2.2" fill="#A8F3FF"/>
+
+  <!-- connectors -->
+  <path d="M92 96H78"
+    stroke="rgba(120,230,255,0.28)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M268 96H282"
+    stroke="rgba(120,230,255,0.28)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M180 64V50"
+    stroke="rgba(150,230,255,0.28)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="180" y="126"
+    text-anchor="middle"
+    fill="#F1F9FF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.4"
+    font-weight="700"
+    letter-spacing="0.2">
+    Neurology
+  </text>
+
+  <text x="180" y="138"
+    text-anchor="middle"
+    fill="rgba(190,220,255,0.9)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    30h
+  </text>
                 </g>
 
                 <!-- FLOOR 4: ONCOLOGY left + ICU right -->
