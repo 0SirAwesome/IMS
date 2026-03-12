@@ -2431,10 +2431,254 @@ document.write(`\n<!-- ═══════════════════
   </text>
                 </g>
                 <g class="hbuild locked" id="hb-psychiatry">
-                  <rect x="188" y="160" width="92" height="35" rx="4" fill="rgba(122,90,171,0.3)" stroke="rgba(122,90,171,0.5)" stroke-width="1.2"/>
-                  <text x="234" y="174" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(122,90,171,0.85)">🧘</text>
-                  <text x="234" y="184" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="rgba(200,218,240,0.7)">Psychiatry</text>
-                  <text x="234" y="192" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">200h</text>
+                 <defs>
+    <!-- Base shell -->
+    <linearGradient id="psych-shell" x1="292" y1="-178" x2="292" y2="-72" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182A45"/>
+      <stop offset="0.52" stop-color="#101C31"/>
+      <stop offset="1" stop-color="#08111E"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="psych-edge" x1="206" y1="-170" x2="378" y2="-72" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#78E7FF"/>
+      <stop offset="0.44" stop-color="#EAFDFF"/>
+      <stop offset="1" stop-color="#B196FF"/>
+    </linearGradient>
+
+    <!-- Mind-center accent -->
+    <linearGradient id="psych-accent" x1="266" y1="-150" x2="320" y2="-108" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D2FBFF"/>
+      <stop offset="0.46" stop-color="#96E5FF"/>
+      <stop offset="1" stop-color="#C6A0FF"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="psych-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 -122) rotate(90) scale(84 124)">
+      <stop offset="0" stop-color="#A4F1FF" stop-opacity="0.12"/>
+      <stop offset="0.34" stop-color="#9475FF" stop-opacity="0.18"/>
+      <stop offset="0.62" stop-color="#5C43CD" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1A103D" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Central calm core -->
+    <radialGradient id="psych-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 -124) rotate(90) scale(30 42)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.84"/>
+      <stop offset="0.44" stop-color="#CEF8FF" stop-opacity="0.40"/>
+      <stop offset="1" stop-color="#B39BFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="psych-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 -68) rotate(90) scale(18 84)">
+      <stop offset="0" stop-color="#54DBFF" stop-opacity="0.30"/>
+      <stop offset="0.48" stop-color="#B092FF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#54DBFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="psych-panel" x1="228" y1="-148" x2="356" y2="-102" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1B3A56" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#10253A" stop-opacity="0.92"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="psych-roof" x1="218" y1="-158" x2="366" y2="-158" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#86ECFF"/>
+      <stop offset="0.50" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#B49CFF"/>
+    </linearGradient>
+
+    <!-- Serenity strip -->
+    <linearGradient id="psych-strip" x1="254" y1="-162" x2="330" y2="-162" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D8FBFF"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#D7B1FF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="psych-shadow" x="202" y="-178" width="180" height="126" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#020713" flood-opacity="0.78"/>
+    </filter>
+
+    <filter id="psych-glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+
+    <filter id="psych-core-glow" x="262" y="-152" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient glow -->
+  <ellipse cx="292" cy="-122" rx="124" ry="84" fill="url(#psych-aura)"/>
+  <ellipse cx="292" cy="-68" rx="84" ry="18" fill="url(#psych-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M224 -152
+       H360
+       C369.941 -152 378 -143.941 378 -134
+       V-94
+       C378 -84.059 369.941 -76 360 -76
+       H224
+       C214.059 -76 206 -84.059 206 -94
+       V-134
+       C206 -143.941 214.059 -152 224 -152 Z"
+    fill="none"
+    stroke="url(#psych-edge)"
+    stroke-opacity="0.18"
+    stroke-width="2"
+    filter="url(#psych-glow)"
+  />
+
+  <!-- building -->
+  <g filter="url(#psych-shadow)">
+    <path
+      d="M224 -152
+         H360
+         C369.941 -152 378 -143.941 378 -134
+         V-94
+         C378 -84.059 369.941 -76 360 -76
+         H224
+         C214.059 -76 206 -84.059 206 -94
+         V-134
+         C206 -143.941 214.059 -152 224 -152 Z"
+      fill="url(#psych-shell)"
+      stroke="url(#psych-edge)"
+      stroke-opacity="0.44"
+      stroke-width="1.4"
+    />
+
+    <!-- roof beam -->
+    <rect x="218" y="-158" width="148" height="6" rx="3" fill="url(#psych-roof)"/>
+
+    <!-- serenity strip -->
+    <rect x="254" y="-162" width="76" height="3.5" rx="2" fill="url(#psych-strip)"/>
+
+    <!-- pylons -->
+    <rect x="220" y="-142" width="11" height="42" rx="5.5"
+      fill="#0C1E32" stroke="rgba(215,248,255,0.18)" stroke-width="1"/>
+    <rect x="353" y="-142" width="11" height="42" rx="5.5"
+      fill="#0C1E32" stroke="rgba(215,248,255,0.18)" stroke-width="1"/>
+
+    <!-- glass -->
+    <rect x="238" y="-142" width="108" height="36" rx="12"
+      fill="url(#psych-panel)"
+      stroke="rgba(224,249,255,0.20)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="252" y="-102" width="80" height="4" rx="2"
+      fill="rgba(116,214,255,0.14)"/>
+
+    <!-- soft tech bands -->
+    <path d="M246 -134H266"
+      stroke="rgba(214,248,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M318 -134H338"
+      stroke="rgba(214,248,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+
+    <path d="M248 -120H262"
+      stroke="rgba(214,248,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M322 -120H336"
+      stroke="rgba(214,248,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- calm core -->
+  <ellipse cx="292" cy="-124" rx="30" ry="42" fill="url(#psych-core)"/>
+
+  <!-- Psychiatry icon: mind-wave / calm signal -->
+  <g filter="url(#psych-core-glow)">
+    <path
+      d="M281 -129
+         C281 -136.2 286.5 -141 292 -141
+         C297.5 -141 303 -136.2 303 -129
+         C303 -124.8 301.4 -121.5 299 -119
+         C300.8 -117.7 302 -115.7 302 -113
+         C302 -108.4 297.6 -105 292 -105
+         C286.4 -105 282 -108.4 282 -113
+         C282 -115.7 283.2 -117.7 285 -119
+         C282.6 -121.5 281 -124.8 281 -129Z"
+      fill="none"
+      stroke="url(#psych-accent)"
+      stroke-width="1.8"
+      stroke-linejoin="round"/>
+
+    <path
+      d="M286 -124
+         C288 -126 290 -126.5 292 -124.5
+         C294 -122.5 296 -122 298 -124"
+      fill="none"
+      stroke="#F2FDFF"
+      stroke-width="1.3"
+      stroke-linecap="round"/>
+
+    <path
+      d="M286 -117
+         C288.2 -118.6 290.5 -119 292.3 -117.3
+         C294.1 -115.7 296.1 -115.4 298 -117"
+      fill="none"
+      stroke="#F2FDFF"
+      stroke-width="1.2"
+      stroke-linecap="round"
+      opacity="0.92"/>
+
+    <circle cx="287.8" cy="-131.2" r="1.2" fill="#F2FDFF"/>
+    <circle cx="296.2" cy="-131.2" r="1.2" fill="#F2FDFF"/>
+  </g>
+
+  <!-- nodes -->
+  <circle cx="256" cy="-122" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(204,247,255,0.30)" stroke-width="1"/>
+  <circle cx="256" cy="-122" r="2.2" fill="#CCF9FF"/>
+
+  <circle cx="328" cy="-122" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(204,247,255,0.30)" stroke-width="1"/>
+  <circle cx="328" cy="-122" r="2.2" fill="#CCF9FF"/>
+
+  <!-- connectors -->
+  <path d="M206 -112H192"
+    stroke="rgba(176,244,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M378 -112H392"
+    stroke="rgba(176,244,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M292 -152V-166"
+    stroke="rgba(176,244,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="292" y="-86"
+    text-anchor="middle"
+    fill="#F4FBFF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.5"
+    font-weight="700"
+    letter-spacing="0.2">
+    Psychiatry
+  </text>
+
+  <text x="292" y="-74"
+    text-anchor="middle"
+    fill="rgba(208,232,255,0.92)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    200h
+  </text>
                 </g>
 
                 <!-- FLOOR 7: OPD full width -->
