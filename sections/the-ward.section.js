@@ -2683,9 +2683,228 @@ document.write(`\n<!-- ═══════════════════
 
                 <!-- FLOOR 7: OPD full width -->
                 <g class="hbuild locked" id="hb-opd">
-                  <rect x="80" y="122" width="200" height="35" rx="4" fill="rgba(237,125,49,0.3)" stroke="rgba(237,125,49,0.5)" stroke-width="1.2"/>
-                  <text x="180" y="136" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(200,218,240,0.75)">🏗️ OPD</text>
-                  <text x="180" y="148" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">300h</text>
+                 <defs>
+    <!-- Base shell -->
+    <linearGradient id="opd-shell" x1="180" y1="-286" x2="180" y2="-174" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182B46"/>
+      <stop offset="0.52" stop-color="#101C32"/>
+      <stop offset="1" stop-color="#08111F"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="opd-edge" x1="88" y1="-278" x2="272" y2="-172" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7CEAFF"/>
+      <stop offset="0.44" stop-color="#F2FDFF"/>
+      <stop offset="1" stop-color="#A99AFF"/>
+    </linearGradient>
+
+    <!-- OPD accent -->
+    <linearGradient id="opd-accent" x1="154" y1="-256" x2="206" y2="-212" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D6FBFF"/>
+      <stop offset="0.46" stop-color="#9AE6FF"/>
+      <stop offset="1" stop-color="#C2A2FF"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="opd-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -230) rotate(90) scale(86 128)">
+      <stop offset="0" stop-color="#A8F2FF" stop-opacity="0.12"/>
+      <stop offset="0.34" stop-color="#9676FF" stop-opacity="0.18"/>
+      <stop offset="0.62" stop-color="#5D44CE" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1A103D" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Central core -->
+    <radialGradient id="opd-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -232) rotate(90) scale(30 42)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.84"/>
+      <stop offset="0.44" stop-color="#D2F9FF" stop-opacity="0.40"/>
+      <stop offset="1" stop-color="#B59CFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="opd-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -172) rotate(90) scale(18 88)">
+      <stop offset="0" stop-color="#57DCFF" stop-opacity="0.30"/>
+      <stop offset="0.48" stop-color="#B395FF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#57DCFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="opd-panel" x1="114" y1="-254" x2="246" y2="-204" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1B3A56" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#10253A" stop-opacity="0.92"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="opd-roof" x1="104" y1="-264" x2="256" y2="-264" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#89EDFF"/>
+      <stop offset="0.50" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#B29CFF"/>
+    </linearGradient>
+
+    <!-- Reception strip -->
+    <linearGradient id="opd-strip" x1="142" y1="-268" x2="218" y2="-268" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#DBFBFF"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#D9B4FF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="opd-shadow" x="84" y="-286" width="192" height="132" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#020713" flood-opacity="0.78"/>
+    </filter>
+
+    <filter id="opd-glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+
+    <filter id="opd-core-glow" x="152" y="-258" width="56" height="56" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient glow -->
+  <ellipse cx="180" cy="-230" rx="128" ry="86" fill="url(#opd-aura)"/>
+  <ellipse cx="180" cy="-172" rx="88" ry="18" fill="url(#opd-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M110 -258
+       H250
+       C260 -258 268 -250 268 -240
+       V-198
+       C268 -188 260 -180 250 -180
+       H110
+       C100 -180 92 -188 92 -198
+       V-240
+       C92 -250 100 -258 110 -258 Z"
+    fill="none"
+    stroke="url(#opd-edge)"
+    stroke-opacity="0.18"
+    stroke-width="2"
+    filter="url(#opd-glow)"
+  />
+
+  <!-- building -->
+  <g filter="url(#opd-shadow)">
+    <path
+      d="M110 -258
+         H250
+         C260 -258 268 -250 268 -240
+         V-198
+         C268 -188 260 -180 250 -180
+         H110
+         C100 -180 92 -188 92 -198
+         V-240
+         C92 -250 100 -258 110 -258 Z"
+      fill="url(#opd-shell)"
+      stroke="url(#opd-edge)"
+      stroke-opacity="0.44"
+      stroke-width="1.4"
+    />
+
+    <!-- roof beam -->
+    <rect x="104" y="-264" width="152" height="6" rx="3" fill="url(#opd-roof)"/>
+
+    <!-- strip -->
+    <rect x="142" y="-268" width="76" height="3.5" rx="2" fill="url(#opd-strip)"/>
+
+    <!-- pylons -->
+    <rect x="108" y="-246" width="11" height="44" rx="5.5"
+      fill="#0C1E32" stroke="rgba(220,249,255,0.18)" stroke-width="1"/>
+    <rect x="241" y="-246" width="11" height="44" rx="5.5"
+      fill="#0C1E32" stroke="rgba(220,249,255,0.18)" stroke-width="1"/>
+
+    <!-- glass -->
+    <rect x="126" y="-246" width="108" height="38" rx="12"
+      fill="url(#opd-panel)"
+      stroke="rgba(228,250,255,0.20)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="140" y="-204" width="80" height="4" rx="2"
+      fill="rgba(118,216,255,0.14)"/>
+
+    <!-- soft bands -->
+    <path d="M134 -238H154"
+      stroke="rgba(218,249,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M206 -238H226"
+      stroke="rgba(218,249,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+
+    <path d="M136 -222H150"
+      stroke="rgba(218,249,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M210 -222H224"
+      stroke="rgba(218,249,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- OPD core -->
+  <ellipse cx="180" cy="-232" rx="30" ry="42" fill="url(#opd-core)"/>
+
+  <!-- OPD icon: public consultation hub -->
+  <g filter="url(#opd-core-glow)">
+    <circle cx="171" cy="-236" r="4.5" fill="url(#opd-accent)"/>
+    <circle cx="189" cy="-236" r="4.5" fill="url(#opd-accent)"/>
+    <path d="M164 -223C164 -227.5 167.6 -230 171 -230C174.4 -230 178 -227.5 178 -223"
+      fill="none" stroke="#F4FDFF" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M182 -223C182 -227.5 185.6 -230 189 -230C192.4 -230 196 -227.5 196 -223"
+      fill="none" stroke="#F4FDFF" stroke-width="1.4" stroke-linecap="round"/>
+
+    <rect x="171.8" y="-217" width="16.4" height="7.5" rx="2.8"
+      fill="none" stroke="url(#opd-accent)" stroke-width="1.5"/>
+    <path d="M180 -224V-217" stroke="#F4FDFF" stroke-width="1.3" stroke-linecap="round"/>
+  </g>
+
+  <!-- side nodes -->
+  <circle cx="144" cy="-230" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(208,248,255,0.30)" stroke-width="1"/>
+  <circle cx="144" cy="-230" r="2.2" fill="#D0FAFF"/>
+
+  <circle cx="216" cy="-230" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(208,248,255,0.30)" stroke-width="1"/>
+  <circle cx="216" cy="-230" r="2.2" fill="#D0FAFF"/>
+
+  <!-- connectors -->
+  <path d="M92 -220H78"
+    stroke="rgba(180,245,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M268 -220H282"
+    stroke="rgba(180,245,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M180 -258V-272"
+    stroke="rgba(180,245,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="180" y="-190"
+    text-anchor="middle"
+    fill="#F4FBFF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.5"
+    font-weight="700"
+    letter-spacing="0.2">
+    OPD
+  </text>
+
+  <text x="180" y="-178"
+    text-anchor="middle"
+    fill="rgba(210,233,255,0.92)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    300h
+  </text>
                 </g>
 
                 <!-- FLOOR 8: RESEARCH left + SENIOR_REG right -->
