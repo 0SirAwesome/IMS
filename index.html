@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.9 -->
+<!-- IMS v0.5.11 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2890,7 +2890,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.9</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.11</span>
   </footer>
 
 </div>
@@ -7168,14 +7168,42 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     if(!code){ setStatus('Enter a room code.','error'); return; }
     if (myPeer) { try { myPeer.destroy(); } catch(e) {} }
     isHost=false; roomCode=code; setStatus('Connecting…');
+
+    const failJoin = (msg) => {
+      wardLeaveRoom();
+      setStatus(msg,'error');
+    };
+
     try{ myPeer=new Peer(); } catch(e){ setStatus('PeerJS unavailable.','error'); return; }
-    myPeer.on('error',err=>setStatus('Cannot connect: '+err.type,'error'));
+
+    let peerOpenTimeout = setTimeout(()=>{
+      failJoin('Connection setup timed out. Please retry.');
+    },10000);
+
+    myPeer.on('error',err=>{
+      clearTimeout(peerOpenTimeout);
+      failJoin('Cannot connect: '+(err?.type||'peer error'));
+    });
+
     myPeer.on('open', myId=>{
+      clearTimeout(peerOpenTimeout);
       hostConn=myPeer.connect(peerIdFromCode(code),{metadata:{name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest}});
-      hostConn.on('open',()=>{ hostConn.send({type:'join',name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest,lastSeen:Date.now()}); showSquadRoom(); setStatus('Connected!','success'); });
+      let joinTimeout = setTimeout(()=>{
+        if (!hostConn || hostConn.open) return;
+        failJoin('Could not join room. Check the code and ensure host is online.');
+      },10000);
+      hostConn.on('open',()=>{
+        clearTimeout(joinTimeout);
+        hostConn.send({type:'join',name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest,lastSeen:Date.now()});
+        showSquadRoom();
+        setStatus('Connected!','success');
+      });
+      hostConn.on('error',err=>{
+        clearTimeout(joinTimeout);
+        failJoin('Cannot connect: '+(err?.type||'room unavailable'));
+      });
       hostConn.on('data',msg=>handleMsg(msg,null));
-      hostConn.on('close',()=>{ setStatus('Disconnected.','error'); if (roomCode) wardLeaveRoom(); });
-      myPeer.on('error',err=>setStatus('Cannot connect: '+err.type,'error'));
+      hostConn.on('close',()=>{ clearTimeout(joinTimeout); if (roomCode) failJoin('Disconnected.'); });
     });
   };
 
