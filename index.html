@@ -6878,7 +6878,6 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const grid=$('ward-stats-grid'); if(!grid||!currentUser) return;
     const u=currentUser, t=todayStr();
     const creditedHours=(u.totalMins/60).toFixed(1);
-    const rawHours=((u.rawTotalMins||0)/60).toFixed(1);
     const squadBonusHours=((u.squadBonusMins||0)/60).toFixed(1);
     const squadRawHours=((u.squadRawMins||0)/60).toFixed(1);
     const weekDays=Array.from({length:7},(_,i)=>{ const d=new Date(); d.setDate(d.getDate()-6+i); return d.toISOString().slice(0,10); });
@@ -6888,7 +6887,6 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const bestDay=allDayMins.length?(Math.max(...allDayMins)/60).toFixed(1):'0';
     grid.innerHTML=[
       {n:creditedHours,   l:'Credited Hours'},
-      {n:rawHours,        l:'Raw Focus Hours'},
       {n:squadRawHours,   l:'Study Together Raw Hours'},
       {n:squadBonusHours, l:'Study Together Bonus Hours'},
       {n:weekAvg+'h',     l:'Daily Avg (7d)'},
