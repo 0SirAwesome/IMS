@@ -2202,10 +2202,233 @@ document.write(`\n<!-- ═══════════════════
 
                 <!-- FLOOR 6: RADIOLOGY left + PSYCHIATRY right -->
                 <g class="hbuild locked" id="hb-radiology">
-                  <rect x="80" y="160" width="92" height="35" rx="4" fill="rgba(91,155,213,0.3)" stroke="rgba(91,155,213,0.5)" stroke-width="1.2"/>
-                  <text x="126" y="174" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(91,155,213,0.85)">☢️</text>
-                  <text x="126" y="184" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="rgba(200,218,240,0.7)">Radiology</text>
-                  <text x="126" y="192" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">150h</text>
+                  <defs>
+
+    <!-- Base shell -->
+    <linearGradient id="rad-shell" x1="72" y1="-178" x2="72" y2="-70" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182B46"/>
+      <stop offset="0.52" stop-color="#101C32"/>
+      <stop offset="1" stop-color="#08111F"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="rad-edge" x1="-8" y1="-170" x2="152" y2="-70" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#72E6FF"/>
+      <stop offset="0.44" stop-color="#F0FDFF"/>
+      <stop offset="1" stop-color="#A29AFF"/>
+    </linearGradient>
+
+    <!-- Imaging accent -->
+    <linearGradient id="rad-accent" x1="46" y1="-150" x2="100" y2="-110" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CFFBFF"/>
+      <stop offset="0.48" stop-color="#8EE2FF"/>
+      <stop offset="1" stop-color="#B29AFF"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="rad-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 -120) rotate(90) scale(80 120)">
+      <stop offset="0" stop-color="#9CEEFF" stop-opacity="0.12"/>
+      <stop offset="0.36" stop-color="#8F6FFF" stop-opacity="0.18"/>
+      <stop offset="0.62" stop-color="#5841C7" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1A103D" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Scanner core -->
+    <radialGradient id="rad-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 -124) rotate(90) scale(30 42)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.86"/>
+      <stop offset="0.44" stop-color="#C7F6FF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#A896FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="rad-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 -66) rotate(90) scale(18 80)">
+      <stop offset="0" stop-color="#52DAFF" stop-opacity="0.30"/>
+      <stop offset="0.48" stop-color="#A48CFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#52DAFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="rad-panel" x1="18" y1="-150" x2="126" y2="-104" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1B3B57" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#10263B" stop-opacity="0.92"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="rad-roof" x1="10" y1="-160" x2="134" y2="-160" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#82EBFF"/>
+      <stop offset="0.50" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#A695FF"/>
+    </linearGradient>
+
+    <!-- Scanner strip -->
+    <linearGradient id="rad-strip" x1="42" y1="-164" x2="102" y2="-164" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D2FAFF"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#CFAEFF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="rad-shadow" x="-8" y="-178" width="160" height="124">
+      <feDropShadow dx="0" dy="10" stdDeviation="8"
+        flood-color="#020713" flood-opacity="0.78"/>
+    </filter>
+
+    <filter id="rad-glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+
+    <filter id="rad-core-glow" x="44" y="-150" width="56" height="56">
+      <feGaussianBlur stdDeviation="3.6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+  </defs>
+
+  <!-- ambient glow -->
+  <ellipse cx="72" cy="-120" rx="120" ry="82" fill="url(#rad-aura)"/>
+  <ellipse cx="72" cy="-66" rx="82" ry="18" fill="url(#rad-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M18 -154
+       H126
+       C136 -154 144 -146 144 -136
+       V-96
+       C144 -86 136 -78 126 -78
+       H18
+       C8 -78 0 -86 0 -96
+       V-136
+       C0 -146 8 -154 18 -154 Z"
+    fill="none"
+    stroke="url(#rad-edge)"
+    stroke-opacity="0.18"
+    stroke-width="2"
+    filter="url(#rad-glow)"
+  />
+
+  <!-- building -->
+  <g filter="url(#rad-shadow)">
+    <path
+      d="M18 -154
+         H126
+         C136 -154 144 -146 144 -136
+         V-96
+         C144 -86 136 -78 126 -78
+         H18
+         C8 -78 0 -86 0 -96
+         V-136
+         C0 -146 8 -154 18 -154 Z"
+      fill="url(#rad-shell)"
+      stroke="url(#rad-edge)"
+      stroke-opacity="0.44"
+      stroke-width="1.4"
+    />
+
+    <!-- roof beam -->
+    <rect x="10" y="-160" width="124" height="6" rx="3" fill="url(#rad-roof)"/>
+
+    <!-- strip -->
+    <rect x="42" y="-164" width="60" height="3.5" rx="2" fill="url(#rad-strip)"/>
+
+    <!-- pylons -->
+    <rect x="12" y="-144" width="10" height="42" rx="5"
+      fill="#0C1E32" stroke="rgba(210,248,255,0.18)" stroke-width="1"/>
+    <rect x="122" y="-144" width="10" height="42" rx="5"
+      fill="#0C1E32" stroke="rgba(210,248,255,0.18)" stroke-width="1"/>
+
+    <!-- glass -->
+    <rect x="26" y="-144" width="92" height="36" rx="12"
+      fill="url(#rad-panel)"
+      stroke="rgba(220,248,255,0.20)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="38" y="-104" width="68" height="4" rx="2"
+      fill="rgba(110,210,255,0.14)"/>
+
+    <!-- tech bands -->
+    <path d="M34 -136H50"
+      stroke="rgba(210,248,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M94 -136H110"
+      stroke="rgba(210,248,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+
+    <path d="M36 -122H48"
+      stroke="rgba(210,248,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M96 -122H108"
+      stroke="rgba(210,248,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- scanner core -->
+  <ellipse cx="72" cy="-124" rx="30" ry="42" fill="url(#rad-core)"/>
+
+  <!-- scanner icon -->
+  <g filter="url(#rad-core-glow)">
+    <circle cx="72" cy="-124" r="12"
+      fill="none" stroke="url(#rad-accent)" stroke-width="1.8"/>
+
+    <circle cx="72" cy="-124" r="5.5"
+      fill="url(#rad-accent)"/>
+
+    <!-- radial beams -->
+    <path d="M72 -140V-134" stroke="#F2FDFF" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M72 -114V-108" stroke="#F2FDFF" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M56 -124H50" stroke="#F2FDFF" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M94 -124H88" stroke="#F2FDFF" stroke-width="1.4" stroke-linecap="round"/>
+
+    <path d="M61 -135L57 -139" stroke="#F2FDFF" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M83 -135L87 -139" stroke="#F2FDFF" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M61 -113L57 -109" stroke="#F2FDFF" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M83 -113L87 -109" stroke="#F2FDFF" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- nodes -->
+  <circle cx="42" cy="-122" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(200,245,255,0.30)" stroke-width="1"/>
+  <circle cx="42" cy="-122" r="2.2" fill="#C6F7FF"/>
+
+  <circle cx="102" cy="-122" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(200,245,255,0.30)" stroke-width="1"/>
+  <circle cx="102" cy="-122" r="2.2" fill="#C6F7FF"/>
+
+  <!-- connectors -->
+  <path d="M144 -112H158"
+    stroke="rgba(170,242,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M72 -154V-168"
+    stroke="rgba(170,242,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="72" y="-88"
+    text-anchor="middle"
+    fill="#F4FBFF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.5"
+    font-weight="700"
+    letter-spacing="0.2">
+    Radiology
+  </text>
+
+  <text x="72" y="-76"
+    text-anchor="middle"
+    fill="rgba(205,230,255,0.92)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    150h
+  </text>
                 </g>
                 <g class="hbuild locked" id="hb-psychiatry">
                   <rect x="188" y="160" width="92" height="35" rx="4" fill="rgba(122,90,171,0.3)" stroke="rgba(122,90,171,0.5)" stroke-width="1.2"/>
