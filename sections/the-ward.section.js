@@ -1534,10 +1534,218 @@ document.write(`\n<!-- ═══════════════════
 
                 <!-- FLOOR 4: ONCOLOGY left + ICU right -->
                 <g class="hbuild locked" id="hb-oncology">
-                  <rect x="80" y="238" width="92" height="36" rx="4" fill="rgba(45,158,87,0.3)" stroke="rgba(45,158,87,0.5)" stroke-width="1.2"/>
-                  <text x="126" y="252" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(45,158,87,0.85)">🔬</text>
-                  <text x="126" y="263" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" font-weight="700" fill="rgba(200,218,240,0.7)">Oncology</text>
-                  <text x="126" y="271" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">50h</text>
+                 <defs>
+    <!-- Base shell -->
+    <linearGradient id="onco-shell" x1="72" y1="16" x2="72" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182943"/>
+      <stop offset="0.54" stop-color="#101B30"/>
+      <stop offset="1" stop-color="#08111E"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="onco-edge" x1="-8" y1="24" x2="152" y2="114" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#61DEFF"/>
+      <stop offset="0.45" stop-color="#BDF8FF"/>
+      <stop offset="1" stop-color="#8F86FF"/>
+    </linearGradient>
+
+    <!-- Oncology accent -->
+    <linearGradient id="onco-accent" x1="42" y1="44" x2="102" y2="86" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A9F2FF"/>
+      <stop offset="0.48" stop-color="#79D1FF"/>
+      <stop offset="1" stop-color="#C08BFF"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="onco-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 62) rotate(90) scale(72 110)">
+      <stop offset="0" stop-color="#8C68FF" stop-opacity="0.22"/>
+      <stop offset="0.52" stop-color="#563FC6" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1A103C" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Central core -->
+    <radialGradient id="onco-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 60) rotate(90) scale(28 40)">
+      <stop offset="0" stop-color="#F6FDFF" stop-opacity="0.78"/>
+      <stop offset="0.44" stop-color="#A7ECFF" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#A388FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="onco-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 116) rotate(90) scale(18 74)">
+      <stop offset="0" stop-color="#43D3FF" stop-opacity="0.28"/>
+      <stop offset="0.48" stop-color="#9C7CFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#43D3FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="onco-panel" x1="18" y1="42" x2="126" y2="88" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#193651" stop-opacity="0.90"/>
+      <stop offset="1" stop-color="#0F2338" stop-opacity="0.90"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="onco-roof" x1="10" y1="34" x2="134" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#67E0FF"/>
+      <stop offset="0.5" stop-color="#D7FAFF"/>
+      <stop offset="1" stop-color="#9C8EFF"/>
+    </linearGradient>
+
+    <!-- Precision strip -->
+    <linearGradient id="onco-strip" x1="42" y1="30" x2="102" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#B8F4FF"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#C79CFF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="onco-shadow" x="-8" y="16" width="160" height="114" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#020713" flood-opacity="0.74"/>
+    </filter>
+
+    <filter id="onco-glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+
+    <filter id="onco-core-glow" x="48" y="36" width="48" height="48" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient glow -->
+  <ellipse cx="72" cy="62" rx="110" ry="72" fill="url(#onco-aura)"/>
+  <ellipse cx="72" cy="116" rx="74" ry="18" fill="url(#onco-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M18 38
+       H126
+       C135.941 38 144 46.059 144 56
+       V94
+       C144 103.941 135.941 112 126 112
+       H18
+       C8.059 112 0 103.941 0 94
+       V56
+       C0 46.059 8.059 38 18 38 Z"
+    fill="none"
+    stroke="url(#onco-edge)"
+    stroke-opacity="0.18"
+    stroke-width="2"
+    filter="url(#onco-glow)"
+  />
+
+  <!-- main building -->
+  <g filter="url(#onco-shadow)">
+    <path
+      d="M18 38
+         H126
+         C135.941 38 144 46.059 144 56
+         V94
+         C144 103.941 135.941 112 126 112
+         H18
+         C8.059 112 0 103.941 0 94
+         V56
+         C0 46.059 8.059 38 18 38 Z"
+      fill="url(#onco-shell)"
+      stroke="url(#onco-edge)"
+      stroke-opacity="0.42"
+      stroke-width="1.4"
+    />
+
+    <!-- roof beam -->
+    <rect x="10" y="34" width="124" height="6" rx="3" fill="url(#onco-roof)"/>
+
+    <!-- precision strip -->
+    <rect x="42" y="30" width="60" height="3.5" rx="2" fill="url(#onco-strip)"/>
+
+    <!-- glass -->
+    <rect x="26" y="46" width="92" height="34" rx="12"
+      fill="url(#onco-panel)"
+      stroke="rgba(190,240,255,0.20)" stroke-width="1"/>
+
+    <!-- side pylons -->
+    <rect x="12" y="48" width="10" height="38" rx="5"
+      fill="#0C1D30" stroke="rgba(155,235,255,0.18)" stroke-width="1"/>
+    <rect x="122" y="48" width="10" height="38" rx="5"
+      fill="#0C1D30" stroke="rgba(155,235,255,0.18)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="38" y="84" width="68" height="4" rx="2"
+      fill="rgba(90,190,255,0.14)"/>
+
+    <!-- inner tech bands -->
+    <path d="M34 54H50" stroke="rgba(150,235,255,0.20)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M94 54H110" stroke="rgba(150,235,255,0.20)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M36 68H48" stroke="rgba(150,235,255,0.14)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M96 68H108" stroke="rgba(150,235,255,0.14)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- central treatment core -->
+  <ellipse cx="72" cy="60" rx="28" ry="40" fill="url(#onco-core)"/>
+
+  <!-- oncology icon: precision cell / radiotherapy target -->
+  <g filter="url(#onco-core-glow)">
+    <circle cx="72" cy="60" r="10.5" fill="none" stroke="url(#onco-accent)" stroke-width="1.8"/>
+    <circle cx="72" cy="60" r="4.2" fill="url(#onco-accent)"/>
+    <path d="M72 47V52" stroke="#E9FBFF" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M72 68V73" stroke="#E9FBFF" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M59 60H64" stroke="#E9FBFF" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M80 60H85" stroke="#E9FBFF" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M63.2 51.2L66.8 54.8" stroke="rgba(233,251,255,0.85)" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M77.2 65.2L80.8 68.8" stroke="rgba(233,251,255,0.85)" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M80.8 51.2L77.2 54.8" stroke="rgba(233,251,255,0.85)" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M66.8 65.2L63.2 68.8" stroke="rgba(233,251,255,0.85)" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- side nodes -->
+  <circle cx="42" cy="62" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(170,235,255,0.28)" stroke-width="1"/>
+  <circle cx="42" cy="62" r="2.2" fill="#A8F3FF"/>
+
+  <circle cx="102" cy="62" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(170,235,255,0.28)" stroke-width="1"/>
+  <circle cx="102" cy="62" r="2.2" fill="#A8F3FF"/>
+
+  <!-- connectors -->
+  <path d="M144 72H158"
+    stroke="rgba(120,230,255,0.28)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M72 38V24"
+    stroke="rgba(150,230,255,0.28)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="72" y="104"
+    text-anchor="middle"
+    fill="#F1F9FF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.4"
+    font-weight="700"
+    letter-spacing="0.2">
+    Oncology
+  </text>
+
+  <text x="72" y="116"
+    text-anchor="middle"
+    fill="rgba(190,220,255,0.9)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    50h
+  </text>
                 </g>
                 <g class="hbuild locked" id="hb-icu">
                   <rect x="188" y="238" width="92" height="36" rx="4" fill="rgba(68,114,196,0.35)" stroke="rgba(68,114,196,0.55)" stroke-width="1.2"/>
