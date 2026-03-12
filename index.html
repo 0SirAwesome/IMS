@@ -2163,6 +2163,25 @@
   .hbuild.current  { filter:drop-shadow(0 0 8px rgba(255,192,0,0.7)); }
   @keyframes cellUnlock { 0%{opacity:0.12} 50%{filter:drop-shadow(0 0 18px rgba(255,192,0,0.9))} 100%{opacity:1} }
   .hbuild.just-unlocked { animation:cellUnlock 1s ease forwards; }
+  .ward-unlock-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: radial-gradient(circle at 50% 30%, rgba(255,192,0,0.2), rgba(4,10,20,0.92));
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.2rem; backdrop-filter: blur(3px);
+  }
+  .ward-unlock-card {
+    position: relative; width: min(520px, 96vw);
+    border-radius: 20px; border: 1px solid rgba(255,192,0,0.42);
+    background: linear-gradient(160deg, rgba(24,31,54,0.95), rgba(10,16,30,0.96));
+    box-shadow: 0 24px 100px rgba(0,0,0,0.65), 0 0 80px rgba(255,192,0,0.15);
+    padding: 2rem 1.5rem 1.3rem; text-align: center; overflow: hidden;
+  }
+  .ward-unlock-title { font-family:'Lora',serif; font-size:1.7rem; color:#ffe08a; margin-bottom:0.4rem; }
+  .ward-unlock-sub { font-size:0.88rem; color:rgba(200,218,240,0.82); margin-bottom:1rem; }
+  .ward-unlock-area { font-family:'JetBrains Mono',monospace; font-size:0.9rem; letter-spacing:0.08em; color:#ffc000; margin-bottom:1.1rem; }
+  .ward-unlock-dismiss { border:none; border-radius:99px; background:rgba(255,192,0,0.18); border:1px solid rgba(255,192,0,0.35); color:#ffd966; padding:0.55rem 1.2rem; font-weight:700; cursor:pointer; }
+  .ward-confetti { position:absolute; width:7px; height:14px; top:-16px; opacity:0.92; border-radius:2px; animation:wardConfettiFall linear forwards; }
+  @keyframes wardConfettiFall { to { transform: translateY(125vh) rotate(720deg); opacity: 0.15; } }
 
   /* STATS */
   .ward-stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.55rem; margin-bottom:0.9rem; }
@@ -3792,6 +3811,14 @@ document.addEventListener('visibilitychange', function() {
         (window._wardTimerState()==='focusing' || window._wardTimerState()==='break')) {
       tickTimer();
     }
+    if (typeof window.refreshWardDerivedUI === 'function') {
+      window.refreshWardDerivedUI({ rehydrate:true });
+    }
+  }
+});
+window.addEventListener('focus', function() {
+  if (typeof window.refreshWardDerivedUI === 'function') {
+    window.refreshWardDerivedUI({ rehydrate:true });
   }
 });
 // pagehide is more reliable than beforeunload on mobile and Blink-based browsers.
@@ -5619,6 +5646,67 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
   const AVATAR_COLORS = ['#4472c4','#ed7d31','#2d9e57','#e05c6e','#ffc000','#5b9bd5','#7a5aab'];
   const ROOM_WORDS = ['TIBIA','AORTA','FEMUR','ILEUM','ULNAR','BOLUS','KREBS','LIPID','RENAL','SERUM','TOXIN','ATRIA','CORTEX'];
+  const SQUAD_BOOST_MULTIPLIER = 1.2;
+  const SQUAD_BONUS_RATE = SQUAD_BOOST_MULTIPLIER - 1;
+  const SQUAD_HEARTBEAT_MAX_AGE_MS = 90 * 1000;
+
+  function getWeekKey(ts = Date.now()) {
+    const d = new Date(ts);
+    const utc = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    const day = utc.getUTCDay() || 7;
+    utc.setUTCDate(utc.getUTCDate() + 4 - day);
+    const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((utc - yearStart) / 86400000) + 1) / 7);
+    return `${utc.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+  }
+
+  function resetWeeklyStats(user, force = false) {
+    if (!user) return;
+    const wk = getWeekKey();
+    if (!force && user.lastWeeklyResetKey === wk) return;
+    user.weeklyMins = 0;
+    user.rawWeeklyMins = 0;
+    user.squadWeeklyRawMins = 0;
+    user.squadWeeklyBonusMins = 0;
+    user.lastWeeklyResetKey = wk;
+  }
+
+  function normalizeUserStats(user) {
+    if (!user) return user;
+    if (!user.dailyMins)      user.dailyMins      = {};
+    if (!user.sessions)       user.sessions       = [];
+    if (!user.hourlyActivity) user.hourlyActivity = new Array(24).fill(0);
+    if (!user.achievements)   user.achievements   = [];
+    if (!user.friends)        user.friends        = [];
+    if (user.totalMins      == null) user.totalMins = 0;
+    if (user.weeklyMins     == null) user.weeklyMins = 0;
+    if (user.streak         == null) user.streak = 0;
+    if (user.longestStreak  == null) user.longestStreak = 0;
+
+    // Squad Boost migration defaults for old users
+    if (user.rawTotalMins         == null) user.rawTotalMins = user.totalMins || 0;
+    if (user.rawWeeklyMins        == null) user.rawWeeklyMins = user.weeklyMins || 0;
+    if (user.squadRawMins         == null) user.squadRawMins = 0;
+    if (user.squadWeeklyRawMins   == null) user.squadWeeklyRawMins = 0;
+    if (user.squadBonusMins       == null) user.squadBonusMins = 0;
+    if (user.squadWeeklyBonusMins == null) user.squadWeeklyBonusMins = 0;
+    if (user.squadBoostRemainder  == null) user.squadBoostRemainder = 0;
+    if (user.squadSessionsCount   == null) user.squadSessionsCount = 0;
+    if (user.lastSquadSessionDate == null) user.lastSquadSessionDate = null;
+    if (!user.lastWeeklyResetKey) user.lastWeeklyResetKey = getWeekKey();
+
+    resetWeeklyStats(user);
+    return user;
+  }
+
+  function getCreditedMinutesDisplay(user) {
+    const u = normalizeUserStats(user || {});
+    return {
+      raw: u.rawTotalMins || 0,
+      bonus: u.squadBonusMins || 0,
+      credited: u.totalMins || 0,
+    };
+  }
 
   // ── DATABASE ──────────────────────────────────────────────────
   // Registered users → Firebase Realtime DB
@@ -5661,19 +5749,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
               _rtdb.ref('users/' + key + '/totalMins').set(u.totalMins).catch(()=>{});
             }
           }
-          // Normalise defaults — every field the Ward UI depends on must exist
-          if (u) {
-            if (!u.dailyMins)      u.dailyMins      = {};
-            if (!u.sessions)       u.sessions       = [];
-            if (!u.hourlyActivity) u.hourlyActivity = new Array(24).fill(0);
-            if (!u.achievements)   u.achievements   = [];
-            if (!u.friends)        u.friends        = [];
-            if (u.totalMins   == null) u.totalMins   = 0;
-            if (u.weeklyMins  == null) u.weeklyMins  = 0;
-            if (u.streak      == null) u.streak      = 0;
-            if (u.longestStreak == null) u.longestStreak = 0;
-          }
-          return u;
+          return normalizeUserStats(u);
         } catch(e){ console.error('DB.getUser',e); return _localAll()[key]||null; }
       },
       // Async: save one user
@@ -5744,9 +5820,31 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   window.hashPass = hashPass;
 
   function createUser(username, password) {
-    return { username:username.toLowerCase(), displayName:username, passwordHash:hashPass(password,username),
-      totalMins:0, weeklyMins:0, dailyMins:{}, sessions:[], streak:0, longestStreak:0,
-      lastStudyDate:null, achievements:[], hourlyActivity:new Array(24).fill(0), friends:[], createdAt:Date.now() };
+    return normalizeUserStats({
+      username:username.toLowerCase(),
+      displayName:username,
+      passwordHash:hashPass(password,username),
+      totalMins:0,
+      weeklyMins:0,
+      rawTotalMins:0,
+      rawWeeklyMins:0,
+      squadRawMins:0,
+      squadWeeklyRawMins:0,
+      squadBonusMins:0,
+      squadWeeklyBonusMins:0,
+      squadBoostRemainder:0,
+      squadSessionsCount:0,
+      lastSquadSessionDate:null,
+      dailyMins:{},
+      sessions:[],
+      streak:0,
+      longestStreak:0,
+      lastStudyDate:null,
+      achievements:[],
+      hourlyActivity:new Array(24).fill(0),
+      friends:[],
+      createdAt:Date.now(),
+    });
   }
   window.createUser = createUser;
 
@@ -5783,12 +5881,260 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   let continuousSecs = 0, burnoutWarned = false;
   let sessionStartTs = 0;       // wall-clock ms when focus/break phase started
   let sessionStartTimeLeft = 0; // timeLeft value at phase start (for wall-clock calc)
+  let squadSessionCreditedThisFocus = false;
+  let _wardRefreshInFlight = false;
+  let _wardLastRehydrateAt = 0;
+  let _wardUnlockOverlaySeen = null;
   let currentLbTab = 'overall', prevTierId = null;
 
   // Room
   let myPeer=null, roomCode=null, isHost=false, connections=[], hostConn=null, members={};
 
   const $ = id => document.getElementById(id);
+  const _isWardVisible = () => {
+    const p = document.getElementById('page-ward');
+    return !!(p && p.classList.contains('active'));
+  };
+
+  async function refreshWardDerivedUI(opts = {}) {
+    if (!currentUser) return;
+    const { rehydrate = false } = opts;
+    normalizeUserStats(currentUser);
+
+    if (rehydrate && !currentUser.isGuest && !_wardRefreshInFlight) {
+      const now = Date.now();
+      if ((now - _wardLastRehydrateAt) > 2500) {
+        _wardRefreshInFlight = true;
+        _wardLastRehydrateAt = now;
+        try {
+          const fresh = await DB.getUser(currentUser.username);
+          if (fresh) {
+            normalizeUserStats(fresh);
+            if ((fresh._savedAt || 0) >= (currentUser._savedAt || 0)) {
+              currentUser = fresh;
+            }
+          }
+        } catch(e) {
+          console.warn('refreshWardDerivedUI rehydrate failed:', e);
+        }
+        _wardRefreshInFlight = false;
+      }
+    }
+
+    if (_isWardVisible()) renderAll();
+  }
+  window.refreshWardDerivedUI = refreshWardDerivedUI;
+
+  function showWardUnlockCelebration(areaName) {
+    if (!areaName) return;
+    if (document.getElementById('ward-unlock-overlay')) return;
+    const ov = document.createElement('div');
+    ov.id = 'ward-unlock-overlay';
+    ov.className = 'ward-unlock-overlay';
+    ov.innerHTML = `<div class="ward-unlock-card" role="dialog" aria-live="polite">
+      <div class="ward-unlock-title">🎉 New Area Unlocked!</div>
+      <div class="ward-unlock-sub">Incredible focus streak — your hospital just expanded.</div>
+      <div class="ward-unlock-area">Welcome to ${areaName}</div>
+      <button class="ward-unlock-dismiss" id="ward-unlock-dismiss">Tap to Continue</button>
+    </div>`;
+
+    const colors = ['#ffc000','#ed7d31','#57f287','#5b9bd5','#e05c6e','#c8dff8'];
+    const card = ov.querySelector('.ward-unlock-card');
+    for (let i = 0; i < 130; i++) {
+      const c = document.createElement('span');
+      c.className = 'ward-confetti';
+      c.style.left = (Math.random() * 100) + '%';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDuration = (1.8 + Math.random() * 1.8) + 's';
+      c.style.animationDelay = (Math.random() * 0.35) + 's';
+      c.style.transform = `translateY(${Math.random()*10}px) rotate(${Math.random()*360}deg)`;
+      card.appendChild(c);
+    }
+
+    const dismiss = () => {
+      document.removeEventListener('keydown', onEsc);
+      ov.remove();
+    };
+    const onEsc = (e) => { if (e.key === 'Escape') dismiss(); };
+    ov.addEventListener('click', dismiss);
+    ov.querySelector('#ward-unlock-dismiss')?.addEventListener('click', dismiss);
+    document.addEventListener('keydown', onEsc);
+    document.body.appendChild(ov);
+  }
+
+  function getValidSquadOverlapParticipantCount() {
+    if (!currentUser || currentUser.isGuest) return 0;
+    if (!roomCode || timerState !== 'focusing' || !myPeer?.id) return 0;
+    const now = Date.now();
+    const myId = myPeer.id;
+    return Object.entries(members).filter(([pid, m]) => {
+      if (!m || pid === myId) return false;
+      if (m.isGuest) return false;
+      if (m.status !== 'focusing') return false;
+      const lastSeen = Number(m.lastSeen || 0);
+      return (now - lastSeen) <= SQUAD_HEARTBEAT_MAX_AGE_MS;
+    }).length;
+  }
+
+  function isValidSquadBoostActive() {
+    return getValidSquadOverlapParticipantCount() >= 1;
+  }
+
+  function applyBankedMinutes(rawMins, context = {}) {
+    if (!currentUser || rawMins < 1) return { creditedMins: 0, bonusMins: 0, usedBoost: false };
+    normalizeUserStats(currentUser);
+    resetWeeklyStats(currentUser);
+
+    const t = todayStr();
+    const hour = new Date().getHours();
+    const boostActive = !!context.squadEligible && !currentUser.isGuest;
+
+    currentUser.rawTotalMins += rawMins;
+    currentUser.rawWeeklyMins += rawMins;
+
+    let creditedMins = rawMins;
+    let bonusMins = 0;
+    if (boostActive) {
+      currentUser.squadRawMins += rawMins;
+      currentUser.squadWeeklyRawMins += rawMins;
+      currentUser.squadBoostRemainder = (currentUser.squadBoostRemainder || 0) + (rawMins * SQUAD_BONUS_RATE);
+      bonusMins = Math.floor(currentUser.squadBoostRemainder);
+      if (bonusMins > 0) {
+        currentUser.squadBoostRemainder -= bonusMins;
+        currentUser.squadBonusMins += bonusMins;
+        currentUser.squadWeeklyBonusMins += bonusMins;
+      }
+      if (!squadSessionCreditedThisFocus) {
+        currentUser.squadSessionsCount += 1;
+        currentUser.lastSquadSessionDate = t;
+        squadSessionCreditedThisFocus = true;
+      }
+      creditedMins += bonusMins;
+    }
+
+    currentUser.totalMins += creditedMins;
+    currentUser.weeklyMins += creditedMins;
+    currentUser.dailyMins[t] = (currentUser.dailyMins[t] || 0) + creditedMins;
+    currentUser.hourlyActivity[hour] = (currentUser.hourlyActivity[hour] || 0) + 1;
+
+    return { creditedMins, bonusMins, usedBoost: boostActive };
+  }
+
+  function getValidSquadOverlapParticipantCount() {
+    if (!currentUser || currentUser.isGuest) return 0;
+    if (!roomCode || timerState !== 'focusing' || !myPeer?.id) return 0;
+    const now = Date.now();
+    const myId = myPeer.id;
+    return Object.entries(members).filter(([pid, m]) => {
+      if (!m || pid === myId) return false;
+      if (m.isGuest) return false;
+      if (m.status !== 'focusing') return false;
+      const lastSeen = Number(m.lastSeen || 0);
+      return (now - lastSeen) <= SQUAD_HEARTBEAT_MAX_AGE_MS;
+    }).length;
+  }
+
+  function isValidSquadBoostActive() {
+    return getValidSquadOverlapParticipantCount() >= 1;
+  }
+
+  function applyBankedMinutes(rawMins, context = {}) {
+    if (!currentUser || rawMins < 1) return { creditedMins: 0, bonusMins: 0, usedBoost: false };
+    normalizeUserStats(currentUser);
+    resetWeeklyStats(currentUser);
+
+    const t = todayStr();
+    const hour = new Date().getHours();
+    const boostActive = !!context.squadEligible && !currentUser.isGuest;
+
+    currentUser.rawTotalMins += rawMins;
+    currentUser.rawWeeklyMins += rawMins;
+
+    let creditedMins = rawMins;
+    let bonusMins = 0;
+    if (boostActive) {
+      currentUser.squadRawMins += rawMins;
+      currentUser.squadWeeklyRawMins += rawMins;
+      currentUser.squadBoostRemainder = (currentUser.squadBoostRemainder || 0) + (rawMins * SQUAD_BONUS_RATE);
+      bonusMins = Math.floor(currentUser.squadBoostRemainder);
+      if (bonusMins > 0) {
+        currentUser.squadBoostRemainder -= bonusMins;
+        currentUser.squadBonusMins += bonusMins;
+        currentUser.squadWeeklyBonusMins += bonusMins;
+      }
+      if (!squadSessionCreditedThisFocus) {
+        currentUser.squadSessionsCount += 1;
+        currentUser.lastSquadSessionDate = t;
+        squadSessionCreditedThisFocus = true;
+      }
+      creditedMins += bonusMins;
+    }
+
+    currentUser.totalMins += creditedMins;
+    currentUser.weeklyMins += creditedMins;
+    currentUser.dailyMins[t] = (currentUser.dailyMins[t] || 0) + creditedMins;
+    currentUser.hourlyActivity[hour] = (currentUser.hourlyActivity[hour] || 0) + 1;
+
+    return { creditedMins, bonusMins, usedBoost: boostActive };
+  }
+
+  function getValidSquadOverlapParticipantCount() {
+    if (!currentUser || currentUser.isGuest) return 0;
+    if (!roomCode || timerState !== 'focusing' || !myPeer?.id) return 0;
+    const now = Date.now();
+    const myId = myPeer.id;
+    return Object.entries(members).filter(([pid, m]) => {
+      if (!m || pid === myId) return false;
+      if (m.isGuest) return false;
+      if (m.status !== 'focusing') return false;
+      const lastSeen = Number(m.lastSeen || 0);
+      return (now - lastSeen) <= SQUAD_HEARTBEAT_MAX_AGE_MS;
+    }).length;
+  }
+
+  function isValidSquadBoostActive() {
+    return getValidSquadOverlapParticipantCount() >= 1;
+  }
+
+  function applyBankedMinutes(rawMins, context = {}) {
+    if (!currentUser || rawMins < 1) return { creditedMins: 0, bonusMins: 0, usedBoost: false };
+    normalizeUserStats(currentUser);
+    resetWeeklyStats(currentUser);
+
+    const t = todayStr();
+    const hour = new Date().getHours();
+    const boostActive = !!context.squadEligible && !currentUser.isGuest;
+
+    currentUser.rawTotalMins += rawMins;
+    currentUser.rawWeeklyMins += rawMins;
+
+    let creditedMins = rawMins;
+    let bonusMins = 0;
+    if (boostActive) {
+      currentUser.squadRawMins += rawMins;
+      currentUser.squadWeeklyRawMins += rawMins;
+      currentUser.squadBoostRemainder = (currentUser.squadBoostRemainder || 0) + (rawMins * SQUAD_BONUS_RATE);
+      bonusMins = Math.floor(currentUser.squadBoostRemainder);
+      if (bonusMins > 0) {
+        currentUser.squadBoostRemainder -= bonusMins;
+        currentUser.squadBonusMins += bonusMins;
+        currentUser.squadWeeklyBonusMins += bonusMins;
+      }
+      if (!squadSessionCreditedThisFocus) {
+        currentUser.squadSessionsCount += 1;
+        currentUser.lastSquadSessionDate = t;
+        squadSessionCreditedThisFocus = true;
+      }
+      creditedMins += bonusMins;
+    }
+
+    currentUser.totalMins += creditedMins;
+    currentUser.weeklyMins += creditedMins;
+    currentUser.dailyMins[t] = (currentUser.dailyMins[t] || 0) + creditedMins;
+    currentUser.hourlyActivity[hour] = (currentUser.hourlyActivity[hour] || 0) + 1;
+
+    return { creditedMins, bonusMins, usedBoost: boostActive };
+  }
 
   // ── AUTH ──────────────────────────────────────────────────────
   window.wardAuthTab = function(tab) {
@@ -5858,7 +6204,17 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     if (!ud)                                { setMsg('Username not found.','error'); return; }
     if (ud.passwordHash!==hashPass(pass,username)) { setMsg('Incorrect password.','error'); return; }
     const guestKey = currentUser.username;
+    normalizeUserStats(ud);
+    normalizeUserStats(currentUser);
     ud.totalMins  = (ud.totalMins||0)  + (currentUser.totalMins||0);
+    ud.rawTotalMins = (ud.rawTotalMins||0) + (currentUser.rawTotalMins||0);
+    ud.squadRawMins = (ud.squadRawMins||0) + (currentUser.squadRawMins||0);
+    ud.squadBonusMins = (ud.squadBonusMins||0) + (currentUser.squadBonusMins||0);
+    ud.squadSessionsCount = (ud.squadSessionsCount||0) + (currentUser.squadSessionsCount||0);
+    ud.squadBoostRemainder = Math.max(0, Math.min(0.999, (ud.squadBoostRemainder||0) + (currentUser.squadBoostRemainder||0)));
+    if (!ud.lastSquadSessionDate || (currentUser.lastSquadSessionDate && currentUser.lastSquadSessionDate > ud.lastSquadSessionDate)) {
+      ud.lastSquadSessionDate = currentUser.lastSquadSessionDate || ud.lastSquadSessionDate;
+    }
     ud.dailyMins  = ud.dailyMins||{};
     Object.entries(currentUser.dailyMins||{}).forEach(([d,m])=>{ ud.dailyMins[d]=(ud.dailyMins[d]||0)+m; });
     ud.sessions   = [...(ud.sessions||[]), ...(currentUser.sessions||[])].slice(-100);
@@ -5967,12 +6323,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   };
 
   window.enterWard = function enterWard(user) {
-    currentUser = user;
-    if(!user.hourlyActivity) user.hourlyActivity = new Array(24).fill(0);
-    if(!user.friends)        user.friends = [];
-    if(!user.achievements)   user.achievements = [];
-    if(!user.dailyMins)      user.dailyMins = {};
-    if(!user.sessions)       user.sessions = [];
+    currentUser = normalizeUserStats(user);
     const auth=$('ward-auth-screen'); if(auth) auth.style.display='none';
     const app=$('ward-app');  if(app) app.style.display='flex';
     // Sync nav to logged-in state (safe to call multiple times — idempotent)
@@ -5993,6 +6344,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     minsToday     = user.dailyMins[t]||0;
     sessionsToday = user.sessions.filter(s=>s.date===t).length;
     prevTierId    = getTier(user.totalMins).id;
+    _wardUnlockOverlaySeen = prevTierId;
 
     // Avatar
     const color = AVATAR_COLORS[(user.username.charCodeAt(0)||65) % AVATAR_COLORS.length];
@@ -6017,6 +6369,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
     checkInterrupted();
     renderAll();
+    refreshWardDerivedUI({ rehydrate:false });
     setTimeout(checkSmartReminder,1800);
 
     // Show guest nudge if applicable
@@ -6034,6 +6387,43 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     renderLeaderboard();
     renderBadges();
     renderFriends();
+    updateTimerUI();
+  }
+
+  function isWardPageVisibleAndActive() {
+    const wardPage = document.getElementById('page-ward');
+    return !!(wardPage && wardPage.classList.contains('active'));
+  }
+
+  async function refreshWardDerivedUI(options = {}) {
+    const { rehydrate = false } = options;
+    if (!currentUser || !isWardPageVisibleAndActive()) return;
+
+    if (rehydrate && !currentUser.isGuest) {
+      try {
+        const latest = await DB.getUser(currentUser.username);
+        if (latest && (latest._savedAt || 0) >= (currentUser._savedAt || 0)) {
+          currentUser = normalizeUserStats(latest);
+        } else {
+          normalizeUserStats(currentUser);
+        }
+      } catch(e) {
+        normalizeUserStats(currentUser);
+      }
+    } else {
+      normalizeUserStats(currentUser);
+    }
+
+    const t = todayStr();
+    minsToday = currentUser.dailyMins[t] || 0;
+    sessionsToday = (currentUser.sessions || []).filter(s => s.date === t).length;
+
+    updateTierDisplay();
+    updateTodayStrip();
+    renderSessionDots();
+    renderMap();
+    renderStats();
+    renderLeaderboard();
     updateTimerUI();
   }
 
@@ -6080,6 +6470,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     timerState='idle';
     timeLeft = mode==='stopwatch' ? 0 : focusMins*60;
     bankedMins = 0;
+    squadSessionCreditedThisFocus = false;
     continuousSecs=0; burnoutWarned=false;
     const bb=$('ward-burnout-banner'); if(bb) bb.style.display='none';
     DB.clearInterrupted(currentUser?.username);
@@ -6093,6 +6484,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       timeLeft = mode==='stopwatch' ? 0 : focusMins*60;
       continuousSecs=0; burnoutWarned=false;
       bankedMins = 0; // fresh session — reset bank
+      squadSessionCreditedThisFocus = false;
     }
     timerState='focusing';
     sessionStartTs = Date.now();
@@ -6111,6 +6503,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       timeLeft = mode==='stopwatch' ? 0 : focusMins*60;
       continuousSecs=0; burnoutWarned=false;
       bankedMins = 0; // fresh session — reset bank
+      squadSessionCreditedThisFocus = false;
     }
     timerState='focusing';
     sessionStartTs = Date.now();
@@ -6171,21 +6564,20 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const mins = totalElapsed - bankedMins; // only NEW mins since last bank
     if (mins >= 1) {
       bankedMins += mins; // record that we've now banked up to totalElapsed
-      const t=todayStr(), hour=new Date().getHours();
       updateStreak(currentUser);
-      currentUser.totalMins += mins;
-      currentUser.weeklyMins = (currentUser.weeklyMins||0) + mins;
-      currentUser.dailyMins[t] = (currentUser.dailyMins[t]||0)+mins;
-      currentUser.hourlyActivity[hour] = (currentUser.hourlyActivity[hour]||0)+1;
+      const t=todayStr(), hour=new Date().getHours();
+      const applied = applyBankedMinutes(mins, { squadEligible: isValidSquadBoostActive() });
       currentUser.sessions.push({ date:t, durationMins:mins, mode, hour, reflection:'' });
       if (currentUser.sessions.length>100) currentUser.sessions=currentUser.sessions.slice(-100);
-      minsToday+=mins; sessionsToday++;
+      minsToday += applied.creditedMins;
+      sessionsToday++;
       checkAchievements();
       checkTierUnlock();
       saveUserSafely(currentUser);
     }
     if (andStop) {
       bankedMins = 0; // reset for next session
+      squadSessionCreditedThisFocus = false;
       clearInterval(timerInterval); timerInterval=null;
       DB.clearInterrupted(currentUser?.username);
       timerState='idle'; timeLeft=mode==='stopwatch'?0:focusMins*60;
@@ -6218,13 +6610,11 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
         if (newMins >= 1) {
           const t=todayStr(), hour=new Date().getHours();
           updateStreak(currentUser);
-          currentUser.totalMins += newMins;
-          currentUser.weeklyMins = (currentUser.weeklyMins||0) + newMins;
-          currentUser.dailyMins[t] = (currentUser.dailyMins[t]||0)+newMins;
-          currentUser.hourlyActivity[hour] = (currentUser.hourlyActivity[hour]||0)+1;
+          const applied = applyBankedMinutes(newMins, { squadEligible: isValidSquadBoostActive() });
           currentUser.sessions.push({ date:t, durationMins:totalMins, mode, hour, reflection:'' });
           if (currentUser.sessions.length>100) currentUser.sessions=currentUser.sessions.slice(-100);
-          minsToday+=newMins; sessionsToday++;
+          minsToday += applied.creditedMins;
+          sessionsToday++;
         } else {
           // All mins already banked mid-session — session still happened, update streak/date
           updateStreak(currentUser);
@@ -6239,6 +6629,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       DB.clearInterrupted(currentUser?.username);
     } catch(e) { console.error('completeFocusSession save error:', e); }
     // Break always starts regardless of any save errors above
+    squadSessionCreditedThisFocus = false;
     timerState='break'; timeLeft=breakMins*60;
     sessionStartTs = Date.now();
     sessionStartTimeLeft = breakMins*60;
@@ -6256,10 +6647,68 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   function checkTierUnlock() {
     const newTier = getTier(currentUser.totalMins);
     if (newTier.id !== prevTierId) {
+      const oldTierId = prevTierId;
       prevTierId = newTier.id;
       showAchievementToast({ emoji:newTier.emoji, name:'Ward Unlocked!', desc:newTier.name+' is now open.' });
+      if (shouldTriggerWardUnlockCelebration(oldTierId, newTier.id)) {
+        showWardUnlockCelebration(newTier.name, newTier.emoji);
+      }
       playUnlockSound();
+      if (_wardUnlockOverlaySeen !== newTier.id) {
+        _wardUnlockOverlaySeen = newTier.id;
+        showWardUnlockCelebration(newTier.name);
+      }
     }
+  }
+
+  function shouldTriggerWardUnlockCelebration(oldTierId, newTierId) {
+    if (!currentUser || !oldTierId || !newTierId || oldTierId === newTierId) return false;
+    const oldIndex = TIERS.findIndex(t => t.id === oldTierId);
+    const newIndex = TIERS.findIndex(t => t.id === newTierId);
+    if (oldIndex < 0 || newIndex < 0 || newIndex <= oldIndex) return false;
+    // Prevent duplicate celebrations for the same unlocked area across refresh/re-render.
+    if (currentUser.lastCelebratedTierId === newTierId) return false;
+    currentUser.lastCelebratedTierId = newTierId;
+    saveUserSafely(currentUser);
+    return true;
+  }
+
+  function showWardUnlockCelebration(areaName, emoji='🏥') {
+    if (document.getElementById('ward-unlock-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'ward-unlock-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:1200;background:radial-gradient(circle at 50% 20%,rgba(255,192,0,0.18),rgba(5,10,22,0.92));display:flex;align-items:center;justify-content:center;padding:1rem;cursor:pointer;';
+    overlay.innerHTML = `<div style="position:relative;max-width:520px;width:min(92vw,520px);background:linear-gradient(160deg,rgba(14,28,55,0.96),rgba(9,18,36,0.97));border:1px solid rgba(255,192,0,0.42);border-radius:20px;padding:1.4rem 1.2rem 1.15rem;box-shadow:0 28px 120px rgba(0,0,0,0.65),0 0 44px rgba(255,192,0,0.22);text-align:center;">
+      <div style="font-size:2.1rem;line-height:1;margin-bottom:0.45rem;">${emoji}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,192,0,0.8);margin-bottom:0.45rem;">🎉 New Area Unlocked!</div>
+      <div style="font-family:'Lora',serif;font-size:1.55rem;font-weight:700;color:#f6fbff;margin-bottom:0.45rem;">Welcome to ${areaName}</div>
+      <div style="font-size:0.82rem;color:rgba(188,214,248,0.78);line-height:1.6;">You just opened a new section of the hospital map.<br><span style="color:#ffd966;">Tap anywhere to continue your streak.</span></div>
+    </div>`;
+
+    const confettiWrap = document.createElement('div');
+    confettiWrap.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden;';
+    for (let i = 0; i < 120; i++) {
+      const c = document.createElement('span');
+      const left = Math.random() * 100;
+      const delay = Math.random() * 0.9;
+      const dur = 1.6 + Math.random() * 1.6;
+      const size = 5 + Math.random() * 8;
+      const rot = Math.floor(Math.random() * 360);
+      const colors = ['#ffc000','#5b9bd5','#e05c6e','#57f287','#c8dff8'];
+      const color = colors[i % colors.length];
+      c.style.cssText = `position:absolute;top:-12px;left:${left}%;width:${size}px;height:${Math.max(4, size*0.58)}px;background:${color};opacity:0.92;border-radius:2px;transform:rotate(${rot}deg);animation:wardConfettiFall ${dur}s ease-in ${delay}s forwards;`;
+      confettiWrap.appendChild(c);
+    }
+    overlay.appendChild(confettiWrap);
+
+    const close = () => {
+      overlay.remove();
+      document.removeEventListener('keydown', onKey);
+    };
+    const onKey = (e) => { if (e.key === 'Escape') close(); };
+    overlay.addEventListener('click', close);
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(overlay);
   }
 
   function updateTimerUI() {
@@ -6275,7 +6724,9 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     disp.className = 'ward-time'+(isFocusing?' focusing':isBreak?' on-break':isPaused?' paused':'');
     if(phase){
       phase.className = 'ward-phase-label'+(isFocusing?' focusing':isBreak?' on-break':isPaused?' paused':'');
-      phase.textContent = isFocusing?'FOCUSING':isBreak?'BREAK':isPaused?'PAUSED':'READY';
+      const boostActive = isFocusing && isValidSquadBoostActive();
+      phase.textContent = isFocusing?(boostActive?'FOCUSING · +20% STUDY TOGETHER BOOST':'FOCUSING'):isBreak?'BREAK':isPaused?'PAUSED':'READY';
+      phase.textContent = isFocusing?(boostActive?'FOCUSING · +20% SQUAD BOOST':'FOCUSING'):isBreak?'BREAK':isPaused?'PAUSED':'READY';
     }
     if(btn) btn.className = 'ward-start-btn'+(isFocusing?' running':isBreak?' break-mode':isPaused?' paused':'');
     if(icon) icon.textContent = isFocusing?'⏸':isBreak?'⏭':(isPaused?'▶':'▶');
@@ -6387,7 +6838,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   }
 
   function updateTodayStrip() {
-    const ts=$('ward-today-sessions'); if(ts) ts.textContent=sessionsToday;
+    const ts=$('ward-today-sessions'); if(ts) ts.textContent=currentUser?.squadWeeklyBonusMins||0;
     const sd=$('ward-streak-display'); if(sd) sd.textContent=currentUser?.streak||0;
     const tm=$('ward-today-mins');
     if(tm) {
@@ -6467,14 +6918,20 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   function renderStats() {
     const grid=$('ward-stats-grid'); if(!grid||!currentUser) return;
     const u=currentUser, t=todayStr();
-    const hours=(u.totalMins/60).toFixed(1);
+    const creditedHours=(u.totalMins/60).toFixed(1);
+    const rawHours=((u.rawTotalMins||0)/60).toFixed(1);
+    const squadBonusHours=((u.squadBonusMins||0)/60).toFixed(1);
+    const squadRawHours=((u.squadRawMins||0)/60).toFixed(1);
     const weekDays=Array.from({length:7},(_,i)=>{ const d=new Date(); d.setDate(d.getDate()-6+i); return d.toISOString().slice(0,10); });
     const weekTotalMins=weekDays.reduce((s,d)=>s+(u.dailyMins[d]||0),0);
     const weekAvg=(weekTotalMins/7/60).toFixed(1);
     const allDayMins=Object.values(u.dailyMins);
     const bestDay=allDayMins.length?(Math.max(...allDayMins)/60).toFixed(1):'0';
     grid.innerHTML=[
-      {n:hours,           l:'Total Hours'},
+      {n:creditedHours,   l:'Credited Hours'},
+      {n:rawHours,        l:'Raw Focus Hours'},
+      {n:squadRawHours,   l:'Squad Raw Hours'},
+      {n:squadBonusHours, l:'Squad Bonus Hours'},
       {n:weekAvg+'h',     l:'Daily Avg (7d)'},
       {n:(u.dailyMins[t]||0)+'m',l:'Today'},
       {n:bestDay+'h',     l:'Best Day'},
@@ -6531,14 +6988,14 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       entries = (currentUser.totalMins||0)>=5 ? [me,...friends] : friends;
     } else {
       entries=Object.values(members)
-        .filter(m => (m.totalMins||0) >= 5)
+        .filter(m => !m.isGuest && (m.totalMins||0) >= 5)
         .map(m=>({name:m.name,mins:m.totalMins||0,me:false}));
-      if (!entries.length){ list.innerHTML='<div class="ward-status-msg">Join a squad room to see live leaderboard.</div>'; return; }
+      if (!entries.length){ list.innerHTML='<div class="ward-status-msg">Join a Study Together room to see live leaderboard.</div>'; return; }
     }
     entries.sort((a,b)=>b.mins-a.mins);
     const isWeekly = currentLbTab==='weekly';
     const notYet = !isWeekly && currentUser && (currentUser.totalMins||0) < 5 && !currentUser.isGuest;
-    const emptyMsg = isWeekly ? 'No weekly sessions yet — be the first!' : 'No entries yet.';
+    const emptyMsg = isWeekly ? 'No weekly credited minutes yet — be the first!' : 'No entries yet.';
     list.innerHTML = (entries.slice(0,15).map((e,i)=>{
       const color=AVATAR_COLORS[(e.name.charCodeAt(0)||65)%AVATAR_COLORS.length];
       const rankIcon=i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1;
@@ -6682,26 +7139,30 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
   window.wardCreateRoom = function() {
     const name=($('ward-squad-name-input')||{}).value.trim()||currentUser?.displayName||'Anonymous';
+    if (myPeer) { try { myPeer.destroy(); } catch(e) {} }
     roomCode=genRoomCode(); isHost=true;
     try{ myPeer=new Peer(peerIdFromCode(roomCode)); } catch(e){ setStatus('PeerJS unavailable.','error'); return; }
     setStatus('Setting up room…');
-    myPeer.on('open', id=>{ members[id]={name,status:'idle',totalMins:currentUser?.totalMins||0,mins:0}; showSquadRoom(); setStatus('Room ready!','success'); });
+    myPeer.on('open', id=>{ members[id]={name,status:'idle',totalMins:currentUser?.totalMins||0,mins:0,lastSeen:Date.now(),username:currentUser?.username||'',isGuest:!!currentUser?.isGuest}; showSquadRoom(); setStatus('Room ready!','success'); });
     myPeer.on('connection',conn=>handleIncomingConn(conn));
     myPeer.on('error',err=>setStatus('Error: '+err.type,'error'));
   };
 
   window.wardJoinRoom = function() {
+    if (myPeer) { try { myPeer.destroy(); } catch(e) {} }
     const name=($('ward-squad-name-input')||{}).value.trim()||currentUser?.displayName||'Anonymous';
-    const code=($('ward-squad-join-input')||{}).value.trim().toUpperCase();
+    const code=($('ward-squad-join-input')||{}).value.trim().toUpperCase().replace(/\s+/g,'');
     if(!code){ setStatus('Enter a room code.','error'); return; }
+    if (myPeer) { try { myPeer.destroy(); } catch(e) {} }
     isHost=false; roomCode=code; setStatus('Connecting…');
     try{ myPeer=new Peer(); } catch(e){ setStatus('PeerJS unavailable.','error'); return; }
     myPeer.on('error',err=>setStatus('Cannot connect: '+err.type,'error'));
     myPeer.on('open', myId=>{
-      hostConn=myPeer.connect(peerIdFromCode(code),{metadata:{name,totalMins:currentUser?.totalMins||0}});
-      hostConn.on('open',()=>{ hostConn.send({type:'join',name,totalMins:currentUser?.totalMins||0}); showSquadRoom(); setStatus('Connected!','success'); });
+      hostConn=myPeer.connect(peerIdFromCode(code),{metadata:{name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest}});
+      hostConn.on('open',()=>{ hostConn.send({type:'join',name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest,lastSeen:Date.now()}); showSquadRoom(); setStatus('Connected!','success'); });
       hostConn.on('data',msg=>handleMsg(msg,null));
-      hostConn.on('close',()=>setStatus('Disconnected.','error'));
+      hostConn.on('close',()=>{ setStatus('Disconnected.','error'); if (roomCode) wardLeaveRoom(); });
+      myPeer.on('error',err=>setStatus('Cannot connect: '+err.type,'error'));
     });
   };
 
@@ -6709,7 +7170,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     connections.push(conn);
     conn.on('open',()=>{
       const name=conn.metadata?.name||'Guest';
-      members[conn.peer]={name,status:'idle',totalMins:conn.metadata?.totalMins||0,mins:0};
+      members[conn.peer]={name,status:'idle',totalMins:conn.metadata?.totalMins||0,mins:0,lastSeen:Date.now(),username:conn.metadata?.username||'',isGuest:!!conn.metadata?.isGuest};
       if(currentUser&&!currentUser.achievements.includes('squad_study')){ currentUser.achievements.push('squad_study'); saveUserSafely(currentUser); showAchievementToast(BADGES.find(b=>b.id==='squad_study')); }
       renderSquadMembers(); broadcastMembers();
     });
@@ -6719,7 +7180,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
   function handleMsg(msg,fromConn) {
     if(!msg?.type) return;
-    if(msg.type==='status'&&fromConn){ members[fromConn.peer]={...members[fromConn.peer],status:msg.status,mins:msg.mins,totalMins:msg.totalMins||0}; broadcastMembers(); renderSquadMembers(); renderLeaderboard(); }
+    if(msg.type==='status'&&fromConn){ members[fromConn.peer]={...members[fromConn.peer],status:msg.status,mins:msg.mins,totalMins:msg.totalMins||0,lastSeen:msg.lastSeen||Date.now(),username:msg.username||members[fromConn.peer]?.username||'',isGuest:msg.isGuest??members[fromConn.peer]?.isGuest??false}; broadcastMembers(); renderSquadMembers(); renderLeaderboard(); }
     else if(msg.type==='members'){ members=msg.members; renderSquadMembers(); renderLeaderboard(); }
   }
 
@@ -6734,8 +7195,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
         : Math.floor((focusMins*60 - timeLeft)/60);
     }
     const liveMins = minsToday + liveElapsed;
-    const payload={type:'status',name:currentUser?.displayName||'',status:displayStatus,mins:liveMins,totalMins:(currentUser?.totalMins||0)+liveElapsed};
-    if(isHost){ if(myPeer.id) members[myPeer.id]={...members[myPeer.id],status:displayStatus,mins:liveMins,totalMins:(currentUser?.totalMins||0)+liveElapsed}; connections.forEach(c=>{try{c.send(payload);}catch(e){}}); renderSquadMembers(); }
+    const payload={type:'status',name:currentUser?.displayName||'',username:currentUser?.username||'',isGuest:!!currentUser?.isGuest,status:displayStatus,mins:liveMins,totalMins:(currentUser?.totalMins||0)+liveElapsed,lastSeen:Date.now()};
+    if(isHost){ if(myPeer.id) members[myPeer.id]={...members[myPeer.id],status:displayStatus,mins:liveMins,totalMins:(currentUser?.totalMins||0)+liveElapsed,lastSeen:Date.now(),username:currentUser?.username||'',isGuest:!!currentUser?.isGuest}; connections.forEach(c=>{try{c.send(payload);}catch(e){}}); renderSquadMembers(); }
     else if(hostConn){ try{hostConn.send(payload);}catch(e){} }
   }
 
@@ -6805,14 +7266,16 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const entries=Object.entries(members);
     if(!entries.length){list.innerHTML='<div class="ward-status-msg" style="font-size:0.7rem;">Waiting for others to join…</div>';return;}
     const myId=myPeer?.id;
+    const now=Date.now();
     list.innerHTML=entries.map(([pid,m],i)=>{
       const color=AVATAR_COLORS[i%AVATAR_COLORS.length];
-      const sc=m.status==='focusing'?'status-focusing':m.status==='break'?'status-break':m.status==='paused'?'status-break':'status-idle';
-      const sl=m.status==='focusing'?'Focusing':m.status==='break'?'Break':m.status==='paused'?'Paused':'Idle';
+      const fresh=(now-Number(m.lastSeen||0))<=SQUAD_HEARTBEAT_MAX_AGE_MS;
+      const sc=!fresh?'status-idle':m.status==='focusing'?'status-focusing':m.status==='break'?'status-break':m.status==='paused'?'status-break':'status-idle';
+      const sl=!fresh?'Stale':m.status==='focusing'?'Focusing':m.status==='break'?'Break':m.status==='paused'?'Paused':'Idle';
       return `<div class="ward-lb-entry${pid===myId?' me':''}">
         <div class="ward-lb-avatar" style="background:${color}22;color:${color};border:1.5px solid ${color}44;">${(m.name||'?')[0].toUpperCase()}</div>
         <div style="flex:1;min-width:0;"><div class="ward-lb-name">${m.name}${pid===myId?' <span style="font-size:0.58rem;color:rgba(140,170,220,0.28);">(you)</span>':''}</div>
-        <div style="font-size:0.6rem;color:rgba(140,170,220,0.3);font-family:'JetBrains Mono',monospace;">${m.mins||0}m today</div></div>
+        <div style="font-size:0.6rem;color:rgba(140,170,220,0.3);font-family:'JetBrains Mono',monospace;">${m.mins||0}m today${m.isGuest?' · guest':''}</div></div>
         <span class="ward-member-status ${sc}">${sl}</span>
       </div>`;
     }).join('');
@@ -6840,21 +7303,12 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       const app=$('ward-app');  if(app) app.style.display='none';
       return;
     }
-    // Normalise all nested fields that Ward UI depends on before handing
-    // the object to enterWard. enterWard also guards these, but doing it here
-    // means the object is always complete before any code touches it.
-    if (!ud.dailyMins)      ud.dailyMins      = {};
-    if (!ud.sessions)       ud.sessions       = [];
-    if (!ud.hourlyActivity) ud.hourlyActivity = new Array(24).fill(0);
-    if (!ud.achievements)   ud.achievements   = [];
-    if (!ud.friends)        ud.friends        = [];
-    if (ud.totalMins    == null) ud.totalMins    = 0;
-    if (ud.weeklyMins   == null) ud.weeklyMins   = 0;
-    if (ud.streak       == null) ud.streak       = 0;
-    if (ud.longestStreak == null) ud.longestStreak = 0;
+    // Ensure all legacy + squad boost fields exist before entering Ward.
+    normalizeUserStats(ud);
 
     // enterWard is the ONLY function that sets currentUser and renders Ward UI.
     enterWard(ud);
+    await refreshWardDerivedUI({ rehydrate: true });
   };
 
   document.addEventListener('DOMContentLoaded', async ()=>{
@@ -6887,6 +7341,13 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     if(lbfi) lbfi.addEventListener('keydown',e=>{ if(e.key==='Enter') window.wardLbAddFriend?.(); });
   });
 
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refreshWardDerivedUI({ rehydrate: true });
+  });
+  window.addEventListener('focus', () => {
+    refreshWardDerivedUI({ rehydrate: true });
+  });
+
   setInterval(()=>{ if(roomCode&&currentUser) broadcastStatus(); },5000);
 
 })();
@@ -6906,7 +7367,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
         <div style="font-size:2rem;margin-bottom:0.5rem;">⚠️</div>
         <h2 style="color:#f0f6ff;font-size:1.2rem;margin:0 0 0.5rem;">Admin — Weekly Reset</h2>
         <p style="color:rgba(140,170,220,0.6);font-size:0.85rem;margin:0 0 1.5rem;">
-          This will zero out <strong style="color:#ffc000;">weeklyMins</strong> for every registered user.<br>
+          This will zero out <strong style="color:#ffc000;">weekly credited + weekly squad counters</strong> for every registered user.<br>
           <strong style="color:#f0f6ff;">totalMins will not be affected.</strong>
         </p>
         <button id="admin-reset-btn" onclick="runWeeklyReset()" style="padding:0.65rem 1.8rem;
@@ -6954,11 +7415,17 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
       status.textContent = `Resetting ${keys.length} users…`;
       const updates = {};
-      keys.forEach(k => { updates['users/' + k + '/weeklyMins'] = 0; });
+      keys.forEach(k => {
+        updates['users/' + k + '/weeklyMins'] = 0;
+        updates['users/' + k + '/rawWeeklyMins'] = 0;
+        updates['users/' + k + '/squadWeeklyRawMins'] = 0;
+        updates['users/' + k + '/squadWeeklyBonusMins'] = 0;
+        updates['users/' + k + '/lastWeeklyResetKey'] = getWeekKey();
+      });
       await window._rtdb.ref().update(updates);
 
       status.style.color = '#5b9bd5';
-      status.textContent = `✓ Done — reset weeklyMins to 0 for ${keys.length} users.`;
+      status.textContent = `✓ Done — reset weekly counters for ${keys.length} users.`;
     } catch(e) {
       status.style.color = '#ed7d31';
       status.textContent = '✗ Error: ' + e.message;
