@@ -1,5 +1,4 @@
-(() => {
-  const html = `\n<!-- ════════════════════════ BRANCH: The Ward ════════════════════════ -->
+document.write(`\n<!-- ════════════════════════ BRANCH: The Ward ════════════════════════ -->
 <div class="page" id="page-ward">
 <div class="ward-wrap">
 
@@ -423,9 +422,4 @@
 </div>
 </div>
 <!-- ══════════════════════ /THE WARD ══════════════════════════ -->
-`;
-  const scriptTag = document.currentScript;
-  if (scriptTag) {
-    scriptTag.insertAdjacentHTML('beforebegin', html);
-  }
-})();
+`);
