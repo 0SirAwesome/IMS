@@ -6696,12 +6696,12 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     if(!code){ setStatus('Enter a room code.','error'); return; }
     isHost=false; roomCode=code; setStatus('Connecting…');
     try{ myPeer=new Peer(); } catch(e){ setStatus('PeerJS unavailable.','error'); return; }
+    myPeer.on('error',err=>setStatus('Cannot connect: '+err.type,'error'));
     myPeer.on('open', myId=>{
       hostConn=myPeer.connect(peerIdFromCode(code),{metadata:{name,totalMins:currentUser?.totalMins||0}});
       hostConn.on('open',()=>{ hostConn.send({type:'join',name,totalMins:currentUser?.totalMins||0}); showSquadRoom(); setStatus('Connected!','success'); });
       hostConn.on('data',msg=>handleMsg(msg,null));
       hostConn.on('close',()=>setStatus('Disconnected.','error'));
-      myPeer.on('error',err=>setStatus('Cannot connect: '+err.type,'error'));
     });
   };
 
