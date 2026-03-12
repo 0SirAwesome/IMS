@@ -4558,6 +4558,7 @@ window.navLogin = async function() {
   DB.setCurrentUser(user);
   document.getElementById('nav-auth-overlay').classList.remove('open');
   enterWard(ud);
+  refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
   if (document.getElementById('page-pearls')?.classList.contains('active')) {
     window.pearlsPageActivated?.();
   }
@@ -4578,7 +4579,7 @@ window.navSignup = async function() {
   await DB.saveUser(nu);
   DB.setCurrentUser(user.toLowerCase());
   msg.textContent='Account created! Welcome, '+nu.displayName+'.'; msg.className='ward-auth-msg success';
-  setTimeout(()=>{ document.getElementById('nav-auth-overlay').classList.remove('open'); enterWard(nu); if (document.getElementById('page-pearls')?.classList.contains('active')) { window.pearlsPageActivated?.(); } }, 500);
+  setTimeout(()=>{ document.getElementById('nav-auth-overlay').classList.remove('open'); enterWard(nu); refreshWardDerivedUI({ rehydrate:true, forceRemote:true }); if (document.getElementById('page-pearls')?.classList.contains('active')) { window.pearlsPageActivated?.(); } }, 500);
 };
 
 window.navContinueAsGuest = function() {
@@ -5718,7 +5719,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     function _localSet(o){ localStorage.setItem(LS_GUESTS, JSON.stringify(o)); }
     return {
       // Async: fetch one user (Firebase for registered, localStorage for guests)
-      getUser: async (name) => {
+      getUser: async (name, opts = {}) => {
+        const { preferFirebase = false } = opts;
         if (!name) return null;
         const key = name.toLowerCase();
         if (_isGuest(key)) return _localAll()[key] || null;
@@ -5730,7 +5732,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
           if (!u) {
             // No Firebase record — migrate from localStorage if available (first-time only)
             if (local) { await _rtdb.ref('users/' + key).set(local); u = local; }
-          } else if (local && !local.isGuest) {
+          } else if (local && !local.isGuest && !preferFirebase) {
             // Both exist — compare by _savedAt timestamp.
             // If local is newer (Firebase write failed), restore the FULL local copy
             // but keep weeklyMins from Firebase since weekly reset only writes there.
@@ -5749,6 +5751,16 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
               _rtdb.ref('users/' + key + '/totalMins').set(u.totalMins).catch(()=>{});
             }
           }
+          if (u && preferFirebase) {
+            // When explicitly refreshing from Firebase (login/focus/tab-return),
+            // treat server as source of truth and mirror into local backup.
+            try {
+              const all = _localAll();
+              all[key] = u;
+              _localSet(all);
+            } catch(e) {}
+          }
+
           return normalizeUserStats(u);
         } catch(e){ console.error('DB.getUser',e); return _localAll()[key]||null; }
       },
@@ -5898,19 +5910,19 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
   async function refreshWardDerivedUI(opts = {}) {
     if (!currentUser) return;
-    const { rehydrate = false } = opts;
+    const { rehydrate = false, forceRemote = false } = opts;
     normalizeUserStats(currentUser);
 
     if (rehydrate && !currentUser.isGuest && !_wardRefreshInFlight) {
       const now = Date.now();
-      if ((now - _wardLastRehydrateAt) > 2500) {
+      if (forceRemote || (now - _wardLastRehydrateAt) > 2500) {
         _wardRefreshInFlight = true;
         _wardLastRehydrateAt = now;
         try {
-          const fresh = await DB.getUser(currentUser.username);
+          const fresh = await DB.getUser(currentUser.username, { preferFirebase: forceRemote });
           if (fresh) {
             normalizeUserStats(fresh);
-            if ((fresh._savedAt || 0) >= (currentUser._savedAt || 0)) {
+            if (forceRemote || (fresh._savedAt || 0) >= (currentUser._savedAt || 0)) {
               currentUser = fresh;
             }
           }
@@ -6282,6 +6294,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     if (ud.passwordHash !== hashPass(pass,user)){ _authMsg(msg,'Incorrect password.','error'); return; }
     DB.setCurrentUser(user);
     enterWard(ud);
+    refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
   };
 
   window.wardSignup = async function() {
@@ -6299,7 +6312,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     await DB.saveUser(nu);
     DB.setCurrentUser(user.toLowerCase());
     _authMsg(msg,'Account created! Welcome, '+nu.displayName+'.','success');
-    setTimeout(()=>enterWard(nu), 500);
+    setTimeout(()=>{ enterWard(nu); refreshWardDerivedUI({ rehydrate:true, forceRemote:true }); }, 500);
   };
 
   function _authMsg(el, text, type) {
@@ -6396,13 +6409,13 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   }
 
   async function refreshWardDerivedUI(options = {}) {
-    const { rehydrate = false } = options;
+    const { rehydrate = false, forceRemote = false } = options;
     if (!currentUser || !isWardPageVisibleAndActive()) return;
 
     if (rehydrate && !currentUser.isGuest) {
       try {
-        const latest = await DB.getUser(currentUser.username);
-        if (latest && (latest._savedAt || 0) >= (currentUser._savedAt || 0)) {
+        const latest = await DB.getUser(currentUser.username, { preferFirebase: forceRemote });
+        if (latest && (forceRemote || (latest._savedAt || 0) >= (currentUser._savedAt || 0))) {
           currentUser = normalizeUserStats(latest);
         } else {
           normalizeUserStats(currentUser);
@@ -7296,7 +7309,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       return;
     }
     // Always fetch fresh data from Firebase/localStorage — no stale in-memory shortcuts
-    const ud = await DB.getUser(savedUsername);
+    const ud = await DB.getUser(savedUsername, { preferFirebase: true });
     if (!ud) {
       // User record missing (deleted externally or first-ever login race)
       const auth=$('ward-auth-screen'); if(auth) auth.style.display='flex';
@@ -7342,10 +7355,10 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   });
 
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) refreshWardDerivedUI({ rehydrate: true });
+    if (!document.hidden) refreshWardDerivedUI({ rehydrate: true, forceRemote: true });
   });
   window.addEventListener('focus', () => {
-    refreshWardDerivedUI({ rehydrate: true });
+    refreshWardDerivedUI({ rehydrate: true, forceRemote: true });
   });
 
   setInterval(()=>{ if(roomCode&&currentUser) broadcastStatus(); },5000);
