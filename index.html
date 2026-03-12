@@ -5694,6 +5694,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     if (user.squadBoostRemainder  == null) user.squadBoostRemainder = 0;
     if (user.squadSessionsCount   == null) user.squadSessionsCount = 0;
     if (user.lastSquadSessionDate == null) user.lastSquadSessionDate = null;
+    if (user.currentRoomCode      == null) user.currentRoomCode = null;
+    if (user.currentRoomRole      == null) user.currentRoomRole = null;
     if (!user.lastWeeklyResetKey) user.lastWeeklyResetKey = getWeekKey();
 
     resetWeeklyStats(user);
@@ -5847,6 +5849,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       squadBoostRemainder:0,
       squadSessionsCount:0,
       lastSquadSessionDate:null,
+      currentRoomCode:null,
+      currentRoomRole:null,
       dailyMins:{},
       sessions:[],
       streak:0,
@@ -5899,8 +5903,11 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   let _wardUnlockOverlaySeen = null;
   let currentLbTab = 'overall', prevTierId = null;
 
-  // Room
-  let myPeer=null, roomCode=null, isHost=false, connections=[], hostConn=null, members={};
+  // Study Together room state (Firebase authoritative source of truth)
+  let roomCode=null, isHost=false, members={};
+  let roomMembersRef=null, roomMetaRef=null;
+  let roomMembersListener=null, roomMetaListener=null;
+  let roomHeartbeatTimer=null, roomFocusCache={ lastSyncAt:0, lastCount:-1 };
 
   const $ = id => document.getElementById(id);
   const _isWardVisible = () => {
@@ -5974,24 +5981,54 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     document.body.appendChild(ov);
   }
 
-  function getValidSquadOverlapParticipantCount() {
-    if (!currentUser || currentUser.isGuest) return 0;
-    if (!roomCode || timerState !== 'focusing' || !myPeer?.id) return 0;
+  function getCurrentRoomMemberStatus() {
+    if (timerState === 'focusing') return 'focusing';
+    if (timerState === 'break') return 'break';
+    if (timerState === 'paused') return 'paused';
+    return 'idle';
+  }
+
+  function isMemberActive(member, now = Date.now()) {
+    if (!member) return false;
+    if (member.isConnected === false) return false;
+    const lastSeen = Number(member.lastSeen || 0);
+    return (now - lastSeen) <= SQUAD_HEARTBEAT_MAX_AGE_MS;
+  }
+
+  function computeRoomFocusCount(roomMembers = members) {
     const now = Date.now();
-    const myId = myPeer.id;
-    return Object.entries(members).filter(([pid, m]) => {
-      if (!m || pid === myId) return false;
-      if (m.isGuest) return false;
+    return Object.values(roomMembers || {}).filter(m => {
+      if (!m || m.isGuest) return false;
       if (m.status !== 'focusing') return false;
-      const lastSeen = Number(m.lastSeen || 0);
-      return (now - lastSeen) <= SQUAD_HEARTBEAT_MAX_AGE_MS;
+      return isMemberActive(m, now);
     }).length;
   }
 
-  function isValidSquadBoostActive() {
-    return getValidSquadOverlapParticipantCount() >= 1;
+  function getValidSquadOverlapParticipantCount() {
+    if (!currentUser || currentUser.isGuest) return 0;
+    if (!roomCode || timerState !== 'focusing') return 0;
+    const myUsername = currentUser.username;
+    const now = Date.now();
+    return Object.values(members).filter(m => {
+      if (!m || m.username === myUsername) return false;
+      if (m.isGuest) return false;
+      if (m.status !== 'focusing') return false;
+      return isMemberActive(m, now);
+    }).length;
   }
 
+  function isStudyTogetherBonusActive(user = currentUser, roomMembers = members) {
+    if (!user || user.isGuest || !roomCode) return false;
+    if (timerState !== 'focusing') return false;
+    if (!isMemberActive(roomMembers[user.username])) return false;
+    return computeRoomFocusCount(roomMembers) >= 2;
+  }
+
+  function isValidSquadBoostActive() {
+    return isStudyTogetherBonusActive(currentUser, members);
+  }
+
+  // Applies newly banked minutes once. This function is the anti-double-credit checkpoint.
   function applyBankedMinutes(rawMins, context = {}) {
     if (!currentUser || rawMins < 1) return { creditedMins: 0, bonusMins: 0, usedBoost: false };
     normalizeUserStats(currentUser);
@@ -6032,120 +6069,16 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     return { creditedMins, bonusMins, usedBoost: boostActive };
   }
 
-  function getValidSquadOverlapParticipantCount() {
-    if (!currentUser || currentUser.isGuest) return 0;
-    if (!roomCode || timerState !== 'focusing' || !myPeer?.id) return 0;
-    const now = Date.now();
-    const myId = myPeer.id;
-    return Object.entries(members).filter(([pid, m]) => {
-      if (!m || pid === myId) return false;
-      if (m.isGuest) return false;
-      if (m.status !== 'focusing') return false;
-      const lastSeen = Number(m.lastSeen || 0);
-      return (now - lastSeen) <= SQUAD_HEARTBEAT_MAX_AGE_MS;
-    }).length;
-  }
-
-  function isValidSquadBoostActive() {
-    return getValidSquadOverlapParticipantCount() >= 1;
-  }
-
-  function applyBankedMinutes(rawMins, context = {}) {
-    if (!currentUser || rawMins < 1) return { creditedMins: 0, bonusMins: 0, usedBoost: false };
-    normalizeUserStats(currentUser);
-    resetWeeklyStats(currentUser);
-
-    const t = todayStr();
-    const hour = new Date().getHours();
-    const boostActive = !!context.squadEligible && !currentUser.isGuest;
-
-    currentUser.rawTotalMins += rawMins;
-    currentUser.rawWeeklyMins += rawMins;
-
-    let creditedMins = rawMins;
-    let bonusMins = 0;
-    if (boostActive) {
-      currentUser.squadRawMins += rawMins;
-      currentUser.squadWeeklyRawMins += rawMins;
-      currentUser.squadBoostRemainder = (currentUser.squadBoostRemainder || 0) + (rawMins * SQUAD_BONUS_RATE);
-      bonusMins = Math.floor(currentUser.squadBoostRemainder);
-      if (bonusMins > 0) {
-        currentUser.squadBoostRemainder -= bonusMins;
-        currentUser.squadBonusMins += bonusMins;
-        currentUser.squadWeeklyBonusMins += bonusMins;
-      }
-      if (!squadSessionCreditedThisFocus) {
-        currentUser.squadSessionsCount += 1;
-        currentUser.lastSquadSessionDate = t;
-        squadSessionCreditedThisFocus = true;
-      }
-      creditedMins += bonusMins;
-    }
-
-    currentUser.totalMins += creditedMins;
-    currentUser.weeklyMins += creditedMins;
-    currentUser.dailyMins[t] = (currentUser.dailyMins[t] || 0) + creditedMins;
-    currentUser.hourlyActivity[hour] = (currentUser.hourlyActivity[hour] || 0) + 1;
-
-    return { creditedMins, bonusMins, usedBoost: boostActive };
-  }
-
-  function getValidSquadOverlapParticipantCount() {
-    if (!currentUser || currentUser.isGuest) return 0;
-    if (!roomCode || timerState !== 'focusing' || !myPeer?.id) return 0;
-    const now = Date.now();
-    const myId = myPeer.id;
-    return Object.entries(members).filter(([pid, m]) => {
-      if (!m || pid === myId) return false;
-      if (m.isGuest) return false;
-      if (m.status !== 'focusing') return false;
-      const lastSeen = Number(m.lastSeen || 0);
-      return (now - lastSeen) <= SQUAD_HEARTBEAT_MAX_AGE_MS;
-    }).length;
-  }
-
-  function isValidSquadBoostActive() {
-    return getValidSquadOverlapParticipantCount() >= 1;
-  }
-
-  function applyBankedMinutes(rawMins, context = {}) {
-    if (!currentUser || rawMins < 1) return { creditedMins: 0, bonusMins: 0, usedBoost: false };
-    normalizeUserStats(currentUser);
-    resetWeeklyStats(currentUser);
-
-    const t = todayStr();
-    const hour = new Date().getHours();
-    const boostActive = !!context.squadEligible && !currentUser.isGuest;
-
-    currentUser.rawTotalMins += rawMins;
-    currentUser.rawWeeklyMins += rawMins;
-
-    let creditedMins = rawMins;
-    let bonusMins = 0;
-    if (boostActive) {
-      currentUser.squadRawMins += rawMins;
-      currentUser.squadWeeklyRawMins += rawMins;
-      currentUser.squadBoostRemainder = (currentUser.squadBoostRemainder || 0) + (rawMins * SQUAD_BONUS_RATE);
-      bonusMins = Math.floor(currentUser.squadBoostRemainder);
-      if (bonusMins > 0) {
-        currentUser.squadBoostRemainder -= bonusMins;
-        currentUser.squadBonusMins += bonusMins;
-        currentUser.squadWeeklyBonusMins += bonusMins;
-      }
-      if (!squadSessionCreditedThisFocus) {
-        currentUser.squadSessionsCount += 1;
-        currentUser.lastSquadSessionDate = t;
-        squadSessionCreditedThisFocus = true;
-      }
-      creditedMins += bonusMins;
-    }
-
-    currentUser.totalMins += creditedMins;
-    currentUser.weeklyMins += creditedMins;
-    currentUser.dailyMins[t] = (currentUser.dailyMins[t] || 0) + creditedMins;
-    currentUser.hourlyActivity[hour] = (currentUser.hourlyActivity[hour] || 0) + 1;
-
-    return { creditedMins, bonusMins, usedBoost: boostActive };
+  async function incrementRoomStudyMins(rawMins) {
+    if (!roomCode || !currentUser || rawMins < 1 || !_rtdb) return;
+    const ref = roomMemberRefFor(roomCode, currentUser.username);
+    if (!ref) return;
+    await ref.transaction(m => {
+      if (!m) return m;
+      const curr = Number(m.roomStudyMins || 0);
+      m.roomStudyMins = curr + rawMins;
+      return m;
+    });
   }
 
   // ── AUTH ──────────────────────────────────────────────────────
@@ -6321,6 +6254,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   }
 
   window.wardLogout = function() {
+    if (roomCode && currentUser) leaveStudyTogetherRoom({ silent:true });
     if (timerState==='focusing' && currentUser) {
       DB.saveInterrupted(currentUser.username, { startTimestamp:Date.now()-(focusMins*60-timeLeft)*1000, secondsElapsed:focusMins*60-timeLeft, mode, focusMins, breakMins });
     }
@@ -6382,6 +6316,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
     checkInterrupted();
     renderAll();
+    restoreRoomStateForUser().catch(()=>{});
     refreshWardDerivedUI({ rehydrate:false });
     setTimeout(checkSmartReminder,1800);
 
@@ -6580,6 +6515,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       updateStreak(currentUser);
       const t=todayStr(), hour=new Date().getHours();
       const applied = applyBankedMinutes(mins, { squadEligible: isValidSquadBoostActive() });
+      incrementRoomStudyMins(mins).catch(()=>{});
       currentUser.sessions.push({ date:t, durationMins:mins, mode, hour, reflection:'' });
       if (currentUser.sessions.length>100) currentUser.sessions=currentUser.sessions.slice(-100);
       minsToday += applied.creditedMins;
@@ -6624,6 +6560,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
           const t=todayStr(), hour=new Date().getHours();
           updateStreak(currentUser);
           const applied = applyBankedMinutes(newMins, { squadEligible: isValidSquadBoostActive() });
+          incrementRoomStudyMins(newMins).catch(()=>{});
           currentUser.sessions.push({ date:t, durationMins:totalMins, mode, hour, reflection:'' });
           if (currentUser.sessions.length>100) currentUser.sessions=currentUser.sessions.slice(-100);
           minsToday += applied.creditedMins;
@@ -6724,6 +6661,16 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     document.body.appendChild(overlay);
   }
 
+  function broadcastStatus() {
+    if (!roomCode || !currentUser) return;
+    updateRoomPresence({
+      status: getCurrentRoomMemberStatus(),
+      currentFocusStartedAt: timerState === 'focusing' ? (Date.now() - (mode === 'stopwatch' ? timeLeft*1000 : (focusMins*60 - timeLeft)*1000)) : null,
+      totalMins: currentUser.totalMins || 0,
+      isHost: !!isHost,
+    }).catch(()=>{});
+  }
+
   function updateTimerUI() {
     const disp=$('ward-time-display'), phase=$('ward-phase-label'), btn=$('ward-start-btn');
     const icon=$('ward-btn-icon'), lbl=$('ward-btn-label'), rst=$('ward-reset-btn');
@@ -6738,8 +6685,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     if(phase){
       phase.className = 'ward-phase-label'+(isFocusing?' focusing':isBreak?' on-break':isPaused?' paused':'');
       const boostActive = isFocusing && isValidSquadBoostActive();
-      phase.textContent = isFocusing?(boostActive?'FOCUSING · +20% STUDY TOGETHER BOOST':'FOCUSING'):isBreak?'BREAK':isPaused?'PAUSED':'READY';
-      phase.textContent = isFocusing?(boostActive?'FOCUSING · +20% SQUAD BOOST':'FOCUSING'):isBreak?'BREAK':isPaused?'PAUSED':'READY';
+      phase.textContent = isFocusing?(boostActive?'FOCUSING · +20% STUDY TOGETHER BONUS':'FOCUSING'):isBreak?'BREAK':isPaused?'PAUSED':'READY';
     }
     if(btn) btn.className = 'ward-start-btn'+(isFocusing?' running':isBreak?' break-mode':isPaused?' paused':'');
     if(icon) icon.textContent = isFocusing?'⏸':isBreak?'⏭':(isPaused?'▶':'▶');
@@ -7001,8 +6947,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       entries = (currentUser.totalMins||0)>=5 ? [me,...friends] : friends;
     } else {
       entries=Object.values(members)
-        .filter(m => !m.isGuest && (m.totalMins||0) >= 5)
-        .map(m=>({name:m.name,mins:m.totalMins||0,me:false}));
+        .filter(m => !m.isGuest && isMemberActive(m) && (m.totalMins||0) >= 5)
+        .map(m=>({name:m.name||m.username,mins:m.totalMins||0,me:m.username===currentUser?.username}));
       if (!entries.length){ list.innerHTML='<div class="ward-status-msg">Join a Study Together room to see live leaderboard.</div>'; return; }
     }
     entries.sort((a,b)=>b.mins-a.mins);
@@ -7145,120 +7091,121 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     }
   }
 
-  // ── PEER / SQUAD ROOM ─────────────────────────────────────────
-  function genRoomCode(){ return ROOM_WORDS[Math.floor(Math.random()*ROOM_WORDS.length)]+'-'+Math.floor(10+Math.random()*90); }
-  function peerIdFromCode(code){ return 'ims-ward-'+code.toLowerCase().replace(/[^a-z0-9]/g,'-'); }
+  // ── STUDY TOGETHER ROOM (Firebase-backed) ───────────────────────
+  const ROOM_HEARTBEAT_INTERVAL_MS = 15000;
+  const ROOM_CODE_MAX_ATTEMPTS = 12;
+
   function setStatus(msg,type=''){ const el=$('ward-status-msg'); if(el){el.textContent=msg;el.className='ward-status-msg '+(type||'');} }
+  function normalizeRoomCode(code='') { return String(code).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8); }
+  function roomMetaRefFor(code){ return _rtdb?.ref('rooms/' + code) || null; }
+  function roomMemberRefFor(code, username){ return _rtdb?.ref('rooms/' + code + '/members/' + username.toLowerCase()) || null; }
+  function canUseRooms(){ return !!(_rtdb && currentUser && !currentUser.isGuest); }
 
-  window.wardCreateRoom = function() {
-    const name=($('ward-squad-name-input')||{}).value.trim()||currentUser?.displayName||'Anonymous';
-    if (myPeer) { try { myPeer.destroy(); } catch(e) {} }
-    roomCode=genRoomCode(); isHost=true;
-    try{ myPeer=new Peer(peerIdFromCode(roomCode)); } catch(e){ setStatus('PeerJS unavailable.','error'); return; }
-    setStatus('Setting up room…');
-    myPeer.on('open', id=>{ members[id]={name,status:'idle',totalMins:currentUser?.totalMins||0,mins:0,lastSeen:Date.now(),username:currentUser?.username||'',isGuest:!!currentUser?.isGuest}; showSquadRoom(); setStatus('Room ready!','success'); });
-    myPeer.on('connection',conn=>handleIncomingConn(conn));
-    myPeer.on('error',err=>setStatus('Error: '+err.type,'error'));
-  };
+  function generateRoomCode() {
+    const word = ROOM_WORDS[Math.floor(Math.random()*ROOM_WORDS.length)];
+    const suffix = String(Math.floor(10 + Math.random()*90));
+    return `${word}${suffix}`;
+  }
 
-  window.wardJoinRoom = function() {
-    if (myPeer) { try { myPeer.destroy(); } catch(e) {} }
-    const name=($('ward-squad-name-input')||{}).value.trim()||currentUser?.displayName||'Anonymous';
-    const code=($('ward-squad-join-input')||{}).value.trim().toUpperCase().replace(/\s+/g,'');
-    if(!code){ setStatus('Enter a room code.','error'); return; }
-    if (myPeer) { try { myPeer.destroy(); } catch(e) {} }
-    isHost=false; roomCode=code; setStatus('Connecting…');
+  async function createUniqueRoomCode() {
+    for (let i=0; i<ROOM_CODE_MAX_ATTEMPTS; i++) {
+      const candidate = generateRoomCode();
+      const snap = await roomMetaRefFor(candidate)?.once('value');
+      const room = snap?.val();
+      if (!room || room.isActive === false) return candidate;
+    }
+    throw new Error('Could not create unique room code. Please retry.');
+  }
 
-    const failJoin = (msg) => {
-      wardLeaveRoom();
-      setStatus(msg,'error');
+  async function updateRoomPresence(extra = {}) {
+    if (!canUseRooms() || !roomCode) return;
+    const status = extra.status || getCurrentRoomMemberStatus();
+    const myRef = roomMemberRefFor(roomCode, currentUser.username);
+    if (!myRef) return;
+    const payload = {
+      username: currentUser.username,
+      name: ($('ward-squad-name-input')||{}).value.trim() || currentUser.displayName || currentUser.username,
+      isGuest: !!currentUser.isGuest,
+      status,
+      isConnected: true,
+      lastSeen: firebase.database.ServerValue.TIMESTAMP,
+      totalMins: currentUser.totalMins || 0,
+      currentRoomCode: roomCode,
+      ...extra,
+    };
+    await myRef.update(payload);
+    myRef.onDisconnect().update({ isConnected:false, status:'offline', lastSeen: firebase.database.ServerValue.TIMESTAMP }).catch(()=>{});
+  }
+
+  async function syncRoomDerivedCounts() {
+    if (!roomCode || !_rtdb) return;
+    const focusCount = computeRoomFocusCount(members);
+    const memberCount = Object.values(members).filter(m => isMemberActive(m)).length;
+    if (focusCount === roomFocusCache.lastCount && Date.now() - roomFocusCache.lastSyncAt < 5000) return;
+    roomFocusCache = { lastSyncAt: Date.now(), lastCount: focusCount };
+    await roomMetaRefFor(roomCode)?.update({
+      memberCount,
+      focusCount,
+      bonusActive: focusCount >= 2,
+      isActive: memberCount > 0,
+      closedAt: memberCount > 0 ? null : firebase.database.ServerValue.TIMESTAMP,
+    });
+  }
+
+  function subscribeToRoom(nextCode) {
+    if (!_rtdb || !nextCode) return;
+    unsubscribeFromRoom();
+    roomCode = nextCode;
+    roomMembersRef = _rtdb.ref('rooms/' + roomCode + '/members');
+    roomMetaRef = _rtdb.ref('rooms/' + roomCode);
+
+    roomMembersListener = snap => {
+      members = snap.val() || {};
+      renderSquadMembers();
+      if (currentLbTab==='room') renderLeaderboard();
+      syncRoomDerivedCounts().catch(()=>{});
+      ensureActiveHost(roomCode).catch(()=>{});
+    };
+    roomMetaListener = snap => {
+      const room = snap.val();
+      if (!room || room.isActive === false) {
+        if (roomCode) {
+          setStatus('This room is closed.', 'error');
+          unsubscribeFromRoom();
+          resetRoomUI();
+        }
+      }
     };
 
-    try{ myPeer=new Peer(); } catch(e){ setStatus('PeerJS unavailable.','error'); return; }
+    roomMembersRef.on('value', roomMembersListener);
+    roomMetaRef.on('value', roomMetaListener);
 
-    let peerOpenTimeout = setTimeout(()=>{
-      failJoin('Connection setup timed out. Please retry.');
-    },10000);
-
-    myPeer.on('error',err=>{
-      if (err?.type === 'not-open-yet') return;
-      clearTimeout(peerOpenTimeout);
-      failJoin('Cannot connect: '+(err?.type||'peer error'));
-    });
-
-    myPeer.on('open', myId=>{
-      clearTimeout(peerOpenTimeout);
-      hostConn=myPeer.connect(peerIdFromCode(code),{metadata:{name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest}});
-      let joinTimeout = setTimeout(()=>{
-        if (!hostConn || hostConn.open) return;
-        failJoin('Could not join room. Check the code and ensure host is online.');
-      },10000);
-      hostConn.on('open',()=>{
-        clearTimeout(joinTimeout);
-        hostConn.send({type:'join',name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest,lastSeen:Date.now()});
-        showSquadRoom();
-        setStatus('Connected!','success');
-      });
-      hostConn.on('error',err=>{
-        if (err?.type === 'not-open-yet') return;
-        clearTimeout(joinTimeout);
-        failJoin('Cannot connect: '+(err?.type||'room unavailable'));
-      });
-      hostConn.on('data',msg=>handleMsg(msg,null));
-      hostConn.on('close',()=>{ clearTimeout(joinTimeout); if (roomCode) failJoin('Disconnected.'); });
-    });
-  };
-
-  function handleIncomingConn(conn) {
-    connections.push(conn);
-    conn.on('open',()=>{
-      const name=conn.metadata?.name||'Guest';
-      members[conn.peer]={name,status:'idle',totalMins:conn.metadata?.totalMins||0,mins:0,lastSeen:Date.now(),username:conn.metadata?.username||'',isGuest:!!conn.metadata?.isGuest};
-      if(currentUser&&!currentUser.achievements.includes('squad_study')){ currentUser.achievements.push('squad_study'); saveUserSafely(currentUser); showAchievementToast(BADGES.find(b=>b.id==='squad_study')); }
-      renderSquadMembers(); broadcastMembers();
-    });
-    conn.on('data',msg=>handleMsg(msg,conn));
-    conn.on('close',()=>{ connections=connections.filter(c=>c!==conn); delete members[conn.peer]; renderSquadMembers(); broadcastMembers(); });
+    roomHeartbeatTimer = setInterval(() => {
+      if (!roomCode || !currentUser) return;
+      updateRoomPresence().catch(()=>{});
+    }, ROOM_HEARTBEAT_INTERVAL_MS);
   }
 
-  function handleMsg(msg,fromConn) {
-    if(!msg?.type) return;
-    if(msg.type==='status'&&fromConn){ members[fromConn.peer]={...members[fromConn.peer],status:msg.status,mins:msg.mins,totalMins:msg.totalMins||0,lastSeen:msg.lastSeen||Date.now(),username:msg.username||members[fromConn.peer]?.username||'',isGuest:msg.isGuest??members[fromConn.peer]?.isGuest??false}; broadcastMembers(); renderSquadMembers(); renderLeaderboard(); }
-    else if(msg.type==='members'){ members=msg.members; renderSquadMembers(); renderLeaderboard(); }
+  function unsubscribeFromRoom() {
+    if (roomMembersRef && roomMembersListener) roomMembersRef.off('value', roomMembersListener);
+    if (roomMetaRef && roomMetaListener) roomMetaRef.off('value', roomMetaListener);
+    roomMembersRef = null; roomMetaRef = null;
+    roomMembersListener = null; roomMetaListener = null;
+    if (roomHeartbeatTimer) clearInterval(roomHeartbeatTimer);
+    roomHeartbeatTimer = null;
+    members = {};
+    roomFocusCache = { lastSyncAt:0, lastCount:-1 };
   }
 
-  function broadcastStatus() {
-    if(!myPeer||!roomCode) return;
-    const displayStatus = timerState==='focusing'?'focusing':timerState==='break'?'break':timerState==='paused'?'paused':'idle';
-    // Include live elapsed so squad sees real-time minutes
-    let liveElapsed = 0;
-    if (timerState==='focusing') {
-      liveElapsed = mode==='stopwatch'
-        ? Math.floor(timeLeft/60)
-        : Math.floor((focusMins*60 - timeLeft)/60);
-    }
-    const liveMins = minsToday + liveElapsed;
-    const payload={type:'status',name:currentUser?.displayName||'',username:currentUser?.username||'',isGuest:!!currentUser?.isGuest,status:displayStatus,mins:liveMins,totalMins:(currentUser?.totalMins||0)+liveElapsed,lastSeen:Date.now()};
-    if(isHost){ if(myPeer.id) members[myPeer.id]={...members[myPeer.id],status:displayStatus,mins:liveMins,totalMins:(currentUser?.totalMins||0)+liveElapsed,lastSeen:Date.now(),username:currentUser?.username||'',isGuest:!!currentUser?.isGuest}; connections.forEach(c=>{try{c.send(payload);}catch(e){}}); renderSquadMembers(); }
-    else if(hostConn){ try{hostConn.send(payload);}catch(e){} }
-  }
-
-  function broadcastMembers() {
-    if(!isHost) return;
-    connections.forEach(c=>{try{c.send({type:'members',members});}catch(e){}});
-  }
-
-  function showSquadRoom() {
+  function showRoomUI() {
     const sl=$('ward-squad-lobby'); if(sl) sl.style.display='none';
     const sr=$('ward-squad-room');  if(sr) sr.style.display='block';
     const rc=$('ward-squad-room-code'); if(rc) rc.textContent=roomCode;
-    // Topbar indicators
     const rai=$('ward-room-active-inline'); if(rai) rai.style.display='inline-flex';
     const rci=$('ward-room-code-inline');   if(rci) rci.textContent=roomCode;
     const cb=$('ward-topbar-create-btn');   if(cb) cb.style.display='none';
     const jb=$('ward-topbar-join-btn');     if(jb) jb.style.display='none';
     const lb=$('ward-topbar-leave-btn');    if(lb) lb.style.display='inline-flex';
-    // Legacy refs
     const rab=$('ward-room-active-badge'); if(rab) rab.style.display='inline-flex';
     const rcd=$('ward-room-code-display'); if(rcd) rcd.textContent=roomCode;
     const sb=$('ward-share-btn'); if(sb) sb.style.display='inline-flex';
@@ -7266,28 +7213,185 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     renderSquadMembers();
   }
 
-  window.wardLeaveRoom = function() {
-    if(myPeer){try{myPeer.destroy();}catch(e){}}
-    myPeer=null;hostConn=null;connections=[];members={};roomCode=null;isHost=false;
+  function resetRoomUI() {
     const sl=$('ward-squad-lobby'); if(sl) sl.style.display='block';
     const sr=$('ward-squad-room');  if(sr) sr.style.display='none';
-    // Topbar
     const rai=$('ward-room-active-inline'); if(rai) rai.style.display='none';
     const cb=$('ward-topbar-create-btn');   if(cb) cb.style.display='inline-flex';
     const jb=$('ward-topbar-join-btn');     if(jb) jb.style.display='inline-flex';
     const lb=$('ward-topbar-leave-btn');    if(lb) lb.style.display='none';
-    // Legacy
     const rab=$('ward-room-active-badge'); if(rab) rab.style.display='none';
     const sb=$('ward-share-btn'); if(sb) sb.style.display='none';
     history.replaceState(null,'',location.pathname);
-    setStatus('Left the room.');
-  };
+    renderSquadMembers();
+  }
+
+  async function ensureActiveHost(targetCode) {
+    if (!_rtdb || !targetCode) return;
+    const roomRef = _rtdb.ref('rooms/' + targetCode);
+    const [roomSnap, membersSnap] = await Promise.all([roomRef.once('value'), _rtdb.ref('rooms/' + targetCode + '/members').once('value')]);
+    const room = roomSnap.val() || {};
+    const roomMembers = membersSnap.val() || {};
+    const activeMembers = Object.values(roomMembers).filter(m => isMemberActive(m));
+    if (!activeMembers.length) return;
+    const hostStillActive = activeMembers.some(m => m.username === room.hostUsername);
+    if (hostStillActive) return;
+    const nextHost = activeMembers[0].username;
+    await roomRef.update({ hostUsername: nextHost });
+    const updates = {};
+    Object.values(roomMembers).forEach(m => { if (m?.username) updates[m.username + '/isHost'] = m.username === nextHost; });
+    await _rtdb.ref('rooms/' + targetCode + '/members').update(updates);
+  }
+
+  async function cleanupEmptyRoom(targetCode) {
+    if (!_rtdb || !targetCode) return;
+    const membersSnap = await _rtdb.ref('rooms/' + targetCode + '/members').once('value');
+    const roomMembers = membersSnap.val() || {};
+    const activeCount = Object.values(roomMembers).filter(m => isMemberActive(m)).length;
+    if (activeCount > 0) return;
+    await _rtdb.ref('rooms/' + targetCode).update({ isActive:false, memberCount:0, focusCount:0, bonusActive:false, closedAt: firebase.database.ServerValue.TIMESTAMP });
+  }
+
+  async function leaveStudyTogetherRoom(options = {}) {
+    if (!currentUser || !roomCode || !_rtdb) {
+      roomCode = null; isHost = false; unsubscribeFromRoom(); resetRoomUI();
+      return;
+    }
+    const codeLeaving = roomCode;
+    try {
+      // room leave lifecycle: mark disconnected while preserving roomStudyMins, clear user room refs
+      await roomMemberRefFor(codeLeaving, currentUser.username)?.update({
+        isConnected:false,
+        status:'offline',
+        leftAt: firebase.database.ServerValue.TIMESTAMP,
+        currentRoomCode:null,
+      });
+      await _rtdb.ref('users/' + currentUser.username + '/currentRoomCode').set(null);
+      await _rtdb.ref('users/' + currentUser.username + '/currentRoomRole').set(null);
+      currentUser.currentRoomCode = null;
+      currentUser.currentRoomRole = null;
+      await ensureActiveHost(codeLeaving);
+      await cleanupEmptyRoom(codeLeaving);
+    } catch (e) {
+      console.error('leaveStudyTogetherRoom failed', e);
+    }
+    unsubscribeFromRoom();
+    roomCode = null; isHost = false;
+    if (!options.silent) setStatus('Left the room.');
+    resetRoomUI();
+  }
+
+  async function joinStudyTogetherRoom(rawCode) {
+    if (!canUseRooms()) { setStatus('Log in with an account to use Study Together rooms.','error'); return false; }
+    const code = normalizeRoomCode(rawCode || ($('ward-squad-join-input')||{}).value || '');
+    if (!code) { setStatus('Enter a room code.','error'); return false; }
+
+    if (currentUser.currentRoomCode && currentUser.currentRoomCode !== code) {
+      await leaveStudyTogetherRoom({ silent:true });
+    }
+
+    try {
+      const roomSnap = await roomMetaRefFor(code).once('value');
+      const room = roomSnap.val();
+      if (!room || room.isActive === false) { setStatus('Invalid or inactive room code.','error'); return false; }
+
+      const userRef = _rtdb.ref('users/' + currentUser.username);
+      const memberRef = roomMemberRefFor(code, currentUser.username);
+      const existingMember = (await memberRef.once('value')).val() || {};
+      const nowTs = firebase.database.ServerValue.TIMESTAMP;
+
+      await memberRef.update({
+        username: currentUser.username,
+        name: ($('ward-squad-name-input')||{}).value.trim() || currentUser.displayName || currentUser.username,
+        joinedAt: existingMember.joinedAt || nowTs,
+        lastSeen: nowTs,
+        status: getCurrentRoomMemberStatus(),
+        roomStudyMins: Number(existingMember.roomStudyMins || 0),
+        currentFocusStartedAt: timerState === 'focusing' ? Date.now() : null,
+        isHost: room.hostUsername === currentUser.username,
+        isConnected: true,
+        isGuest: !!currentUser.isGuest,
+        totalMins: currentUser.totalMins || 0,
+      });
+      memberRef.onDisconnect().update({ isConnected:false, status:'offline', lastSeen: firebase.database.ServerValue.TIMESTAMP }).catch(()=>{});
+
+      await userRef.child('currentRoomCode').set(code);
+      await userRef.child('currentRoomRole').set(room.hostUsername === currentUser.username ? 'host' : 'member');
+      currentUser.currentRoomCode = code;
+      currentUser.currentRoomRole = room.hostUsername === currentUser.username ? 'host' : 'member';
+      roomCode = code;
+      isHost = room.hostUsername === currentUser.username;
+
+      subscribeToRoom(code);
+      await updateRoomPresence();
+      showRoomUI();
+      setStatus('Joined room ' + code + '.', 'success');
+      if(currentUser&&!currentUser.achievements.includes('squad_study')){ currentUser.achievements.push('squad_study'); saveUserSafely(currentUser); showAchievementToast(BADGES.find(b=>b.id==='squad_study')); }
+      return true;
+    } catch (e) {
+      console.error('joinStudyTogetherRoom failed', e);
+      setStatus('Could not join room due to a network issue. Please retry.', 'error');
+      return false;
+    }
+  }
+
+  async function createStudyTogetherRoom() {
+    if (!canUseRooms()) { setStatus('Log in with an account to create rooms.','error'); return; }
+    try {
+      if (currentUser.currentRoomCode) await leaveStudyTogetherRoom({ silent:true });
+      const code = await createUniqueRoomCode();
+      const nowTs = firebase.database.ServerValue.TIMESTAMP;
+      await roomMetaRefFor(code).set({
+        code,
+        hostUsername: currentUser.username,
+        createdAt: nowTs,
+        isActive: true,
+        memberCount: 1,
+        focusCount: timerState === 'focusing' ? 1 : 0,
+        bonusActive: false,
+        closedAt: null,
+      });
+      await _rtdb.ref('users/' + currentUser.username + '/currentRoomCode').set(code);
+      await _rtdb.ref('users/' + currentUser.username + '/currentRoomRole').set('host');
+      currentUser.currentRoomCode = code;
+      currentUser.currentRoomRole = 'host';
+      roomCode = code;
+      isHost = true;
+
+      subscribeToRoom(code);
+      await updateRoomPresence({ isHost:true, joinedAt:nowTs, roomStudyMins:0 });
+      showRoomUI();
+      setStatus('Room ready! Share code: ' + code, 'success');
+    } catch (e) {
+      console.error('createStudyTogetherRoom failed', e);
+      setStatus(e.message || 'Unable to create room.', 'error');
+    }
+  }
+
+  async function restoreRoomStateForUser() {
+    if (!canUseRooms()) return;
+    const savedCode = normalizeRoomCode(currentUser.currentRoomCode || '');
+    if (!savedCode) return;
+    const roomSnap = await roomMetaRefFor(savedCode).once('value');
+    const room = roomSnap.val();
+    if (!room || room.isActive === false) {
+      currentUser.currentRoomCode = null;
+      currentUser.currentRoomRole = null;
+      await _rtdb.ref('users/' + currentUser.username + '/currentRoomCode').set(null);
+      await _rtdb.ref('users/' + currentUser.username + '/currentRoomRole').set(null);
+      return;
+    }
+    await joinStudyTogetherRoom(savedCode);
+  }
+
+  window.wardCreateRoom = function() { createStudyTogetherRoom(); };
+  window.wardJoinRoom = function() { joinStudyTogetherRoom(); };
+  window.wardLeaveRoom = function() { leaveStudyTogetherRoom(); };
 
   window.wardQuickCreateRoom = function() {
-    // Pre-fill name and open squad tab, then create
     const sni=$('ward-squad-name-input'); if(sni&&!sni.value.trim()) sni.value=currentUser?.displayName||'';
     wardPanelTab('squad');
-    wardCreateRoom();
+    createStudyTogetherRoom();
   };
 
   window.wardQuickJoinRoom = function() {
@@ -7296,7 +7400,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     wardPanelTab('squad');
     const ji=$('ward-squad-join-input'); if(ji&&code) ji.value=code;
     if (!code) { const ji2=$('ward-squad-join-input'); if(ji2) ji2.focus(); }
-    else wardJoinRoom();
+    else joinStudyTogetherRoom(code);
   };
 
   window.wardShareRoom = function() {
@@ -7306,19 +7410,20 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
   function renderSquadMembers() {
     const list=$('ward-members-list'); if(!list) return;
-    const entries=Object.entries(members);
+    const entries=Object.values(members || {}).sort((a,b)=>Number(b.lastSeen||0)-Number(a.lastSeen||0));
     if(!entries.length){list.innerHTML='<div class="ward-status-msg" style="font-size:0.7rem;">Waiting for others to join…</div>';return;}
-    const myId=myPeer?.id;
     const now=Date.now();
-    list.innerHTML=entries.map(([pid,m],i)=>{
+    list.innerHTML=entries.map((m,i)=>{
       const color=AVATAR_COLORS[i%AVATAR_COLORS.length];
-      const fresh=(now-Number(m.lastSeen||0))<=SQUAD_HEARTBEAT_MAX_AGE_MS;
+      const fresh=isMemberActive(m, now);
       const sc=!fresh?'status-idle':m.status==='focusing'?'status-focusing':m.status==='break'?'status-break':m.status==='paused'?'status-break':'status-idle';
-      const sl=!fresh?'Stale':m.status==='focusing'?'Focusing':m.status==='break'?'Break':m.status==='paused'?'Paused':'Idle';
-      return `<div class="ward-lb-entry${pid===myId?' me':''}">
+      const sl=!fresh?'Offline':m.status==='focusing'?'Focusing':m.status==='break'?'Break':m.status==='paused'?'Paused':'Idle';
+      const isMe = m.username === currentUser?.username;
+      const roomMins = Number(m.roomStudyMins||0);
+      return `<div class="ward-lb-entry${isMe?' me':''}">
         <div class="ward-lb-avatar" style="background:${color}22;color:${color};border:1.5px solid ${color}44;">${(m.name||'?')[0].toUpperCase()}</div>
-        <div style="flex:1;min-width:0;"><div class="ward-lb-name">${m.name}${pid===myId?' <span style="font-size:0.58rem;color:rgba(140,170,220,0.28);">(you)</span>':''}</div>
-        <div style="font-size:0.6rem;color:rgba(140,170,220,0.3);font-family:'JetBrains Mono',monospace;">${m.mins||0}m today${m.isGuest?' · guest':''}</div></div>
+        <div style="flex:1;min-width:0;"><div class="ward-lb-name">${m.name||m.username}${isMe?' <span style="font-size:0.58rem;color:rgba(140,170,220,0.28);">(you)</span>':''}${m.isHost?' <span style="font-size:0.58rem;color:#ffd966;">HOST</span>':''}</div>
+        <div style="font-size:0.6rem;color:rgba(140,170,220,0.3);font-family:'JetBrains Mono',monospace;">${roomMins}m in room${m.isGuest?' · guest':''}</div></div>
         <span class="ward-member-status ${sc}">${sl}</span>
       </div>`;
     }).join('');
@@ -7391,7 +7496,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     refreshWardDerivedUI({ rehydrate: true, forceRemote: true });
   });
 
-  setInterval(()=>{ if(roomCode&&currentUser) broadcastStatus(); },5000);
+  setInterval(()=>{ if(roomCode&&currentUser) updateRoomPresence().catch(()=>{}); },5000);
 
 })();
 
