@@ -167,7 +167,7 @@ document.write(`\n<!-- ═══════════════════
           <button class="ward-panel-tab"        onclick="wardPanelTab('stats')"        id="ward-ptab-stats">📊 Stats</button>
           <button class="ward-panel-tab"        onclick="wardPanelTab('leaderboard')"  id="ward-ptab-leaderboard">🏆 Leaderboard</button>
           <button class="ward-panel-tab"        onclick="wardPanelTab('achievements')" id="ward-ptab-achievements">🏅 Badges</button>
-          <button class="ward-panel-tab"        onclick="wardPanelTab('squad')"        id="ward-ptab-squad">👥 Squad</button>
+          <button class="ward-panel-tab"        onclick="wardPanelTab('squad')"        id="ward-ptab-squad">👥 Study Together</button>
         </div>
         <div class="ward-panel-content">
 
