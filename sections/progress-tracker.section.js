@@ -1,5 +1,4 @@
-(() => {
-  const html = `\n<!-- ════════════════════════ BRANCH: Progress Tracker ════════════════════════ -->
+document.write(`\n<!-- ════════════════════════ BRANCH: Progress Tracker ════════════════════════ -->
 <div class="page" id="page-progress">
 
   <div class="subj-hero">
@@ -62,8 +61,4 @@
     </div>
   </footer>
 </div>
-`;
-  const scriptTag = document.currentScript || Array.from(document.scripts || []).find(s => /progress-tracker\.section\.js$/.test(s.src || ''));
-  if (scriptTag) scriptTag.insertAdjacentHTML('beforebegin', html);
-  else document.body?.insertAdjacentHTML('beforeend', html);
-})();
+`);

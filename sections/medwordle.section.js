@@ -1,5 +1,6 @@
 (() => {
   const html = `\n<!-- ════════════════════════ BRANCH: MedWordle ════════════════════════ -->
+document.write(`\n<!-- ════════════════════════ BRANCH: MedWordle ════════════════════════ -->
 <div class="page" id="page-medwordle">
 <div class="play-page-wrap">
 
@@ -122,7 +123,8 @@
 
 <!-- ══════════════════════ DAILY PEARLS PAGE ══════════════════════ -->
 `;
-  const scriptTag = document.currentScript || Array.from(document.scripts || []).find(s => /medwordle\.section\.js$/.test(s.src || ''));
-  if (scriptTag) scriptTag.insertAdjacentHTML('beforebegin', html);
-  else document.body?.insertAdjacentHTML('beforeend', html);
+  const scriptTag = document.currentScript;
+  if (scriptTag) {
+    scriptTag.insertAdjacentHTML('beforebegin', html);
+  }
 })();

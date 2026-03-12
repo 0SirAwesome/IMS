@@ -1,5 +1,4 @@
-(() => {
-  const html = `\n<!-- ════════════════════════ BRANCH: Daily Clinical Pearls ════════════════════════ -->
+document.write(`\n<!-- ════════════════════════ BRANCH: Daily Clinical Pearls ════════════════════════ -->
 <div class="page" id="page-pearls">
   <div class="pearls-wrap" id="pearls-wrap">
 
@@ -82,8 +81,4 @@
 
   </div>
 </div>
-`;
-  const scriptTag = document.currentScript || Array.from(document.scripts || []).find(s => /daily-clinical-pearls\.section\.js$/.test(s.src || ''));
-  if (scriptTag) scriptTag.insertAdjacentHTML('beforebegin', html);
-  else document.body?.insertAdjacentHTML('beforeend', html);
-})();
+`);
