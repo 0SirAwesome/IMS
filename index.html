@@ -6020,6 +6020,64 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     return { creditedMins, bonusMins, usedBoost: boostActive };
   }
 
+  function getValidSquadOverlapParticipantCount() {
+    if (!currentUser || currentUser.isGuest) return 0;
+    if (!roomCode || timerState !== 'focusing' || !myPeer?.id) return 0;
+    const now = Date.now();
+    const myId = myPeer.id;
+    return Object.entries(members).filter(([pid, m]) => {
+      if (!m || pid === myId) return false;
+      if (m.isGuest) return false;
+      if (m.status !== 'focusing') return false;
+      const lastSeen = Number(m.lastSeen || 0);
+      return (now - lastSeen) <= SQUAD_HEARTBEAT_MAX_AGE_MS;
+    }).length;
+  }
+
+  function isValidSquadBoostActive() {
+    return getValidSquadOverlapParticipantCount() >= 1;
+  }
+
+  function applyBankedMinutes(rawMins, context = {}) {
+    if (!currentUser || rawMins < 1) return { creditedMins: 0, bonusMins: 0, usedBoost: false };
+    normalizeUserStats(currentUser);
+    resetWeeklyStats(currentUser);
+
+    const t = todayStr();
+    const hour = new Date().getHours();
+    const boostActive = !!context.squadEligible && !currentUser.isGuest;
+
+    currentUser.rawTotalMins += rawMins;
+    currentUser.rawWeeklyMins += rawMins;
+
+    let creditedMins = rawMins;
+    let bonusMins = 0;
+    if (boostActive) {
+      currentUser.squadRawMins += rawMins;
+      currentUser.squadWeeklyRawMins += rawMins;
+      currentUser.squadBoostRemainder = (currentUser.squadBoostRemainder || 0) + (rawMins * SQUAD_BONUS_RATE);
+      bonusMins = Math.floor(currentUser.squadBoostRemainder);
+      if (bonusMins > 0) {
+        currentUser.squadBoostRemainder -= bonusMins;
+        currentUser.squadBonusMins += bonusMins;
+        currentUser.squadWeeklyBonusMins += bonusMins;
+      }
+      if (!squadSessionCreditedThisFocus) {
+        currentUser.squadSessionsCount += 1;
+        currentUser.lastSquadSessionDate = t;
+        squadSessionCreditedThisFocus = true;
+      }
+      creditedMins += bonusMins;
+    }
+
+    currentUser.totalMins += creditedMins;
+    currentUser.weeklyMins += creditedMins;
+    currentUser.dailyMins[t] = (currentUser.dailyMins[t] || 0) + creditedMins;
+    currentUser.hourlyActivity[hour] = (currentUser.hourlyActivity[hour] || 0) + 1;
+
+    return { creditedMins, bonusMins, usedBoost: boostActive };
+  }
+
   // ── AUTH ──────────────────────────────────────────────────────
   window.wardAuthTab = function(tab) {
     ['login','signup'].forEach(t => {
@@ -6519,6 +6577,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       phase.className = 'ward-phase-label'+(isFocusing?' focusing':isBreak?' on-break':isPaused?' paused':'');
       const boostActive = isFocusing && isValidSquadBoostActive();
       phase.textContent = isFocusing?(boostActive?'FOCUSING · +20% STUDY TOGETHER BOOST':'FOCUSING'):isBreak?'BREAK':isPaused?'PAUSED':'READY';
+      phase.textContent = isFocusing?(boostActive?'FOCUSING · +20% SQUAD BOOST':'FOCUSING'):isBreak?'BREAK':isPaused?'PAUSED':'READY';
     }
     if(btn) btn.className = 'ward-start-btn'+(isFocusing?' running':isBreak?' break-mode':isPaused?' paused':'');
     if(icon) icon.textContent = isFocusing?'⏸':isBreak?'⏭':(isPaused?'▶':'▶');
@@ -6630,6 +6689,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   }
 
   function updateTodayStrip() {
+    const ts=$('ward-today-sessions'); if(ts) ts.textContent=currentUser?.squadWeeklyBonusMins||0;
     const sd=$('ward-streak-display'); if(sd) sd.textContent=currentUser?.streak||0;
     const tm=$('ward-today-mins');
     if(tm) {
@@ -6712,6 +6772,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const creditedHours=(u.totalMins/60).toFixed(1);
     const rawHours=((u.rawTotalMins||0)/60).toFixed(1);
     const squadBonusHours=((u.squadBonusMins||0)/60).toFixed(1);
+    const squadRawHours=((u.squadRawMins||0)/60).toFixed(1);
     const weekDays=Array.from({length:7},(_,i)=>{ const d=new Date(); d.setDate(d.getDate()-6+i); return d.toISOString().slice(0,10); });
     const weekTotalMins=weekDays.reduce((s,d)=>s+(u.dailyMins[d]||0),0);
     const weekAvg=(weekTotalMins/7/60).toFixed(1);
@@ -6720,7 +6781,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     grid.innerHTML=[
       {n:creditedHours,   l:'Credited Hours'},
       {n:rawHours,        l:'Raw Focus Hours'},
-      {n:squadBonusHours, l:'Study Together Bonus Hours'},
+      {n:squadRawHours,   l:'Squad Raw Hours'},
+      {n:squadBonusHours, l:'Squad Bonus Hours'},
       {n:weekAvg+'h',     l:'Daily Avg (7d)'},
       {n:(u.dailyMins[t]||0)+'m',l:'Today'},
       {n:bestDay+'h',     l:'Best Day'},
