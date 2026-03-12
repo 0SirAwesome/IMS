@@ -7156,6 +7156,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     if (myPeer) { try { myPeer.destroy(); } catch(e) {} }
     isHost=false; roomCode=code; setStatus('Connecting…');
     try{ myPeer=new Peer(); } catch(e){ setStatus('PeerJS unavailable.','error'); return; }
+    myPeer.on('error',err=>setStatus('Cannot connect: '+err.type,'error'));
     myPeer.on('open', myId=>{
       hostConn=myPeer.connect(peerIdFromCode(code),{metadata:{name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest}});
       hostConn.on('open',()=>{ hostConn.send({type:'join',name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest,lastSeen:Date.now()}); showSquadRoom(); setStatus('Connected!','success'); });
