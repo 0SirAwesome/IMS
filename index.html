@@ -2163,7 +2163,25 @@
   .hbuild.current  { filter:drop-shadow(0 0 8px rgba(255,192,0,0.7)); }
   @keyframes cellUnlock { 0%{opacity:0.12} 50%{filter:drop-shadow(0 0 18px rgba(255,192,0,0.9))} 100%{opacity:1} }
   .hbuild.just-unlocked { animation:cellUnlock 1s ease forwards; }
-  @keyframes wardConfettiFall { 0%{transform:translateY(-10px) rotate(0deg);opacity:.98} 100%{transform:translateY(115vh) rotate(560deg);opacity:0} }
+  .ward-unlock-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: radial-gradient(circle at 50% 30%, rgba(255,192,0,0.2), rgba(4,10,20,0.92));
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.2rem; backdrop-filter: blur(3px);
+  }
+  .ward-unlock-card {
+    position: relative; width: min(520px, 96vw);
+    border-radius: 20px; border: 1px solid rgba(255,192,0,0.42);
+    background: linear-gradient(160deg, rgba(24,31,54,0.95), rgba(10,16,30,0.96));
+    box-shadow: 0 24px 100px rgba(0,0,0,0.65), 0 0 80px rgba(255,192,0,0.15);
+    padding: 2rem 1.5rem 1.3rem; text-align: center; overflow: hidden;
+  }
+  .ward-unlock-title { font-family:'Lora',serif; font-size:1.7rem; color:#ffe08a; margin-bottom:0.4rem; }
+  .ward-unlock-sub { font-size:0.88rem; color:rgba(200,218,240,0.82); margin-bottom:1rem; }
+  .ward-unlock-area { font-family:'JetBrains Mono',monospace; font-size:0.9rem; letter-spacing:0.08em; color:#ffc000; margin-bottom:1.1rem; }
+  .ward-unlock-dismiss { border:none; border-radius:99px; background:rgba(255,192,0,0.18); border:1px solid rgba(255,192,0,0.35); color:#ffd966; padding:0.55rem 1.2rem; font-weight:700; cursor:pointer; }
+  .ward-confetti { position:absolute; width:7px; height:14px; top:-16px; opacity:0.92; border-radius:2px; animation:wardConfettiFall linear forwards; }
+  @keyframes wardConfettiFall { to { transform: translateY(125vh) rotate(720deg); opacity: 0.15; } }
 
   /* STATS */
   .ward-stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.55rem; margin-bottom:0.9rem; }
@@ -3793,6 +3811,14 @@ document.addEventListener('visibilitychange', function() {
         (window._wardTimerState()==='focusing' || window._wardTimerState()==='break')) {
       tickTimer();
     }
+    if (typeof window.refreshWardDerivedUI === 'function') {
+      window.refreshWardDerivedUI({ rehydrate:true });
+    }
+  }
+});
+window.addEventListener('focus', function() {
+  if (typeof window.refreshWardDerivedUI === 'function') {
+    window.refreshWardDerivedUI({ rehydrate:true });
   }
 });
 // pagehide is more reliable than beforeunload on mobile and Blink-based browsers.
@@ -5856,12 +5882,201 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   let sessionStartTs = 0;       // wall-clock ms when focus/break phase started
   let sessionStartTimeLeft = 0; // timeLeft value at phase start (for wall-clock calc)
   let squadSessionCreditedThisFocus = false;
+  let _wardRefreshInFlight = false;
+  let _wardLastRehydrateAt = 0;
+  let _wardUnlockOverlaySeen = null;
   let currentLbTab = 'overall', prevTierId = null;
 
   // Room
   let myPeer=null, roomCode=null, isHost=false, connections=[], hostConn=null, members={};
 
   const $ = id => document.getElementById(id);
+  const _isWardVisible = () => {
+    const p = document.getElementById('page-ward');
+    return !!(p && p.classList.contains('active'));
+  };
+
+  async function refreshWardDerivedUI(opts = {}) {
+    if (!currentUser) return;
+    const { rehydrate = false } = opts;
+    normalizeUserStats(currentUser);
+
+    if (rehydrate && !currentUser.isGuest && !_wardRefreshInFlight) {
+      const now = Date.now();
+      if ((now - _wardLastRehydrateAt) > 2500) {
+        _wardRefreshInFlight = true;
+        _wardLastRehydrateAt = now;
+        try {
+          const fresh = await DB.getUser(currentUser.username);
+          if (fresh) {
+            normalizeUserStats(fresh);
+            if ((fresh._savedAt || 0) >= (currentUser._savedAt || 0)) {
+              currentUser = fresh;
+            }
+          }
+        } catch(e) {
+          console.warn('refreshWardDerivedUI rehydrate failed:', e);
+        }
+        _wardRefreshInFlight = false;
+      }
+    }
+
+    if (_isWardVisible()) renderAll();
+  }
+  window.refreshWardDerivedUI = refreshWardDerivedUI;
+
+  function showWardUnlockCelebration(areaName) {
+    if (!areaName) return;
+    if (document.getElementById('ward-unlock-overlay')) return;
+    const ov = document.createElement('div');
+    ov.id = 'ward-unlock-overlay';
+    ov.className = 'ward-unlock-overlay';
+    ov.innerHTML = `<div class="ward-unlock-card" role="dialog" aria-live="polite">
+      <div class="ward-unlock-title">🎉 New Area Unlocked!</div>
+      <div class="ward-unlock-sub">Incredible focus streak — your hospital just expanded.</div>
+      <div class="ward-unlock-area">Welcome to ${areaName}</div>
+      <button class="ward-unlock-dismiss" id="ward-unlock-dismiss">Tap to Continue</button>
+    </div>`;
+
+    const colors = ['#ffc000','#ed7d31','#57f287','#5b9bd5','#e05c6e','#c8dff8'];
+    const card = ov.querySelector('.ward-unlock-card');
+    for (let i = 0; i < 130; i++) {
+      const c = document.createElement('span');
+      c.className = 'ward-confetti';
+      c.style.left = (Math.random() * 100) + '%';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDuration = (1.8 + Math.random() * 1.8) + 's';
+      c.style.animationDelay = (Math.random() * 0.35) + 's';
+      c.style.transform = `translateY(${Math.random()*10}px) rotate(${Math.random()*360}deg)`;
+      card.appendChild(c);
+    }
+
+    const dismiss = () => {
+      document.removeEventListener('keydown', onEsc);
+      ov.remove();
+    };
+    const onEsc = (e) => { if (e.key === 'Escape') dismiss(); };
+    ov.addEventListener('click', dismiss);
+    ov.querySelector('#ward-unlock-dismiss')?.addEventListener('click', dismiss);
+    document.addEventListener('keydown', onEsc);
+    document.body.appendChild(ov);
+  }
+
+  function getValidSquadOverlapParticipantCount() {
+    if (!currentUser || currentUser.isGuest) return 0;
+    if (!roomCode || timerState !== 'focusing' || !myPeer?.id) return 0;
+    const now = Date.now();
+    const myId = myPeer.id;
+    return Object.entries(members).filter(([pid, m]) => {
+      if (!m || pid === myId) return false;
+      if (m.isGuest) return false;
+      if (m.status !== 'focusing') return false;
+      const lastSeen = Number(m.lastSeen || 0);
+      return (now - lastSeen) <= SQUAD_HEARTBEAT_MAX_AGE_MS;
+    }).length;
+  }
+
+  function isValidSquadBoostActive() {
+    return getValidSquadOverlapParticipantCount() >= 1;
+  }
+
+  function applyBankedMinutes(rawMins, context = {}) {
+    if (!currentUser || rawMins < 1) return { creditedMins: 0, bonusMins: 0, usedBoost: false };
+    normalizeUserStats(currentUser);
+    resetWeeklyStats(currentUser);
+
+    const t = todayStr();
+    const hour = new Date().getHours();
+    const boostActive = !!context.squadEligible && !currentUser.isGuest;
+
+    currentUser.rawTotalMins += rawMins;
+    currentUser.rawWeeklyMins += rawMins;
+
+    let creditedMins = rawMins;
+    let bonusMins = 0;
+    if (boostActive) {
+      currentUser.squadRawMins += rawMins;
+      currentUser.squadWeeklyRawMins += rawMins;
+      currentUser.squadBoostRemainder = (currentUser.squadBoostRemainder || 0) + (rawMins * SQUAD_BONUS_RATE);
+      bonusMins = Math.floor(currentUser.squadBoostRemainder);
+      if (bonusMins > 0) {
+        currentUser.squadBoostRemainder -= bonusMins;
+        currentUser.squadBonusMins += bonusMins;
+        currentUser.squadWeeklyBonusMins += bonusMins;
+      }
+      if (!squadSessionCreditedThisFocus) {
+        currentUser.squadSessionsCount += 1;
+        currentUser.lastSquadSessionDate = t;
+        squadSessionCreditedThisFocus = true;
+      }
+      creditedMins += bonusMins;
+    }
+
+    currentUser.totalMins += creditedMins;
+    currentUser.weeklyMins += creditedMins;
+    currentUser.dailyMins[t] = (currentUser.dailyMins[t] || 0) + creditedMins;
+    currentUser.hourlyActivity[hour] = (currentUser.hourlyActivity[hour] || 0) + 1;
+
+    return { creditedMins, bonusMins, usedBoost: boostActive };
+  }
+
+  function getValidSquadOverlapParticipantCount() {
+    if (!currentUser || currentUser.isGuest) return 0;
+    if (!roomCode || timerState !== 'focusing' || !myPeer?.id) return 0;
+    const now = Date.now();
+    const myId = myPeer.id;
+    return Object.entries(members).filter(([pid, m]) => {
+      if (!m || pid === myId) return false;
+      if (m.isGuest) return false;
+      if (m.status !== 'focusing') return false;
+      const lastSeen = Number(m.lastSeen || 0);
+      return (now - lastSeen) <= SQUAD_HEARTBEAT_MAX_AGE_MS;
+    }).length;
+  }
+
+  function isValidSquadBoostActive() {
+    return getValidSquadOverlapParticipantCount() >= 1;
+  }
+
+  function applyBankedMinutes(rawMins, context = {}) {
+    if (!currentUser || rawMins < 1) return { creditedMins: 0, bonusMins: 0, usedBoost: false };
+    normalizeUserStats(currentUser);
+    resetWeeklyStats(currentUser);
+
+    const t = todayStr();
+    const hour = new Date().getHours();
+    const boostActive = !!context.squadEligible && !currentUser.isGuest;
+
+    currentUser.rawTotalMins += rawMins;
+    currentUser.rawWeeklyMins += rawMins;
+
+    let creditedMins = rawMins;
+    let bonusMins = 0;
+    if (boostActive) {
+      currentUser.squadRawMins += rawMins;
+      currentUser.squadWeeklyRawMins += rawMins;
+      currentUser.squadBoostRemainder = (currentUser.squadBoostRemainder || 0) + (rawMins * SQUAD_BONUS_RATE);
+      bonusMins = Math.floor(currentUser.squadBoostRemainder);
+      if (bonusMins > 0) {
+        currentUser.squadBoostRemainder -= bonusMins;
+        currentUser.squadBonusMins += bonusMins;
+        currentUser.squadWeeklyBonusMins += bonusMins;
+      }
+      if (!squadSessionCreditedThisFocus) {
+        currentUser.squadSessionsCount += 1;
+        currentUser.lastSquadSessionDate = t;
+        squadSessionCreditedThisFocus = true;
+      }
+      creditedMins += bonusMins;
+    }
+
+    currentUser.totalMins += creditedMins;
+    currentUser.weeklyMins += creditedMins;
+    currentUser.dailyMins[t] = (currentUser.dailyMins[t] || 0) + creditedMins;
+    currentUser.hourlyActivity[hour] = (currentUser.hourlyActivity[hour] || 0) + 1;
+
+    return { creditedMins, bonusMins, usedBoost: boostActive };
+  }
 
   function getValidSquadOverlapParticipantCount() {
     if (!currentUser || currentUser.isGuest) return 0;
@@ -6129,6 +6344,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     minsToday     = user.dailyMins[t]||0;
     sessionsToday = user.sessions.filter(s=>s.date===t).length;
     prevTierId    = getTier(user.totalMins).id;
+    _wardUnlockOverlaySeen = prevTierId;
 
     // Avatar
     const color = AVATAR_COLORS[(user.username.charCodeAt(0)||65) % AVATAR_COLORS.length];
@@ -6153,7 +6369,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
     checkInterrupted();
     renderAll();
-    refreshWardDerivedUI();
+    refreshWardDerivedUI({ rehydrate:false });
     setTimeout(checkSmartReminder,1800);
 
     // Show guest nudge if applicable
@@ -6438,6 +6654,10 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
         showWardUnlockCelebration(newTier.name, newTier.emoji);
       }
       playUnlockSound();
+      if (_wardUnlockOverlaySeen !== newTier.id) {
+        _wardUnlockOverlaySeen = newTier.id;
+        showWardUnlockCelebration(newTier.name);
+      }
     }
   }
 
@@ -6506,6 +6726,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       phase.className = 'ward-phase-label'+(isFocusing?' focusing':isBreak?' on-break':isPaused?' paused':'');
       const boostActive = isFocusing && isValidSquadBoostActive();
       phase.textContent = isFocusing?(boostActive?'FOCUSING · +20% STUDY TOGETHER BOOST':'FOCUSING'):isBreak?'BREAK':isPaused?'PAUSED':'READY';
+      phase.textContent = isFocusing?(boostActive?'FOCUSING · +20% SQUAD BOOST':'FOCUSING'):isBreak?'BREAK':isPaused?'PAUSED':'READY';
     }
     if(btn) btn.className = 'ward-start-btn'+(isFocusing?' running':isBreak?' break-mode':isPaused?' paused':'');
     if(icon) icon.textContent = isFocusing?'⏸':isBreak?'⏭':(isPaused?'▶':'▶');
@@ -6617,6 +6838,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   }
 
   function updateTodayStrip() {
+    const ts=$('ward-today-sessions'); if(ts) ts.textContent=currentUser?.squadWeeklyBonusMins||0;
     const sd=$('ward-streak-display'); if(sd) sd.textContent=currentUser?.streak||0;
     const tm=$('ward-today-mins');
     if(tm) {
@@ -6699,6 +6921,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const creditedHours=(u.totalMins/60).toFixed(1);
     const rawHours=((u.rawTotalMins||0)/60).toFixed(1);
     const squadBonusHours=((u.squadBonusMins||0)/60).toFixed(1);
+    const squadRawHours=((u.squadRawMins||0)/60).toFixed(1);
     const weekDays=Array.from({length:7},(_,i)=>{ const d=new Date(); d.setDate(d.getDate()-6+i); return d.toISOString().slice(0,10); });
     const weekTotalMins=weekDays.reduce((s,d)=>s+(u.dailyMins[d]||0),0);
     const weekAvg=(weekTotalMins/7/60).toFixed(1);
@@ -6707,7 +6930,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     grid.innerHTML=[
       {n:creditedHours,   l:'Credited Hours'},
       {n:rawHours,        l:'Raw Focus Hours'},
-      {n:squadBonusHours, l:'Study Together Bonus Hours'},
+      {n:squadRawHours,   l:'Squad Raw Hours'},
+      {n:squadBonusHours, l:'Squad Bonus Hours'},
       {n:weekAvg+'h',     l:'Daily Avg (7d)'},
       {n:(u.dailyMins[t]||0)+'m',l:'Today'},
       {n:bestDay+'h',     l:'Best Day'},
@@ -6915,6 +7139,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
   window.wardCreateRoom = function() {
     const name=($('ward-squad-name-input')||{}).value.trim()||currentUser?.displayName||'Anonymous';
+    if (myPeer) { try { myPeer.destroy(); } catch(e) {} }
     roomCode=genRoomCode(); isHost=true;
     try{ myPeer=new Peer(peerIdFromCode(roomCode)); } catch(e){ setStatus('PeerJS unavailable.','error'); return; }
     setStatus('Setting up room…');
@@ -6928,13 +7153,14 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const name=($('ward-squad-name-input')||{}).value.trim()||currentUser?.displayName||'Anonymous';
     const code=($('ward-squad-join-input')||{}).value.trim().toUpperCase().replace(/\s+/g,'');
     if(!code){ setStatus('Enter a room code.','error'); return; }
+    if (myPeer) { try { myPeer.destroy(); } catch(e) {} }
     isHost=false; roomCode=code; setStatus('Connecting…');
     try{ myPeer=new Peer(); } catch(e){ setStatus('PeerJS unavailable.','error'); return; }
     myPeer.on('open', myId=>{
       hostConn=myPeer.connect(peerIdFromCode(code),{metadata:{name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest}});
       hostConn.on('open',()=>{ hostConn.send({type:'join',name,totalMins:currentUser?.totalMins||0,username:currentUser?.username||'',isGuest:!!currentUser?.isGuest,lastSeen:Date.now()}); showSquadRoom(); setStatus('Connected!','success'); });
       hostConn.on('data',msg=>handleMsg(msg,null));
-      hostConn.on('close',()=>setStatus('Disconnected.','error'));
+      hostConn.on('close',()=>{ setStatus('Disconnected.','error'); if (roomCode) wardLeaveRoom(); });
       myPeer.on('error',err=>setStatus('Cannot connect: '+err.type,'error'));
     });
   };
@@ -6954,10 +7180,6 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   function handleMsg(msg,fromConn) {
     if(!msg?.type) return;
     if(msg.type==='status'&&fromConn){ members[fromConn.peer]={...members[fromConn.peer],status:msg.status,mins:msg.mins,totalMins:msg.totalMins||0,lastSeen:msg.lastSeen||Date.now(),username:msg.username||members[fromConn.peer]?.username||'',isGuest:msg.isGuest??members[fromConn.peer]?.isGuest??false}; broadcastMembers(); renderSquadMembers(); renderLeaderboard(); }
-    else if(msg.type==='join'&&fromConn){
-      members[fromConn.peer]={...members[fromConn.peer],name:msg.name||members[fromConn.peer]?.name||'Guest',totalMins:msg.totalMins||members[fromConn.peer]?.totalMins||0,username:msg.username||members[fromConn.peer]?.username||'',isGuest:msg.isGuest??members[fromConn.peer]?.isGuest??false,lastSeen:msg.lastSeen||Date.now()};
-      broadcastMembers(); renderSquadMembers(); renderLeaderboard();
-    }
     else if(msg.type==='members'){ members=msg.members; renderSquadMembers(); renderLeaderboard(); }
   }
 
@@ -7144,7 +7366,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
         <div style="font-size:2rem;margin-bottom:0.5rem;">⚠️</div>
         <h2 style="color:#f0f6ff;font-size:1.2rem;margin:0 0 0.5rem;">Admin — Weekly Reset</h2>
         <p style="color:rgba(140,170,220,0.6);font-size:0.85rem;margin:0 0 1.5rem;">
-          This will zero out <strong style="color:#ffc000;">weekly credited + weekly Study Together counters</strong> for every registered user.<br>
+          This will zero out <strong style="color:#ffc000;">weekly credited + weekly squad counters</strong> for every registered user.<br>
           <strong style="color:#f0f6ff;">totalMins will not be affected.</strong>
         </p>
         <button id="admin-reset-btn" onclick="runWeeklyReset()" style="padding:0.65rem 1.8rem;

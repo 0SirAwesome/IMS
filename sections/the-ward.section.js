@@ -1,5 +1,4 @@
-(() => {
-  const html = `\n<!-- ════════════════════════ BRANCH: The Ward ════════════════════════ -->
+document.write(`\n<!-- ════════════════════════ BRANCH: The Ward ════════════════════════ -->
 <div class="page" id="page-ward">
 <div class="ward-wrap">
 
@@ -144,7 +143,7 @@
 
           <!-- Today stats strip -->
           <div class="ward-today-strip">
-            <div class="ward-today-stat"><span class="ward-today-num" style="font-size:0.82rem;line-height:1.15;color:#ffd966;letter-spacing:0.01em;">1.2× points</span><span class="ward-today-lbl">if studying together</span></div>
+            <div class="ward-today-stat"><span class="ward-today-num" id="ward-today-sessions">0</span><span class="ward-today-lbl">sessions</span></div>
             <div class="ward-today-stat"><span class="ward-today-num" id="ward-today-mins">0</span><span class="ward-today-lbl">min today</span></div>
             <div class="ward-today-stat"><span class="ward-today-num" id="ward-streak-display">0</span><span class="ward-today-lbl">day streak</span></div>
           </div>
@@ -168,7 +167,7 @@
           <button class="ward-panel-tab"        onclick="wardPanelTab('stats')"        id="ward-ptab-stats">📊 Stats</button>
           <button class="ward-panel-tab"        onclick="wardPanelTab('leaderboard')"  id="ward-ptab-leaderboard">🏆 Leaderboard</button>
           <button class="ward-panel-tab"        onclick="wardPanelTab('achievements')" id="ward-ptab-achievements">🏅 Badges</button>
-          <button class="ward-panel-tab"        onclick="wardPanelTab('squad')"        id="ward-ptab-squad">👥 Study Together</button>
+          <button class="ward-panel-tab"        onclick="wardPanelTab('squad')"        id="ward-ptab-squad">👥 Squad</button>
         </div>
         <div class="ward-panel-content">
 
@@ -367,15 +366,15 @@
             <div class="ward-badge-grid" id="ward-badge-grid"></div>
           </div>
 
-          <!-- STUDY TOGETHER -->
+          <!-- SQUAD -->
           <div class="ward-panel-section" id="ward-section-squad">
             <div id="ward-squad-lobby">
-              <span class="ward-section-h">Study Together Room</span>
+              <span class="ward-section-h">Study Room</span>
               <input class="ward-field-input" id="ward-squad-name-input" placeholder="Display name" maxlength="20" style="margin-bottom:0.5rem;"/>
               <button class="ward-auth-submit" onclick="wardCreateRoom()" style="margin-bottom:0.45rem;font-size:0.82rem;padding:0.6rem;">🏥 Create a Room</button>
               <div style="text-align:center;font-size:0.68rem;color:rgba(140,170,220,0.28);margin:0.3rem 0;">— or —</div>
               <input class="ward-field-input" id="ward-squad-join-input" placeholder="Room code e.g. TIBIA-42" maxlength="12" style="text-transform:uppercase;margin-bottom:0.45rem;"/>
-              <button class="ward-auth-submit" style="background:linear-gradient(135deg,rgba(255,192,0,0.18),rgba(255,192,0,0.09));border-color:rgba(255,192,0,0.28);color:#ffd966;font-size:0.82rem;padding:0.6rem;" onclick="wardJoinRoom()">🔑 Join a Room</button>
+              <button class="ward-auth-submit" style="background:linear-gradient(135deg,rgba(255,192,0,0.18),rgba(255,192,0,0.09));border-color:rgba(255,192,0,0.28);color:#ffd966;font-size:0.82rem;padding:0.6rem;" onclick="wardJoinRoom()">🔑 Join Room</button>
               <div class="ward-status-msg" id="ward-status-msg">No room active.</div>
             </div>
             <div id="ward-squad-room" style="display:none;">
@@ -423,9 +422,4 @@
 </div>
 </div>
 <!-- ══════════════════════ /THE WARD ══════════════════════════ -->
-`;
-  const scriptTag = document.currentScript;
-  if (scriptTag) {
-    scriptTag.insertAdjacentHTML('beforebegin', html);
-  }
-})();
+`);

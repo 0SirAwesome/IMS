@@ -1,5 +1,4 @@
-(() => {
-  const html = `\n<!-- ════════════════════════ BRANCH: Study Deck ════════════════════════ -->
+document.write(`\n<!-- ════════════════════════ BRANCH: Study Deck ════════════════════════ -->
 <div class="page" id="page-guide">
 
   <div class="subj-hero">
@@ -1285,9 +1284,4 @@
 <!-- ════════════════════════ PROGRESS PAGE ════════════════════════ -->
 <!-- ══════════════════════ PLAY PAGE ════════════════════════ -->
 <!-- ══════════════════════ THE WARD PAGE ═════════════════════ -->
-`;
-  const scriptTag = document.currentScript;
-  if (scriptTag) {
-    scriptTag.insertAdjacentHTML('beforebegin', html);
-  }
-})();
+`);
