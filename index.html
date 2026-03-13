@@ -2158,6 +2158,11 @@
   .ward-next-chip.badge { background:rgba(255,192,0,0.1); border-color:rgba(255,192,0,0.22); color:#ffd966; }
   #ward-hospital-svg { width:100%; height:auto; display:block; }
   .hbuild { transition: opacity 0.6s ease, filter 0.6s ease; }
+  #ward-hospital-svg .hbuild {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0.5);
+  }
   .hbuild.locked   { opacity:0.12; filter:saturate(0); }
   .hbuild.unlocked { opacity:1;    filter:none; }
   .hbuild.current  { filter:drop-shadow(0 0 8px rgba(255,192,0,0.7)); }
