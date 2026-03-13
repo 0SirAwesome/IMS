@@ -2909,30 +2909,989 @@ document.write(`\n<!-- ═══════════════════
 
                 <!-- FLOOR 8: RESEARCH left + SENIOR_REG right -->
                 <g class="hbuild locked" id="hb-research">
-                  <rect x="80" y="86" width="92" height="33" rx="4" fill="rgba(255,192,0,0.25)" stroke="rgba(255,192,0,0.45)" stroke-width="1.2"/>
-                  <text x="126" y="99" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(255,192,0,0.85)">⚗️</text>
-                  <text x="126" y="109" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6.5" font-weight="700" fill="rgba(200,218,240,0.7)">Research</text>
-                  <text x="126" y="116" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">400h</text>
+                  <defs>
+    <!-- Base shell -->
+    <linearGradient id="res-shell" x1="72" y1="-394" x2="72" y2="-278" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182B47"/>
+      <stop offset="0.52" stop-color="#101C32"/>
+      <stop offset="1" stop-color="#08111F"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="res-edge" x1="-10" y1="-386" x2="154" y2="-276" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#85EDFF"/>
+      <stop offset="0.44" stop-color="#F5FDFF"/>
+      <stop offset="1" stop-color="#B49FFF"/>
+    </linearGradient>
+
+    <!-- Research accent -->
+    <linearGradient id="res-accent" x1="42" y1="-360" x2="102" y2="-314" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#DDFDFF"/>
+      <stop offset="0.46" stop-color="#9FE9FF"/>
+      <stop offset="1" stop-color="#C9A8FF"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="res-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 -334) rotate(90) scale(90 132)">
+      <stop offset="0" stop-color="#B3F6FF" stop-opacity="0.12"/>
+      <stop offset="0.34" stop-color="#9C7DFF" stop-opacity="0.18"/>
+      <stop offset="0.62" stop-color="#6248D2" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1A103D" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Core -->
+    <radialGradient id="res-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 -338) rotate(90) scale(32 44)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.86"/>
+      <stop offset="0.42" stop-color="#D7FAFF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#B89FFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="res-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(72 -276) rotate(90) scale(18 92)">
+      <stop offset="0" stop-color="#5CDDFF" stop-opacity="0.30"/>
+      <stop offset="0.48" stop-color="#BA9BFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#5CDDFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="res-panel" x1="16" y1="-362" x2="128" y2="-308" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1B3B57" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#10253A" stop-opacity="0.92"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="res-roof" x1="8" y1="-372" x2="136" y2="-372" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8EF0FF"/>
+      <stop offset="0.50" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#B8A1FF"/>
+    </linearGradient>
+
+    <!-- Prestige strip -->
+    <linearGradient id="res-strip" x1="40" y1="-376" x2="104" y2="-376" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E2FCFF"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DDB7FF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="res-shadow" x="-10" y="-394" width="164" height="136" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#020713" flood-opacity="0.78"/>
+    </filter>
+
+    <filter id="res-glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+
+    <filter id="res-core-glow" x="42" y="-366" width="60" height="64" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient glow -->
+  <ellipse cx="72" cy="-334" rx="132" ry="90" fill="url(#res-aura)"/>
+  <ellipse cx="72" cy="-276" rx="92" ry="18" fill="url(#res-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M18 -366
+       H126
+       C136 -366 144 -358 144 -348
+       V-304
+       C144 -294 136 -286 126 -286
+       H18
+       C8 -286 0 -294 0 -304
+       V-348
+       C0 -358 8 -366 18 -366 Z"
+    fill="none"
+    stroke="url(#res-edge)"
+    stroke-opacity="0.18"
+    stroke-width="2"
+    filter="url(#res-glow)"
+  />
+
+  <!-- building -->
+  <g filter="url(#res-shadow)">
+    <path
+      d="M18 -366
+         H126
+         C136 -366 144 -358 144 -348
+         V-304
+         C144 -294 136 -286 126 -286
+         H18
+         C8 -286 0 -294 0 -304
+         V-348
+         C0 -358 8 -366 18 -366 Z"
+      fill="url(#res-shell)"
+      stroke="url(#res-edge)"
+      stroke-opacity="0.44"
+      stroke-width="1.4"
+    />
+
+    <!-- roof beam -->
+    <rect x="8" y="-372" width="128" height="6" rx="3" fill="url(#res-roof)"/>
+
+    <!-- prestige strip -->
+    <rect x="40" y="-376" width="64" height="3.5" rx="2" fill="url(#res-strip)"/>
+
+    <!-- pylons -->
+    <rect x="10" y="-354" width="11" height="46" rx="5.5"
+      fill="#0C1E32" stroke="rgba(225,250,255,0.18)" stroke-width="1"/>
+    <rect x="123" y="-354" width="11" height="46" rx="5.5"
+      fill="#0C1E32" stroke="rgba(225,250,255,0.18)" stroke-width="1"/>
+
+    <!-- glass -->
+    <rect x="24" y="-354" width="96" height="40" rx="12"
+      fill="url(#res-panel)"
+      stroke="rgba(232,250,255,0.20)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="38" y="-310" width="68" height="4" rx="2"
+      fill="rgba(122,220,255,0.14)"/>
+
+    <!-- soft bands -->
+    <path d="M32 -344H50"
+      stroke="rgba(224,250,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M94 -344H112"
+      stroke="rgba(224,250,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+
+    <path d="M34 -328H48"
+      stroke="rgba(224,250,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M96 -328H110"
+      stroke="rgba(224,250,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- research core -->
+  <ellipse cx="72" cy="-338" rx="32" ry="44" fill="url(#res-core)"/>
+
+  <!-- Research icon: flask + molecule -->
+  <g filter="url(#res-core-glow)">
+    <!-- flask neck -->
+    <path d="M67 -354H77" stroke="url(#res-accent)" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M69 -354V-346" stroke="url(#res-accent)" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M75 -354V-346" stroke="url(#res-accent)" stroke-width="1.6" stroke-linecap="round"/>
+
+    <!-- flask body -->
+    <path
+      d="M66 -346
+         V-338
+         L58 -322
+         C56.5 -319 58.4 -316 61.7 -316
+         H82.3
+         C85.6 -316 87.5 -319 86 -322
+         L78 -338
+         V-346"
+      fill="none"
+      stroke="url(#res-accent)"
+      stroke-width="1.8"
+      stroke-linejoin="round"/>
+
+    <!-- fluid line -->
+    <path d="M61 -324C66 -326 78 -326 83 -324"
+      fill="none" stroke="#F5FDFF" stroke-width="1.3" stroke-linecap="round"/>
+
+    <!-- bubbles / molecule nodes -->
+    <circle cx="89" cy="-340" r="2.3" fill="#F5FDFF"/>
+    <circle cx="96" cy="-333" r="1.8" fill="url(#res-accent)"/>
+    <path d="M90.5 -338.5L94.5 -334.8" stroke="#F5FDFF" stroke-width="1.1" stroke-linecap="round"/>
+  </g>
+
+  <!-- side nodes -->
+  <circle cx="42" cy="-334" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(212,249,255,0.30)" stroke-width="1"/>
+  <circle cx="42" cy="-334" r="2.2" fill="#D8FBFF"/>
+
+  <circle cx="102" cy="-334" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(212,249,255,0.30)" stroke-width="1"/>
+  <circle cx="102" cy="-334" r="2.2" fill="#D8FBFF"/>
+
+  <!-- connectors -->
+  <path d="M144 -324H158"
+    stroke="rgba(186,246,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M72 -366V-380"
+    stroke="rgba(186,246,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="72" y="-296"
+    text-anchor="middle"
+    fill="#F4FBFF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.3"
+    font-weight="700"
+    letter-spacing="0.2">
+    Research Lab
+  </text>
+
+  <text x="72" y="-284"
+    text-anchor="middle"
+    fill="rgba(214,235,255,0.92)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    400h
+  </text>
                 </g>
                 <g class="hbuild locked" id="hb-senior_reg">
-                  <rect x="188" y="86" width="92" height="33" rx="4" fill="rgba(68,114,196,0.28)" stroke="rgba(68,114,196,0.5)" stroke-width="1.2"/>
-                  <text x="234" y="99" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(68,114,196,0.9)">👨‍⚕️</text>
-                  <text x="234" y="109" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="6" font-weight="700" fill="rgba(200,218,240,0.7)">Sr. Registrar</text>
-                  <text x="234" y="116" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">500h</text>
+                   <defs>
+    <!-- Base shell -->
+    <linearGradient id="sr-shell" x1="292" y1="-394" x2="292" y2="-274" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182C48"/>
+      <stop offset="0.50" stop-color="#101D33"/>
+      <stop offset="1" stop-color="#08111F"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="sr-edge" x1="204" y1="-386" x2="380" y2="-272" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8DEEFF"/>
+      <stop offset="0.42" stop-color="#F8FEFF"/>
+      <stop offset="1" stop-color="#B9A2FF"/>
+    </linearGradient>
+
+    <!-- Prestige accent -->
+    <linearGradient id="sr-accent" x1="270" y1="-360" x2="316" y2="-310" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E4FDFF"/>
+      <stop offset="0.44" stop-color="#A7ECFF"/>
+      <stop offset="1" stop-color="#D0AEFF"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="sr-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 -332) rotate(90) scale(92 134)">
+      <stop offset="0" stop-color="#B8F7FF" stop-opacity="0.12"/>
+      <stop offset="0.34" stop-color="#A281FF" stop-opacity="0.18"/>
+      <stop offset="0.62" stop-color="#654BD5" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1A103D" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Core -->
+    <radialGradient id="sr-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 -334) rotate(90) scale(30 46)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.88"/>
+      <stop offset="0.40" stop-color="#DBFAFF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#C2A5FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="sr-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(292 -270) rotate(90) scale(18 96)">
+      <stop offset="0" stop-color="#61E0FF" stop-opacity="0.30"/>
+      <stop offset="0.48" stop-color="#C09DFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#61E0FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="sr-panel" x1="236" y1="-360" x2="348" y2="-306" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1C3C59" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#10263B" stop-opacity="0.92"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="sr-roof" x1="226" y1="-372" x2="358" y2="-372" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#97F2FF"/>
+      <stop offset="0.50" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#C1A8FF"/>
+    </linearGradient>
+
+    <!-- Rank strip -->
+    <linearGradient id="sr-strip" x1="258" y1="-378" x2="326" y2="-378" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E8FDFF"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E1BCFF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="sr-shadow" x="202" y="-394" width="180" height="142" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="11" stdDeviation="8" flood-color="#020713" flood-opacity="0.80"/>
+    </filter>
+
+    <filter id="sr-glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+
+    <filter id="sr-core-glow" x="264" y="-366" width="56" height="64" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient glow -->
+  <ellipse cx="292" cy="-332" rx="134" ry="92" fill="url(#sr-aura)"/>
+  <ellipse cx="292" cy="-270" rx="96" ry="18" fill="url(#sr-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M228 -366
+       H356
+       C366 -366 374 -358 374 -348
+       V-300
+       C374 -290 366 -282 356 -282
+       H228
+       C218 -282 210 -290 210 -300
+       V-348
+       C210 -358 218 -366 228 -366 Z"
+    fill="none"
+    stroke="url(#sr-edge)"
+    stroke-opacity="0.18"
+    stroke-width="2"
+    filter="url(#sr-glow)"
+  />
+
+  <!-- building -->
+  <g filter="url(#sr-shadow)">
+    <path
+      d="M228 -366
+         H356
+         C366 -366 374 -358 374 -348
+         V-300
+         C374 -290 366 -282 356 -282
+         H228
+         C218 -282 210 -290 210 -300
+         V-348
+         C210 -358 218 -366 228 -366 Z"
+      fill="url(#sr-shell)"
+      stroke="url(#sr-edge)"
+      stroke-opacity="0.44"
+      stroke-width="1.4"
+    />
+
+    <!-- roof beam -->
+    <rect x="226" y="-372" width="132" height="6" rx="3" fill="url(#sr-roof)"/>
+
+    <!-- rank strip -->
+    <rect x="258" y="-378" width="68" height="3.5" rx="2" fill="url(#sr-strip)"/>
+
+    <!-- pylons -->
+    <rect x="224" y="-352" width="11" height="48" rx="5.5"
+      fill="#0C1E32" stroke="rgba(230,251,255,0.18)" stroke-width="1"/>
+    <rect x="349" y="-352" width="11" height="48" rx="5.5"
+      fill="#0C1E32" stroke="rgba(230,251,255,0.18)" stroke-width="1"/>
+
+    <!-- glass -->
+    <rect x="240" y="-354" width="104" height="42" rx="12"
+      fill="url(#sr-panel)"
+      stroke="rgba(236,251,255,0.20)" stroke-width="1"/>
+
+    <!-- central tower inset -->
+    <rect x="274" y="-372" width="36" height="18" rx="8"
+      fill="rgba(160,236,255,0.08)"
+      stroke="rgba(224,251,255,0.14)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="252" y="-308" width="80" height="4" rx="2"
+      fill="rgba(126,222,255,0.14)"/>
+
+    <!-- soft bands -->
+    <path d="M248 -342H266"
+      stroke="rgba(228,251,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M318 -342H336"
+      stroke="rgba(228,251,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+
+    <path d="M250 -326H264"
+      stroke="rgba(228,251,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M320 -326H334"
+      stroke="rgba(228,251,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- prestige core -->
+  <ellipse cx="292" cy="-334" rx="30" ry="46" fill="url(#sr-core)"/>
+
+  <!-- Senior Registrar icon -->
+  <g filter="url(#sr-core-glow)">
+    <!-- rank chevrons -->
+    <path d="M280 -344L292 -334L304 -344"
+      fill="none" stroke="url(#sr-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M283 -336L292 -328L301 -336"
+      fill="none" stroke="#F7FEFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+
+    <!-- central badge -->
+    <circle cx="292" cy="-319" r="6.5"
+      fill="none" stroke="url(#sr-accent)" stroke-width="1.7"/>
+    <path d="M292 -323V-315" stroke="#F7FEFF" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M288 -319H296" stroke="#F7FEFF" stroke-width="1.3" stroke-linecap="round"/>
+  </g>
+
+  <!-- side nodes -->
+  <circle cx="256" cy="-332" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(218,250,255,0.30)" stroke-width="1"/>
+  <circle cx="256" cy="-332" r="2.2" fill="#DDFBFF"/>
+
+  <circle cx="328" cy="-332" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(218,250,255,0.30)" stroke-width="1"/>
+  <circle cx="328" cy="-332" r="2.2" fill="#DDFBFF"/>
+
+  <!-- connectors -->
+  <path d="M210 -322H196"
+    stroke="rgba(192,247,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M374 -322H388"
+    stroke="rgba(192,247,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M292 -366V-380"
+    stroke="rgba(192,247,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="292" y="-292"
+    text-anchor="middle"
+    fill="#F5FBFF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.1"
+    font-weight="700"
+    letter-spacing="0.18">
+    Senior Registrar
+  </text>
+
+  <text x="292" y="-280"
+    text-anchor="middle"
+    fill="rgba(218,236,255,0.92)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    500h
+  </text>
                 </g>
 
                 <!-- PENTHOUSE: CONSULTANT -->
-                <g class="hbuild locked" id="hb-consultant">
-                  <rect x="100" y="50" width="160" height="33" rx="4" fill="rgba(255,192,0,0.28)" stroke="rgba(255,192,0,0.5)" stroke-width="1.4"/>
-                  <text x="180" y="64" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7.5" font-weight="700" fill="rgba(255,192,0,0.9)">🏆 Consultant</text>
-                  <text x="180" y="76" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5.5" fill="rgba(140,170,220,0.35)">750h</text>
+               <defs>
+    <!-- Base shell -->
+    <linearGradient id="con-shell" x1="180" y1="-506" x2="180" y2="-382" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182D49"/>
+      <stop offset="0.50" stop-color="#101D34"/>
+      <stop offset="1" stop-color="#08111F"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="con-edge" x1="88" y1="-498" x2="272" y2="-378" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#95F2FF"/>
+      <stop offset="0.42" stop-color="#FCFEFF"/>
+      <stop offset="1" stop-color="#C1A7FF"/>
+    </linearGradient>
+
+    <!-- Prestige accent -->
+    <linearGradient id="con-accent" x1="156" y1="-468" x2="204" y2="-414" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ECFEFF"/>
+      <stop offset="0.44" stop-color="#B2F0FF"/>
+      <stop offset="1" stop-color="#D7B3FF"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="con-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -442) rotate(90) scale(96 138)">
+      <stop offset="0" stop-color="#C5FAFF" stop-opacity="0.12"/>
+      <stop offset="0.34" stop-color="#AA89FF" stop-opacity="0.18"/>
+      <stop offset="0.62" stop-color="#6A4ED9" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#1A103D" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Core -->
+    <radialGradient id="con-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -444) rotate(90) scale(32 48)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.90"/>
+      <stop offset="0.40" stop-color="#E5FCFF" stop-opacity="0.44"/>
+      <stop offset="1" stop-color="#C9ABFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="con-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -378) rotate(90) scale(18 100)">
+      <stop offset="0" stop-color="#66E3FF" stop-opacity="0.30"/>
+      <stop offset="0.48" stop-color="#C7A3FF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#66E3FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="con-panel" x1="122" y1="-470" x2="238" y2="-412" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1D3D5A" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#10273C" stop-opacity="0.92"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="con-roof" x1="110" y1="-482" x2="250" y2="-482" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A1F5FF"/>
+      <stop offset="0.50" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#C8ADFF"/>
+    </linearGradient>
+
+    <!-- Rank strip -->
+    <linearGradient id="con-strip" x1="144" y1="-488" x2="216" y2="-488" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F0FEFF"/>
+      <stop offset="0.5" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E8C1FF"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="con-shadow" x="84" y="-506" width="192" height="148" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="12" stdDeviation="8" flood-color="#020713" flood-opacity="0.82"/>
+    </filter>
+
+    <filter id="con-glow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+
+    <filter id="con-core-glow" x="150" y="-474" width="60" height="68" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.9" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient glow -->
+  <ellipse cx="180" cy="-442" rx="138" ry="96" fill="url(#con-aura)"/>
+  <ellipse cx="180" cy="-378" rx="100" ry="18" fill="url(#con-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M112 -474
+       H248
+       C258 -474 266 -466 266 -456
+       V-406
+       C266 -396 258 -388 248 -388
+       H112
+       C102 -388 94 -396 94 -406
+       V-456
+       C94 -466 102 -474 112 -474 Z"
+    fill="none"
+    stroke="url(#con-edge)"
+    stroke-opacity="0.18"
+    stroke-width="2"
+    filter="url(#con-glow)"
+  />
+
+  <!-- building -->
+  <g filter="url(#con-shadow)">
+    <path
+      d="M112 -474
+         H248
+         C258 -474 266 -466 266 -456
+         V-406
+         C266 -396 258 -388 248 -388
+         H112
+         C102 -388 94 -396 94 -406
+         V-456
+         C94 -466 102 -474 112 -474 Z"
+      fill="url(#con-shell)"
+      stroke="url(#con-edge)"
+      stroke-opacity="0.46"
+      stroke-width="1.4"
+    />
+
+    <!-- roof beam -->
+    <rect x="110" y="-482" width="140" height="6" rx="3" fill="url(#con-roof)"/>
+
+    <!-- rank strip -->
+    <rect x="144" y="-488" width="72" height="3.5" rx="2" fill="url(#con-strip)"/>
+
+    <!-- top crown inset -->
+    <rect x="160" y="-494" width="40" height="16" rx="8"
+      fill="rgba(180,242,255,0.08)"
+      stroke="rgba(232,252,255,0.14)" stroke-width="1"/>
+
+    <!-- pylons -->
+    <rect x="108" y="-458" width="11" height="50" rx="5.5"
+      fill="#0C1E32" stroke="rgba(236,252,255,0.18)" stroke-width="1"/>
+    <rect x="241" y="-458" width="11" height="50" rx="5.5"
+      fill="#0C1E32" stroke="rgba(236,252,255,0.18)" stroke-width="1"/>
+
+    <!-- glass -->
+    <rect x="126" y="-458" width="108" height="44" rx="12"
+      fill="url(#con-panel)"
+      stroke="rgba(242,252,255,0.20)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="140" y="-410" width="80" height="4" rx="2"
+      fill="rgba(132,225,255,0.14)"/>
+
+    <!-- soft bands -->
+    <path d="M134 -446H154"
+      stroke="rgba(235,252,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M206 -446H226"
+      stroke="rgba(235,252,255,0.22)" stroke-width="1.1" stroke-linecap="round"/>
+
+    <path d="M136 -428H150"
+      stroke="rgba(235,252,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M210 -428H224"
+      stroke="rgba(235,252,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- prestige core -->
+  <ellipse cx="180" cy="-444" rx="32" ry="48" fill="url(#con-core)"/>
+
+  <!-- Consultant icon -->
+  <g filter="url(#con-core-glow)">
+    <!-- central medallion -->
+    <circle cx="180" cy="-432" r="8"
+      fill="none" stroke="url(#con-accent)" stroke-width="1.8"/>
+    <path d="M180 -436V-428" stroke="#FAFEFF" stroke-width="1.35" stroke-linecap="round"/>
+    <path d="M176 -432H184" stroke="#FAFEFF" stroke-width="1.35" stroke-linecap="round"/>
+
+    <!-- laurels -->
+    <path d="M169 -437C165.5 -435.5 163.5 -432.5 163 -428.5"
+      fill="none" stroke="url(#con-accent)" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M191 -437C194.5 -435.5 196.5 -432.5 197 -428.5"
+      fill="none" stroke="url(#con-accent)" stroke-width="1.5" stroke-linecap="round"/>
+
+    <!-- upper stars -->
+    <path d="M172 -451L174 -447L178 -447L175 -444L176 -440L172 -442L168 -440L169 -444L166 -447L170 -447Z"
+      fill="#FAFEFF" opacity="0.95"/>
+    <path d="M188 -451L190 -447L194 -447L191 -444L192 -440L188 -442L184 -440L185 -444L182 -447L186 -447Z"
+      fill="#FAFEFF" opacity="0.95"/>
+  </g>
+
+  <!-- side nodes -->
+  <circle cx="144" cy="-440" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(224,251,255,0.30)" stroke-width="1"/>
+  <circle cx="144" cy="-440" r="2.2" fill="#E6FCFF"/>
+
+  <circle cx="216" cy="-440" r="6.5"
+    fill="#0D2134"
+    stroke="rgba(224,251,255,0.30)" stroke-width="1"/>
+  <circle cx="216" cy="-440" r="2.2" fill="#E6FCFF"/>
+
+  <!-- connectors -->
+  <path d="M94 -430H80"
+    stroke="rgba(198,248,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M266 -430H280"
+    stroke="rgba(198,248,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M180 -474V-488"
+    stroke="rgba(198,248,255,0.30)"
+    stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="180" y="-398"
+    text-anchor="middle"
+    fill="#F7FCFF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.3"
+    font-weight="700"
+    letter-spacing="0.18">
+    Consultant
+  </text>
+
+  <text x="180" y="-386"
+    text-anchor="middle"
+    fill="rgba(222,238,255,0.92)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    750h
+  </text>
                 </g>
 
                 <!-- ROOF / CROWN: CHIEF -->
-                <g class="hbuild locked" id="hb-chief">
-                  <polygon points="180,4 220,48 140,48" fill="rgba(255,192,0,0.22)" stroke="rgba(255,192,0,0.6)" stroke-width="1.5"/>
-                  <text x="180" y="36" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" font-weight="700" fill="rgba(255,192,0,0.85)">👑</text>
-                  <text x="180" y="47" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="5" fill="rgba(140,170,220,0.35)">1000h</text>
+               <defs>
+    <!-- Base shell -->
+    <linearGradient id="dean-shell" x1="180" y1="-628" x2="180" y2="-486" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#182E4B"/>
+      <stop offset="0.48" stop-color="#101E35"/>
+      <stop offset="1" stop-color="#08111F"/>
+    </linearGradient>
+
+    <!-- Edge glow -->
+    <linearGradient id="dean-edge" x1="84" y1="-620" x2="276" y2="-482" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A6F7FF"/>
+      <stop offset="0.40" stop-color="#FFFFFF"/>
+      <stop offset="0.78" stop-color="#D7C2FF"/>
+      <stop offset="1" stop-color="#FFD36B"/>
+    </linearGradient>
+
+    <!-- Final prestige accent -->
+    <linearGradient id="dean-accent" x1="154" y1="-586" x2="206" y2="-522" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F3FFFF"/>
+      <stop offset="0.40" stop-color="#BFF5FF"/>
+      <stop offset="0.75" stop-color="#DABEFF"/>
+      <stop offset="1" stop-color="#FFC95A"/>
+    </linearGradient>
+
+    <!-- Ambient aura -->
+    <radialGradient id="dean-aura" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -558) rotate(90) scale(108 152)">
+      <stop offset="0" stop-color="#D0FCFF" stop-opacity="0.14"/>
+      <stop offset="0.30" stop-color="#B694FF" stop-opacity="0.20"/>
+      <stop offset="0.58" stop-color="#6F52DE" stop-opacity="0.12"/>
+      <stop offset="0.80" stop-color="#FFC857" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#1A103D" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Central core -->
+    <radialGradient id="dean-core" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -560) rotate(90) scale(34 54)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.94"/>
+      <stop offset="0.34" stop-color="#EAFEFF" stop-opacity="0.58"/>
+      <stop offset="0.68" stop-color="#D5B7FF" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#FFC857" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Ground glow -->
+    <radialGradient id="dean-ground" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(180 -480) rotate(90) scale(20 108)">
+      <stop offset="0" stop-color="#6BE5FF" stop-opacity="0.34"/>
+      <stop offset="0.40" stop-color="#C7A4FF" stop-opacity="0.16"/>
+      <stop offset="0.72" stop-color="#FFC857" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#6BE5FF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Glass panel -->
+    <linearGradient id="dean-panel" x1="118" y1="-590" x2="242" y2="-520" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1D3F5D" stop-opacity="0.94"/>
+      <stop offset="1" stop-color="#10273D" stop-opacity="0.94"/>
+    </linearGradient>
+
+    <!-- Roof beam -->
+    <linearGradient id="dean-roof" x1="104" y1="-604" x2="256" y2="-604" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#AEFAFF"/>
+      <stop offset="0.40" stop-color="#FFFFFF"/>
+      <stop offset="0.80" stop-color="#DCC3FF"/>
+      <stop offset="1" stop-color="#FFD56E"/>
+    </linearGradient>
+
+    <!-- Final rank strip -->
+    <linearGradient id="dean-strip" x1="142" y1="-610" x2="218" y2="-610" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F5FFFF"/>
+      <stop offset="0.45" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#FFD98C"/>
+    </linearGradient>
+
+    <!-- Gold crown -->
+    <linearGradient id="dean-crown" x1="162" y1="-622" x2="198" y2="-622" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE39B"/>
+      <stop offset="0.5" stop-color="#FFC857"/>
+      <stop offset="1" stop-color="#FFB938"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="dean-shadow" x="80" y="-628" width="200" height="168" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="13" stdDeviation="9" flood-color="#020713" flood-opacity="0.84"/>
+    </filter>
+
+    <filter id="dean-glow">
+      <feGaussianBlur stdDeviation="4.5"/>
+    </filter>
+
+    <filter id="dean-core-glow" x="148" y="-594" width="64" height="78" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="4.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="dean-crown-glow" x="156" y="-634" width="48" height="24" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ambient glow -->
+  <ellipse cx="180" cy="-558" rx="152" ry="108" fill="url(#dean-aura)"/>
+  <ellipse cx="180" cy="-480" rx="108" ry="20" fill="url(#dean-ground)"/>
+
+  <!-- outer silhouette -->
+  <path
+    d="M110 -594
+       H250
+       C260 -594 268 -586 268 -576
+       V-520
+       C268 -510 260 -502 250 -502
+       H110
+       C100 -502 92 -510 92 -520
+       V-576
+       C92 -586 100 -594 110 -594 Z"
+    fill="none"
+    stroke="url(#dean-edge)"
+    stroke-opacity="0.22"
+    stroke-width="2.2"
+    filter="url(#dean-glow)"
+  />
+
+  <!-- main citadel -->
+  <g filter="url(#dean-shadow)">
+    <path
+      d="M110 -594
+         H250
+         C260 -594 268 -586 268 -576
+         V-520
+         C268 -510 260 -502 250 -502
+         H110
+         C100 -502 92 -510 92 -520
+         V-576
+         C92 -586 100 -594 110 -594 Z"
+      fill="url(#dean-shell)"
+      stroke="url(#dean-edge)"
+      stroke-opacity="0.50"
+      stroke-width="1.5"
+    />
+
+    <!-- top beam -->
+    <rect x="104" y="-604" width="152" height="6" rx="3" fill="url(#dean-roof)"/>
+
+    <!-- final strip -->
+    <rect x="142" y="-610" width="76" height="3.5" rx="2" fill="url(#dean-strip)"/>
+
+    <!-- central tower -->
+    <rect x="158" y="-620" width="44" height="24" rx="10"
+      fill="rgba(195,245,255,0.10)"
+      stroke="rgba(244,254,255,0.16)" stroke-width="1"/>
+
+    <!-- side pylons -->
+    <rect x="106" y="-576" width="12" height="54" rx="6"
+      fill="#0C1E32" stroke="rgba(240,252,255,0.20)" stroke-width="1"/>
+    <rect x="242" y="-576" width="12" height="54" rx="6"
+      fill="#0C1E32" stroke="rgba(240,252,255,0.20)" stroke-width="1"/>
+
+    <!-- glass -->
+    <rect x="124" y="-576" width="112" height="46" rx="13"
+      fill="url(#dean-panel)"
+      stroke="rgba(244,253,255,0.22)" stroke-width="1"/>
+
+    <!-- lower platform -->
+    <rect x="140" y="-526" width="80" height="4.5" rx="2.25"
+      fill="rgba(138,228,255,0.16)"/>
+
+    <!-- internal bands -->
+    <path d="M132 -562H154"
+      stroke="rgba(238,252,255,0.24)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M206 -562H228"
+      stroke="rgba(238,252,255,0.24)" stroke-width="1.1" stroke-linecap="round"/>
+
+    <path d="M134 -542H150"
+      stroke="rgba(238,252,255,0.16)" stroke-width="1" stroke-linecap="round"/>
+    <path d="M210 -542H226"
+      stroke="rgba(238,252,255,0.16)" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <!-- core -->
+  <ellipse cx="180" cy="-560" rx="34" ry="54" fill="url(#dean-core)"/>
+
+  <!-- crown -->
+  <g filter="url(#dean-crown-glow)">
+    <path
+      d="M162 -620
+         L168 -628
+         L176 -618
+         L180 -630
+         L184 -618
+         L192 -628
+         L198 -620
+         V-614
+         H162Z"
+      fill="url(#dean-crown)"
+      stroke="rgba(255,238,179,0.65)"
+      stroke-width="1"
+      stroke-linejoin="round"/>
+  </g>
+
+  <!-- Dean icon -->
+  <g filter="url(#dean-core-glow)">
+    <!-- ceremonial medallion -->
+    <circle cx="180" cy="-546" r="9"
+      fill="none" stroke="url(#dean-accent)" stroke-width="1.9"/>
+    <path d="M180 -550V-542" stroke="#FFFFFF" stroke-width="1.35" stroke-linecap="round"/>
+    <path d="M176 -546H184" stroke="#FFFFFF" stroke-width="1.35" stroke-linecap="round"/>
+
+    <!-- authority laurels -->
+    <path d="M167 -551C163 -549 160.5 -545.5 160 -540.5"
+      fill="none" stroke="url(#dean-accent)" stroke-width="1.55" stroke-linecap="round"/>
+    <path d="M193 -551C197 -549 199.5 -545.5 200 -540.5"
+      fill="none" stroke="url(#dean-accent)" stroke-width="1.55" stroke-linecap="round"/>
+
+    <!-- lower ribbon -->
+    <path d="M172 -535L180 -529L188 -535"
+      fill="none" stroke="#FFF3CC" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- stars -->
+    <path d="M170 -568L171.8 -564.5L175.8 -564.2L172.8 -561.8L173.8 -558L170 -560L166.2 -558L167.2 -561.8L164.2 -564.2L168.2 -564.5Z"
+      fill="#FFFFFF" opacity="0.96"/>
+    <path d="M190 -568L191.8 -564.5L195.8 -564.2L192.8 -561.8L193.8 -558L190 -560L186.2 -558L187.2 -561.8L184.2 -564.2L188.2 -564.5Z"
+      fill="#FFE39B" opacity="0.98"/>
+  </g>
+
+  <!-- side nodes -->
+  <circle cx="142" cy="-556" r="6.8"
+    fill="#0D2134"
+    stroke="rgba(232,252,255,0.32)" stroke-width="1"/>
+  <circle cx="142" cy="-556" r="2.3" fill="#EEFDFF"/>
+
+  <circle cx="218" cy="-556" r="6.8"
+    fill="#0D2134"
+    stroke="rgba(232,252,255,0.32)" stroke-width="1"/>
+  <circle cx="218" cy="-556" r="2.3" fill="#FFE4A0"/>
+
+  <!-- connectors -->
+  <path d="M92 -546H78"
+    stroke="rgba(205,249,255,0.32)"
+    stroke-width="1.25" stroke-linecap="round"/>
+
+  <path d="M268 -546H282"
+    stroke="rgba(205,249,255,0.32)"
+    stroke-width="1.25" stroke-linecap="round"/>
+
+  <path d="M180 -594V-608"
+    stroke="rgba(205,249,255,0.32)"
+    stroke-width="1.25" stroke-linecap="round"/>
+
+  <!-- label -->
+  <text x="180" y="-512"
+    text-anchor="middle"
+    fill="#F9FDFF"
+    font-family="Inter, DM Sans, Arial, sans-serif"
+    font-size="8.6"
+    font-weight="700"
+    letter-spacing="0.18">
+    Dean
+  </text>
+
+  <text x="180" y="-500"
+    text-anchor="middle"
+    fill="rgba(226,240,255,0.94)"
+    font-family="JetBrains Mono, monospace"
+    font-size="5.2"
+    font-weight="600"
+    letter-spacing="0.5">
+    1000h
+  </text>
                 </g>
 
                 <!-- Structural lines connecting floors -->
