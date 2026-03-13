@@ -3378,6 +3378,7 @@ document.write(`\n<!-- ═══════════════════
                 </g>
 
                 <!-- PENTHOUSE: CONSULTANT -->
+                <g class="hbuild locked" id="hb-consultant">
                <defs>
     <!-- Base shell -->
     <linearGradient id="con-shell" x1="180" y1="-506" x2="180" y2="-382" gradientUnits="userSpaceOnUse">
@@ -3615,6 +3616,7 @@ document.write(`\n<!-- ═══════════════════
                 </g>
 
                 <!-- ROOF / CROWN: CHIEF -->
+                <g class="hbuild locked" id="hb-chief">
                <defs>
     <!-- Base shell -->
     <linearGradient id="dean-shell" x1="180" y1="-628" x2="180" y2="-486" gradientUnits="userSpaceOnUse">
