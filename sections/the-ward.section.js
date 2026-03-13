@@ -1327,7 +1327,7 @@ document.write(`\n<!-- ═══════════════════
                 </g>
 
                 <!-- FLOOR 3: NEUROLOGY full width -->
-                <g class="hbuild locked" id="hb-neurology" transform="translate(0 -56)">
+                <g class="hbuild locked" id="hb-neurology">
                  <defs>
 
     <!-- Base building shell -->
@@ -1399,7 +1399,7 @@ document.write(`\n<!-- ═══════════════════
     </linearGradient>
 
     <!-- Filters -->
-    <filter id="neuro-shadow" x="92" y="40" width="180" height="114">
+    <filter id="neuro-shadow" x="92" y="40" width="180" height="114" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
       <feDropShadow dx="0" dy="9" stdDeviation="8"
         flood-color="#020713" flood-opacity="0.74"/>
     </filter>
