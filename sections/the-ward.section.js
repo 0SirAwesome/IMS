@@ -174,7 +174,7 @@ document.write(`\n<!-- ═══════════════════
           <!-- MAP -->
           <div class="ward-panel-section active" id="ward-section-map">
             <div class="ward-hospital-wrap">
-              <svg id="ward-hospital-svg" viewBox="0 0 360 520" xmlns="http://www.w3.org/2000/svg">
+              <svg id="ward-hospital-svg" viewBox="-24 -650 438 1174" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <radialGradient id="hg-gold" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffc000" stop-opacity="0.35"/><stop offset="100%" stop-color="#ffc000" stop-opacity="0"/></radialGradient>
                   <radialGradient id="hg-blue" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#4472c4" stop-opacity="0.3"/><stop offset="100%" stop-color="#4472c4" stop-opacity="0"/></radialGradient>
@@ -1327,7 +1327,7 @@ document.write(`\n<!-- ═══════════════════
                 </g>
 
                 <!-- FLOOR 3: NEUROLOGY full width -->
-                <g class="hbuild locked" id="hb-neurology">
+                <g class="hbuild locked" id="hb-neurology" transform="translate(0 -56)">
                  <defs>
 
     <!-- Base building shell -->
