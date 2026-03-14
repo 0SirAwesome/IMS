@@ -118,6 +118,10 @@ async function verifySignedValue(token, secret) {
   }
 }
 
+function getDiscordClientId(env) {
+  return env.DISCORD_CLIENT_ID || '1482364378102894843';
+}
+
 function cookieAttrs(maxAge) {
   const attrs = [
     'Path=/',
@@ -132,14 +136,15 @@ function cookieAttrs(maxAge) {
 async function startDiscordAuth(request, env) {
   const origin = new URL(request.url).origin;
   const redirectUri = env.DISCORD_REDIRECT_URI || `${origin}/api/auth/discord/callback`;
-  if (!env.DISCORD_CLIENT_ID) return json({ error: 'missing_discord_client_id' }, 500);
+  const discordClientId = getDiscordClientId(env);
+  if (!discordClientId) return redirect('/#discord_auth_error=server_config');
 
   const stateBytes = new Uint8Array(24);
   crypto.getRandomValues(stateBytes);
   const state = base64UrlEncode(stateBytes);
 
   const authUrl = new URL(DISCORD_AUTH_BASE);
-  authUrl.searchParams.set('client_id', env.DISCORD_CLIENT_ID);
+  authUrl.searchParams.set('client_id', discordClientId);
   authUrl.searchParams.set('response_type', 'code');
   authUrl.searchParams.set('scope', 'identify email');
   authUrl.searchParams.set('redirect_uri', redirectUri);
@@ -161,7 +166,8 @@ async function handleDiscordCallback(request, env) {
   if (!code || !state || !cookieState || state !== cookieState) {
     return redirectWithCookies('/#discord_auth_error=state_mismatch', [`ims_discord_state=; ${cookieAttrs(0)}`]);
   }
-  if (!env.DISCORD_CLIENT_ID || !env.DISCORD_CLIENT_SECRET) {
+  const discordClientId = getDiscordClientId(env);
+  if (!discordClientId || !env.DISCORD_CLIENT_SECRET) {
     return redirect('/#discord_auth_error=server_config');
   }
 
@@ -169,7 +175,7 @@ async function handleDiscordCallback(request, env) {
   const redirectUri = env.DISCORD_REDIRECT_URI || `${origin}/api/auth/discord/callback`;
 
   const body = new URLSearchParams({
-    client_id: env.DISCORD_CLIENT_ID,
+    client_id: discordClientId,
     client_secret: env.DISCORD_CLIENT_SECRET,
     grant_type: 'authorization_code',
     code,
