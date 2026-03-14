@@ -49,16 +49,12 @@ document.write(`\n<!-- ═══════════════════
     </div>
   </div>
 
-  <footer>
-    <div class="footer-logo" style="display:flex;align-items:center;gap:0.5rem;">
-      <img id="footer-logo-img-2" alt="IMS" style="width:24px;height:24px;border-radius:50%;object-fit:cover;opacity:0.85;">
-      The Indian Medical Server
+  <footer class="blossom-footer">
+    <div style="display:flex;align-items:center;gap:0.85rem;">
+      <span>Made by medical students, for medical students</span>
+      <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <p>Made by medical students, for medical students</p>
-    <div class="footer-links" style="display:flex;align-items:center;gap:0.85rem;justify-content:space-between;">
-      <a class="btn btn-discord" href="https://discord.gg/eKevY6F2pa" target="_blank" style="font-size:0.8rem; padding:0.4rem 1rem;">Join Discord</a>
-      <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.9</span>
-    </div>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.15</span>
   </footer>
 </div>
 `);
