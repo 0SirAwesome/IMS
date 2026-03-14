@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.26 -->
+<!-- IMS v0.5.27 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2901,7 +2901,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.26</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.27</span>
   </footer>
 
 </div>
@@ -4581,21 +4581,28 @@ window.navLogin = async function() {
 
 window.navSignup = async function() {
   const user    = (document.getElementById('nav-signup-user')?.value||'').trim();
-    const pass    = document.getElementById('nav-signup-pass')?.value||'';
+  const pass    = document.getElementById('nav-signup-pass')?.value||'';
   const confirm = document.getElementById('nav-signup-confirm')?.value||'';
   const msg     = document.getElementById('nav-auth-msg');
   if (!user||!pass||!confirm){ msg.textContent='Please fill in all fields.'; msg.className='ward-auth-msg error'; return; }
   if (!/^[a-zA-Z0-9_]{1,14}$/.test(user)){ msg.textContent='Letters, numbers, underscore only (max 14).'; msg.className='ward-auth-msg error'; return; }
-    if (pass.length < 6){ msg.textContent='Password must be at least 6 characters.'; msg.className='ward-auth-msg error'; return; }
+  if (pass.length < 6){ msg.textContent='Password must be at least 6 characters.'; msg.className='ward-auth-msg error'; return; }
   if (pass !== confirm){ msg.textContent='Passwords do not match.'; msg.className='ward-auth-msg error'; return; }
-  msg.textContent='Checking username…'; msg.className='ward-auth-msg';
-  if (await DB.getUser(user)){ msg.textContent='Username "'+user+'" is already taken.'; msg.className='ward-auth-msg error'; return; }
+  try {
+    msg.textContent='Checking username…'; msg.className='ward-auth-msg';
+    if (await DB.getUser(user)){ msg.textContent='Username "'+user+'" is already taken.'; msg.className='ward-auth-msg error'; return; }
     const nu = createUser(user, pass);
-  await DB.saveUser(nu);
-  DB.setCurrentUser(user.toLowerCase());
-  setSessionMethod('legacy');
-  msg.textContent='Account created! Welcome, '+nu.displayName+'.'; msg.className='ward-auth-msg success';
-  setTimeout(()=>{ document.getElementById('nav-auth-overlay').classList.remove('open'); enterWard(nu); refreshWardDerivedUI({ rehydrate:true, forceRemote:true }); if (document.getElementById('page-pearls')?.classList.contains('active')) { window.pearlsPageActivated?.(); } }, 500);
+    await DB.saveUser(nu);
+    DB.setCurrentUser(user.toLowerCase());
+    setSessionMethod('legacy');
+    msg.textContent='Account created! Welcome, '+nu.displayName+'.'; msg.className='ward-auth-msg success';
+    setTimeout(()=>{ document.getElementById('nav-auth-overlay').classList.remove('open'); enterWard(nu); refreshWardDerivedUI({ rehydrate:true, forceRemote:true }); if (document.getElementById('page-pearls')?.classList.contains('active')) { window.pearlsPageActivated?.(); } }, 500);
+  } catch (e) {
+    console.error('navSignup error:', e);
+    const details = (e && (e.stack || e.message)) ? String(e.stack || e.message) : 'Unknown error';
+    msg.textContent='Sign up failed: ' + details.slice(0, 220);
+    msg.className='ward-auth-msg error';
+  }
 };
 
 window.navContinueAsGuest = function() {
@@ -5959,7 +5966,14 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       },
       // Sync: session / interrupt (stays local, device-specific)
       getCurrentUser:  ()    => localStorage.getItem('ims_ward_current'),
-      setCurrentUser:  name  => localStorage.setItem('ims_ward_current', name),
+      setCurrentUser:  name  => {
+        try {
+          localStorage.setItem('ims_ward_current', name);
+        } catch (e) {
+          console.error('DB.setCurrentUser', e);
+          throw e;
+        }
+      },
       clearCurrentUser:()    => localStorage.removeItem('ims_ward_current'),
       getInterrupted:  name  => { try{ return JSON.parse(localStorage.getItem('ims_ward_int_'+name)||'null'); }catch(e){ return null; } },
       saveInterrupted: (n,d) => localStorage.setItem('ims_ward_int_'+n, JSON.stringify(d)),
@@ -6652,14 +6666,20 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     if (!/^[a-zA-Z0-9_]{1,14}$/.test(user)){ _authMsg(msg,'Letters, numbers, underscore only (max 14).','error'); return; }
     if (pass.length < 6){ _authMsg(msg,'Password must be at least 6 characters.','error'); return; }
     if (pass !== confirm){ _authMsg(msg,'Passwords do not match.','error'); return; }
-    _authMsg(msg,'Checking username…','');
-    if (await DB.getUser(user)){ _authMsg(msg,'Username "'+user+'" is already taken.','error'); return; }
-    const nu = createUser(user, pass);
-    await DB.saveUser(nu);
-    DB.setCurrentUser(user.toLowerCase());
-    setSessionMethod('legacy');
-    _authMsg(msg,'Account created! Welcome, '+nu.displayName+'.','success');
-    setTimeout(()=>{ enterWard(nu); refreshWardDerivedUI({ rehydrate:true, forceRemote:true }); }, 500);
+    try {
+      _authMsg(msg,'Checking username…','');
+      if (await DB.getUser(user)){ _authMsg(msg,'Username "'+user+'" is already taken.','error'); return; }
+      const nu = createUser(user, pass);
+      await DB.saveUser(nu);
+      DB.setCurrentUser(user.toLowerCase());
+      setSessionMethod('legacy');
+      _authMsg(msg,'Account created! Welcome, '+nu.displayName+'.','success');
+      setTimeout(()=>{ enterWard(nu); refreshWardDerivedUI({ rehydrate:true, forceRemote:true }); }, 500);
+    } catch (e) {
+      console.error('wardSignup error:', e);
+      const details = (e && (e.stack || e.message)) ? String(e.stack || e.message) : 'Unknown error';
+      _authMsg(msg, 'Sign up failed: ' + details.slice(0, 220), 'error');
+    }
   };
 
   function _authMsg(el, text, type) {
