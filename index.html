@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.24 -->
+<!-- IMS v0.5.25 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2901,7 +2901,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.24</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.25</span>
   </footer>
 
 </div>
@@ -4565,7 +4565,9 @@ window.navLogin = async function() {
     if (!user||!pass){ msg.textContent='Please fill in both fields.'; msg.className='ward-auth-msg error'; return; }
     if (user.includes('@')) { msg.textContent='Email login has been removed. Use your username or Discord.'; msg.className='ward-auth-msg error'; return; }
     msg.textContent='Signing in…'; msg.className='ward-auth-msg';
-    const result = await loginWithLegacy(user, pass);
+    const loginWithLegacyFn = window.loginWithLegacy || (typeof loginWithLegacy === 'function' ? loginWithLegacy : null);
+    if (!loginWithLegacyFn) throw new ReferenceError('loginWithLegacy is not available');
+    const result = await loginWithLegacyFn(user, pass);
     if (!result.ok) { msg.textContent=result.message || 'Sign in failed.'; msg.className='ward-auth-msg error'; return; }
     document.getElementById('nav-auth-overlay').classList.remove('open');
     if (document.getElementById('page-pearls')?.classList.contains('active')) {
@@ -6021,7 +6023,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     return userRecord;
   }
 
-  async function loginWithLegacy(identifier, password) {
+  window.loginWithLegacy = async function loginWithLegacy(identifier, password) {
     const userRecord = await resolveAppUserFromLegacy(identifier);
     if (!userRecord) return { ok: false, code: 'not_found', message: 'User not found.' };
     if (!userRecord.passwordHash) {
@@ -6601,7 +6603,9 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       if (!user||!pass){ _authMsg(msg,'Please fill in both fields.','error'); return; }
       if (user.includes('@')) { _authMsg(msg,'Email login has been removed. Use your username or Discord.','error'); return; }
       _authMsg(msg,'Signing in…','');
-      const result = await loginWithLegacy(user, pass);
+      const loginWithLegacyFn = window.loginWithLegacy || (typeof loginWithLegacy === 'function' ? loginWithLegacy : null);
+      if (!loginWithLegacyFn) throw new ReferenceError('loginWithLegacy is not available');
+      const result = await loginWithLegacyFn(user, pass);
       if (!result.ok){ _authMsg(msg, result.message || 'Sign in failed.', 'error'); return; }
     } catch (e) {
       console.error('wardLogin error:', e);
