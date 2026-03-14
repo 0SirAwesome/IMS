@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.21 -->
+<!-- IMS v0.5.22 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2903,7 +2903,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.21</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.22</span>
   </footer>
 
 </div>
@@ -6039,6 +6039,67 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     await initializeAppForUser(userRecord, 'legacy');
     return { ok: true, user: userRecord };
   }
+
+  window.debugLegacyLoginFlow = async function(identifier, password) {
+    const input = String(identifier || '');
+    const loginId = input.trim().toLowerCase();
+    const report = {
+      input,
+      normalizedLoginId: loginId,
+      isEmailLogin: loginId.includes('@'),
+      steps: []
+    };
+
+    const pushStep = (name, ok, details = '') => {
+      report.steps.push({ name, ok: !!ok, details });
+    };
+
+    if (!loginId) {
+      pushStep('normalize-input', false, 'Identifier is empty after trim/lowercase.');
+      report.ok = false;
+      report.code = 'empty_identifier';
+      return report;
+    }
+
+    pushStep('normalize-input', true, 'Identifier normalized successfully.');
+
+    const userRecord = await resolveAppUserFromLegacy(loginId);
+    if (!userRecord) {
+      pushStep('resolve-user-record', false, 'No account found for this username/email.');
+      report.ok = false;
+      report.code = 'not_found';
+      return report;
+    }
+
+    pushStep('resolve-user-record', true, `Matched account: ${userRecord.username || '(missing username)'}.`);
+
+    if (!userRecord.passwordHash) {
+      pushStep('check-password-hash', false, 'Account has no legacy passwordHash (Discord-only account).');
+      report.ok = false;
+      report.code = 'discord_only';
+      return report;
+    }
+
+    pushStep('check-password-hash', true, 'passwordHash present.');
+
+    const passwordOk = await verifyAndUpgradePassword(userRecord, password);
+    if (!passwordOk) {
+      pushStep('verify-password', false, 'Password verification failed.');
+      report.ok = false;
+      report.code = 'wrong_password';
+      return report;
+    }
+
+    pushStep('verify-password', true, 'Password accepted (including legacy hash migration if needed).');
+
+    await initializeAppForUser(userRecord, 'legacy');
+    pushStep('initialize-session', true, 'Session/localStorage/nav state initialized.');
+
+    report.ok = true;
+    report.code = 'ok';
+    report.username = userRecord.username;
+    return report;
+  };
 
   async function completeDiscordLogin() {
     const msg = document.getElementById('nav-auth-msg');
