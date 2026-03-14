@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.28 -->
+<!-- IMS v0.5.29 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -1245,7 +1245,7 @@
     color: #57f287;
   }
   #page-progress .subjects-container { color: #e0eeff; }
-  #page-progress .section-label      { color: rgba(140,170,220,0.45); }
+  #page-progress .section-label      { color: rgba(255,192,0,0.78); }
   #page-progress .cl-subject-block {
     background: rgba(255,255,255,0.04);
     border-color: rgba(68,114,196,0.18);
@@ -1999,9 +1999,9 @@
   .ward-auth-card { background:rgba(6,14,28,0.96); border:1px solid rgba(68,114,196,0.28); border-radius:18px; padding:2.5rem; width:100%; max-width:390px; backdrop-filter:blur(24px); box-shadow:0 24px 80px rgba(0,0,0,0.6); }
   .ward-auth-eyebrow { font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase; color:#ffc000; opacity:0.75; margin-bottom:0.3rem; text-align:center; }
   .ward-auth-title { font-family:'Lora',serif; font-size:1.7rem; font-weight:700; color:#f0f6ff; margin-bottom:0.2rem; text-align:center; }
-  .ward-auth-sub { font-size:0.76rem; color:rgba(140,170,220,0.45); margin-bottom:1.5rem; text-align:center; }
+  .ward-auth-sub { font-size:0.76rem; color:rgba(255,192,0,0.78); margin-bottom:1.5rem; text-align:center; }
   .ward-auth-tabs { display:flex; gap:4px; margin-bottom:1.5rem; background:rgba(255,255,255,0.04); border-radius:10px; padding:4px; }
-  .ward-auth-tab { flex:1; padding:0.48rem; border:none; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; background:transparent; color:rgba(140,170,220,0.45); }
+  .ward-auth-tab { flex:1; padding:0.48rem; border:none; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; background:transparent; color:rgba(255,192,0,0.78); }
   .ward-auth-tab.active { background:rgba(68,114,196,0.25); color:#a0c8f0; }
   .ward-field-label { font-size:0.68rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(140,170,220,0.4); margin-bottom:0.3rem; display:block; }
   .ward-field-input { width:100%; box-sizing:border-box; background:rgba(255,255,255,0.05); border:1px solid rgba(68,114,196,0.22); border-radius:9px; padding:0.62rem 0.9rem; font-family:'DM Sans',sans-serif; font-size:0.88rem; color:#e0eeff; outline:none; transition:border-color 0.2s; margin-bottom:0.8rem; }
@@ -2010,7 +2010,7 @@
   .ward-field-hint { font-size:0.66rem; color:rgba(140,170,220,0.3); margin-top:-0.55rem; margin-bottom:0.8rem; }
   .ward-auth-submit { width:100%; padding:0.72rem; border:none; border-radius:10px; background:linear-gradient(135deg,rgba(68,114,196,0.38),rgba(68,114,196,0.22)); border:1px solid rgba(68,114,196,0.38); color:#a0c8f0; font-family:'DM Sans',sans-serif; font-size:0.88rem; font-weight:700; cursor:pointer; transition:all 0.2s; margin-bottom:0.7rem; letter-spacing:0.03em; }
   .ward-auth-submit:hover { background:linear-gradient(135deg,rgba(68,114,196,0.52),rgba(68,114,196,0.32)); color:#c8dff8; }
-  .ward-auth-msg { font-size:0.76rem; text-align:center; min-height:1.2rem; padding:0.28rem; border-radius:6px; }
+  .ward-auth-msg { font-size:0.76rem; text-align:center; min-height:1.2rem; padding:0.28rem; border-radius:6px; color:var(--gold); background:rgba(255,192,0,0.08); }
   .ward-auth-msg.error  { color:#f08090; background:rgba(224,92,110,0.1); }
   .ward-auth-msg.success{ color:#57f287; background:rgba(87,242,135,0.08); }
 
@@ -2123,7 +2123,7 @@
   .ward-reflection-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.72); z-index:3000; display:flex; align-items:center; justify-content:center; padding:1.5rem; backdrop-filter:blur(6px); }
   .ward-reflection-card { background:rgba(6,14,28,0.98); border:1px solid rgba(68,114,196,0.28); border-radius:16px; padding:2rem; width:100%; max-width:420px; box-shadow:0 30px 80px rgba(0,0,0,0.7); }
   .ward-reflection-title { font-family:'Lora',serif; font-size:1.15rem; font-weight:700; color:#f0f6ff; margin-bottom:0.3rem; }
-  .ward-reflection-sub    { font-size:0.76rem; color:rgba(140,170,220,0.45); margin-bottom:1.1rem; }
+  .ward-reflection-sub    { font-size:0.76rem; color:rgba(255,192,0,0.78); margin-bottom:1.1rem; }
   .ward-reflection-textarea { width:100%; box-sizing:border-box; min-height:85px; resize:vertical; background:rgba(255,255,255,0.04); border:1px solid rgba(68,114,196,0.2); border-radius:9px; padding:0.62rem 0.82rem; font-family:'DM Sans',sans-serif; font-size:0.84rem; color:#e0eeff; outline:none; margin-bottom:0.9rem; transition:border-color 0.2s; }
   .ward-reflection-textarea:focus { border-color:rgba(68,114,196,0.42); }
   .ward-reflection-btns { display:flex; gap:0.65rem; }
@@ -2136,7 +2136,7 @@
   .ward-toast-emoji { font-size:1.75rem; }
   .ward-toast-label { font-size:0.58rem; font-family:'JetBrains Mono',monospace; letter-spacing:0.15em; text-transform:uppercase; color:#ffc000; }
   .ward-toast-name  { font-size:0.88rem; font-weight:700; color:#f0f6ff; }
-  .ward-toast-desc  { font-size:0.7rem; color:rgba(140,170,220,0.45); margin-top:0.1rem; }
+  .ward-toast-desc  { font-size:0.7rem; color:rgba(255,192,0,0.78); margin-top:0.1rem; }
 
   /* RIGHT PANEL */
   .ward-right-col { display:flex; flex-direction:column; overflow:hidden; }
@@ -2696,7 +2696,7 @@
     <button onclick="closeMobileNav();navAuthOpen('signup', true)" style="flex:1;padding:0.6rem;border-radius:99px;background:rgba(255,192,0,0.12);border:1px solid rgba(255,192,0,0.28);color:#ffd966;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;">Sign Up</button>
   </div>
   <div id="mnav-auth-logged-in" style="display:none;flex-direction:column;gap:0.35rem;margin-top:0.25rem;">
-    <div id="mnav-user-greeting" style="font-size:0.75rem;color:rgba(140,170,220,0.45);padding:0.4rem 0.25rem;font-family:'DM Sans',sans-serif;"></div>
+    <div id="mnav-user-greeting" style="font-size:0.75rem;color:rgba(255,192,0,0.78);padding:0.4rem 0.25rem;font-family:'DM Sans',sans-serif;"></div>
     <button onclick="closeMobileNav();wardLogout()" style="width:100%;text-align:left;padding:0.65rem 1rem;border-radius:10px;background:rgba(255,80,60,0.08);border:1px solid rgba(255,80,60,0.18);color:rgba(255,120,100,0.7);font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;">← Log out</button>
   </div>
   <a class="nav-discord" href="https://discord.gg/eKevY6F2pa" target="_blank" style="margin-top:0.5rem;justify-content:center;">
@@ -2901,7 +2901,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.28</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.29</span>
   </footer>
 
 </div>
