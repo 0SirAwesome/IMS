@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.22 -->
+<!-- IMS v0.5.23 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2644,8 +2644,8 @@
       <button class="ward-auth-tab"        id="nav-tab-signup" onclick="navAuthTab('signup')">Sign Up</button>
     </div>
     <div id="nav-login-form">
-      <label class="ward-field-label">Username or Email</label>
-      <input class="ward-field-input" id="nav-login-user" type="text" placeholder="your username or email" maxlength="80" autocomplete="username"/>
+      <label class="ward-field-label">Username</label>
+      <input class="ward-field-input" id="nav-login-user" type="text" placeholder="your username" maxlength="14" autocomplete="username"/>
       <label class="ward-field-label">Password</label>
       <input class="ward-field-input" id="nav-login-pass" type="password" placeholder="••••••••" autocomplete="current-password"/>
       <button class="ward-auth-submit" onclick="navLogin()">Enter the Ward →</button>
@@ -2654,8 +2654,6 @@
       <label class="ward-field-label">Username</label>
       <input class="ward-field-input" id="nav-signup-user" type="text" placeholder="choose a username" maxlength="14" autocomplete="username"/>
       <div class="ward-field-hint">Max 14 chars · letters, numbers, underscore only</div>
-      <label class="ward-field-label">Email</label>
-      <input class="ward-field-input" id="nav-signup-email" type="email" placeholder="you@example.com" autocomplete="email"/>
       <label class="ward-field-label">Password</label>
       <input class="ward-field-input" id="nav-signup-pass" type="password" placeholder="min 6 characters" autocomplete="new-password"/>
       <label class="ward-field-label">Confirm Password</label>
@@ -2903,7 +2901,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.22</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.23</span>
   </footer>
 
 </div>
@@ -4565,6 +4563,7 @@ window.navLogin = async function() {
   const msg  = document.getElementById('nav-auth-msg');
   try {
     if (!user||!pass){ msg.textContent='Please fill in both fields.'; msg.className='ward-auth-msg error'; return; }
+    if (user.includes('@')) { msg.textContent='Email login has been removed. Use your username or Discord.'; msg.className='ward-auth-msg error'; return; }
     msg.textContent='Signing in…'; msg.className='ward-auth-msg';
     const result = await loginWithLegacy(user, pass);
     if (!result.ok) { msg.textContent=result.message || 'Sign in failed.'; msg.className='ward-auth-msg error'; return; }
@@ -4580,19 +4579,16 @@ window.navLogin = async function() {
 
 window.navSignup = async function() {
   const user    = (document.getElementById('nav-signup-user')?.value||'').trim();
-  const email   = (document.getElementById('nav-signup-email')?.value||'').trim().toLowerCase();
-  const pass    = document.getElementById('nav-signup-pass')?.value||'';
+    const pass    = document.getElementById('nav-signup-pass')?.value||'';
   const confirm = document.getElementById('nav-signup-confirm')?.value||'';
   const msg     = document.getElementById('nav-auth-msg');
-  if (!user||!email||!pass||!confirm){ msg.textContent='Please fill in all fields.'; msg.className='ward-auth-msg error'; return; }
+  if (!user||!pass||!confirm){ msg.textContent='Please fill in all fields.'; msg.className='ward-auth-msg error'; return; }
   if (!/^[a-zA-Z0-9_]{1,14}$/.test(user)){ msg.textContent='Letters, numbers, underscore only (max 14).'; msg.className='ward-auth-msg error'; return; }
-  if (!isValidEmail(email)){ msg.textContent='Enter a valid email address.'; msg.className='ward-auth-msg error'; return; }
-  if (pass.length < 6){ msg.textContent='Password must be at least 6 characters.'; msg.className='ward-auth-msg error'; return; }
+    if (pass.length < 6){ msg.textContent='Password must be at least 6 characters.'; msg.className='ward-auth-msg error'; return; }
   if (pass !== confirm){ msg.textContent='Passwords do not match.'; msg.className='ward-auth-msg error'; return; }
   msg.textContent='Checking username…'; msg.className='ward-auth-msg';
   if (await DB.getUser(user)){ msg.textContent='Username "'+user+'" is already taken.'; msg.className='ward-auth-msg error'; return; }
-  if (await isEmailTaken(email)){ msg.textContent='That email is already in use.'; msg.className='ward-auth-msg error'; return; }
-  const nu = createUser(user, pass, email);
+    const nu = createUser(user, pass);
   await DB.saveUser(nu);
   DB.setCurrentUser(user.toLowerCase());
   setSessionMethod('legacy');
@@ -5940,23 +5936,6 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   }
   window.saveUserSafely = saveUserSafely;
 
-  function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim().toLowerCase());
-  }
-
-  async function findUserByLoginId(identifier) {
-    const loginId = String(identifier || '').trim().toLowerCase();
-    if (!loginId) return null;
-    if (!loginId.includes('@')) return DB.getUser(loginId);
-    return DB.getUserByEmail(loginId);
-  }
-
-  async function isEmailTaken(email) {
-    const normalized = String(email || '').trim().toLowerCase();
-    if (!normalized) return false;
-    return !!(await DB.getUserByEmail(normalized));
-  }
-
   function discordUserKey(discordId) {
     const id = String(discordId || '0');
     let h = 0x811c9dc5 >>> 0;
@@ -6014,7 +5993,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   }
 
   async function resolveAppUserFromLegacy(identifier) {
-    const user = await findUserByLoginId(identifier);
+    const user = await DB.getUser(String(identifier || '').trim().toLowerCase());
     return user ? normalizeUserStats(user) : null;
   }
 
@@ -6046,7 +6025,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const report = {
       input,
       normalizedLoginId: loginId,
-      isEmailLogin: loginId.includes('@'),
+      isEmailLogin: false,
       steps: []
     };
 
@@ -6065,7 +6044,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
     const userRecord = await resolveAppUserFromLegacy(loginId);
     if (!userRecord) {
-      pushStep('resolve-user-record', false, 'No account found for this username/email.');
+      pushStep('resolve-user-record', false, 'No account found for this username.');
       report.ok = false;
       report.code = 'not_found';
       return report;
@@ -6213,12 +6192,12 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     return true;
   }
 
-  function createUser(username, password, email = null) {
+  function createUser(username, password) {
     return normalizeUserStats({
       username:username.toLowerCase(),
       displayName:username,
       passwordHash:hashPass(password,username),
-      email: email ? String(email).toLowerCase() : null,
+      email: null,
       totalMins:0,
       weeklyMins:0,
       rawTotalMins:0,
@@ -6606,6 +6585,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const msg  = $('ward-auth-msg');
     try {
       if (!user||!pass){ _authMsg(msg,'Please fill in both fields.','error'); return; }
+      if (user.includes('@')) { _authMsg(msg,'Email login has been removed. Use your username or Discord.','error'); return; }
       _authMsg(msg,'Signing in…','');
       const result = await loginWithLegacy(user, pass);
       if (!result.ok){ _authMsg(msg, result.message || 'Sign in failed.', 'error'); return; }
@@ -6617,19 +6597,16 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
   window.wardSignup = async function() {
     const user    = $('ward-signup-user')?.value.trim()||'';
-    const email   = ($('ward-signup-email')?.value||'').trim().toLowerCase();
     const pass    = $('ward-signup-pass')?.value||'';
     const confirm = $('ward-signup-confirm')?.value||'';
     const msg     = $('ward-auth-msg');
     if (!user||!pass||!confirm){ _authMsg(msg,'Please fill in all fields.','error'); return; }
     if (!/^[a-zA-Z0-9_]{1,14}$/.test(user)){ _authMsg(msg,'Letters, numbers, underscore only (max 14).','error'); return; }
-    if (email && !isValidEmail(email)){ _authMsg(msg,'Enter a valid email address.','error'); return; }
     if (pass.length < 6){ _authMsg(msg,'Password must be at least 6 characters.','error'); return; }
     if (pass !== confirm){ _authMsg(msg,'Passwords do not match.','error'); return; }
     _authMsg(msg,'Checking username…','');
     if (await DB.getUser(user)){ _authMsg(msg,'Username "'+user+'" is already taken.','error'); return; }
-    if (email && await isEmailTaken(email)){ _authMsg(msg,'That email is already in use.','error'); return; }
-    const nu = createUser(user, pass, email || null);
+    const nu = createUser(user, pass);
     await DB.saveUser(nu);
     DB.setCurrentUser(user.toLowerCase());
     setSessionMethod('legacy');
@@ -7865,7 +7842,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     }
 
     // ── STEP 3: KEYBOARD SHORTCUTS ────────────────────────────────
-    [['nav-login-pass', navLogin], ['nav-signup-confirm', navSignup], ['nav-signup-email', navSignup]].forEach(([id,fn])=>{
+    [['nav-login-pass', navLogin], ['nav-signup-confirm', navSignup]].forEach(([id,fn])=>{
       const el=document.getElementById(id); if(el) el.addEventListener('keydown',e=>{ if(e.key==='Enter') fn(); });
     });
     const lbfi=document.getElementById('ward-lb-friend-input');
