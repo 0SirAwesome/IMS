@@ -54,7 +54,7 @@ document.write(`\n<!-- ═══════════════════
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.15</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.16</span>
   </footer>
 </div>
 `);
