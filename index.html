@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.25 -->
+<!-- IMS v0.5.26 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2901,7 +2901,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.25</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.26</span>
   </footer>
 
 </div>
@@ -5727,12 +5727,41 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
   function normalizeUserStats(user) {
     if (!user) return user;
+
+    if (typeof user.dailyMins !== 'object' || Array.isArray(user.dailyMins) || user.dailyMins === null) {
+      user.dailyMins = {};
+    }
+    if (!Array.isArray(user.sessions)) {
+      if (user.sessions && typeof user.sessions === 'object') {
+        user.sessions = Object.values(user.sessions).filter(Boolean);
+      } else {
+        user.sessions = [];
+      }
+    }
+    if (!Array.isArray(user.hourlyActivity) || user.hourlyActivity.length !== 24) {
+      const prev = Array.isArray(user.hourlyActivity) ? user.hourlyActivity : [];
+      user.hourlyActivity = Array.from({ length: 24 }, (_, i) => Number(prev[i] || 0));
+    }
+    if (!Array.isArray(user.achievements)) {
+      if (user.achievements && typeof user.achievements === 'object') {
+        user.achievements = Object.values(user.achievements).filter(Boolean);
+      } else {
+        user.achievements = [];
+      }
+    }
+    if (!Array.isArray(user.friends)) {
+      if (user.friends && typeof user.friends === 'object') {
+        user.friends = Object.values(user.friends).filter(Boolean);
+      } else {
+        user.friends = [];
+      }
+    }
+
+    if (!user.username) user.username = 'guest';
     if (!user.displayName) user.displayName = user.username || 'User';
-    if (!user.dailyMins)      user.dailyMins      = {};
-    if (!user.sessions)       user.sessions       = [];
-    if (!user.hourlyActivity) user.hourlyActivity = new Array(24).fill(0);
-    if (!user.achievements)   user.achievements   = [];
-    if (!user.friends)        user.friends        = [];
+    if (typeof user.displayName !== 'string') user.displayName = String(user.displayName || user.username || 'User');
+    if (typeof user.username !== 'string') user.username = String(user.username || 'guest');
+
     if (user.totalMins      == null) user.totalMins = 0;
     if (user.weeklyMins     == null) user.weeklyMins = 0;
     if (user.streak         == null) user.streak = 0;
