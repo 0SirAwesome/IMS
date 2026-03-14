@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.18 -->
+<!-- IMS v0.5.19 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2903,7 +2903,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.18</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.19</span>
   </footer>
 
 </div>
@@ -5732,6 +5732,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
   function normalizeUserStats(user) {
     if (!user) return user;
+    if (!user.displayName) user.displayName = user.username || 'User';
     if (!user.dailyMins)      user.dailyMins      = {};
     if (!user.sessions)       user.sessions       = [];
     if (!user.hourlyActivity) user.hourlyActivity = new Array(24).fill(0);
@@ -6442,10 +6443,11 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
   window.enterWard = function enterWard(user) {
     currentUser = normalizeUserStats(user);
+    const safeUser = currentUser;
     const auth=$('ward-auth-screen'); if(auth) auth.style.display='none';
     const app=$('ward-app');  if(app) app.style.display='flex';
     // Sync nav to logged-in state (safe to call multiple times — idempotent)
-    if (typeof updateNavAuth === 'function') updateNavAuth(user);
+    if (typeof updateNavAuth === 'function') updateNavAuth(safeUser);
     // Navigate to Ward page directly — bypasses showPage() so wardPageActivated()
     // is NOT re-triggered, preventing a second enterWard() call (double-init loop).
     const wardPage = document.getElementById('page-ward');
@@ -6459,17 +6461,17 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     }
 
     const t = todayStr();
-    minsToday     = user.dailyMins[t]||0;
-    sessionsToday = user.sessions.filter(s=>s.date===t).length;
-    prevTierId    = getTier(user.totalMins).id;
+    minsToday     = safeUser.dailyMins[t]||0;
+    sessionsToday = safeUser.sessions.filter(s=>s.date===t).length;
+    prevTierId    = getTier(safeUser.totalMins).id;
     _wardUnlockOverlaySeen = prevTierId;
 
     // Avatar
-    const color = AVATAR_COLORS[(user.username.charCodeAt(0)||65) % AVATAR_COLORS.length];
+    const color = AVATAR_COLORS[(safeUser.username.charCodeAt(0)||65) % AVATAR_COLORS.length];
     const av=$('ward-user-avatar');
-    if(av){ av.textContent=user.displayName[0].toUpperCase(); av.style.cssText=`background:${color}22;color:${color};border:1.5px solid ${color}44;`; }
-    const nd=$('ward-user-name-display'); if(nd) nd.textContent=user.displayName;
-    const sni=$('ward-squad-name-input'); if(sni) sni.value=user.displayName;
+    if(av){ av.textContent=safeUser.displayName[0].toUpperCase(); av.style.cssText=`background:${color}22;color:${color};border:1.5px solid ${color}44;`; }
+    const nd=$('ward-user-name-display'); if(nd) nd.textContent=safeUser.displayName;
+    const sni=$('ward-squad-name-input'); if(sni) sni.value=safeUser.displayName;
 
     // Hash auto-join
     const hash = window.location.hash;
@@ -6479,10 +6481,10 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     }
 
     // Validate streak continuity
-    if (user.lastStudyDate) {
-      const last = new Date(user.lastStudyDate+'T12:00:00');
+    if (safeUser.lastStudyDate) {
+      const last = new Date(safeUser.lastStudyDate+'T12:00:00');
       const diff = Math.floor((new Date()-last)/86400000);
-      if (diff>1){ user.streak=0; DB.saveUser(user).catch(console.error); }
+      if (diff>1){ safeUser.streak=0; DB.saveUser(safeUser).catch(console.error); }
     }
 
     checkInterrupted();
@@ -6493,7 +6495,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
     // Show guest nudge if applicable
     const gn = $('ward-guest-nudge');
-    if (gn) gn.style.display = user.isGuest ? 'block' : 'none';
+    if (gn) gn.style.display = safeUser.isGuest ? 'block' : 'none';
   }
 
   function renderAll() {
