@@ -3986,7 +3986,7 @@ document.write(`\n<!-- ═══════════════════
         <span>Focus together. Pass together.</span>
         <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
       </div>
-      <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.17</span>
+      <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.18</span>
     </footer>
   </div><!-- /app -->
 

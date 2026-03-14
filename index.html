@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.17 -->
+<!-- IMS v0.5.18 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2903,7 +2903,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.17</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.18</span>
   </footer>
 
 </div>
@@ -4563,17 +4563,22 @@ window.navLogin = async function() {
   const user = (document.getElementById('nav-login-user')?.value||'').trim().toLowerCase();
   const pass = document.getElementById('nav-login-pass')?.value||'';
   const msg  = document.getElementById('nav-auth-msg');
-  if (!user||!pass){ msg.textContent='Please fill in both fields.'; msg.className='ward-auth-msg error'; return; }
-  msg.textContent='Signing in…'; msg.className='ward-auth-msg';
-  const ud = await findUserByLoginId(user);
-  if (!ud){ msg.textContent='User not found.'; msg.className='ward-auth-msg error'; return; }
-  if (ud.passwordHash !== hashPass(pass,ud.username)){ msg.textContent='Incorrect password.'; msg.className='ward-auth-msg error'; return; }
-  DB.setCurrentUser(ud.username);
-  document.getElementById('nav-auth-overlay').classList.remove('open');
-  enterWard(ud);
-  refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
-  if (document.getElementById('page-pearls')?.classList.contains('active')) {
-    window.pearlsPageActivated?.();
+  try {
+    if (!user||!pass){ msg.textContent='Please fill in both fields.'; msg.className='ward-auth-msg error'; return; }
+    msg.textContent='Signing in…'; msg.className='ward-auth-msg';
+    const ud = await findUserByLoginId(user);
+    if (!ud){ msg.textContent='User not found.'; msg.className='ward-auth-msg error'; return; }
+    if (!ud.username || !ud.passwordHash || ud.passwordHash !== hashPass(pass,ud.username)){ msg.textContent='Incorrect password.'; msg.className='ward-auth-msg error'; return; }
+    DB.setCurrentUser(ud.username);
+    document.getElementById('nav-auth-overlay').classList.remove('open');
+    enterWard(ud);
+    refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
+    if (document.getElementById('page-pearls')?.classList.contains('active')) {
+      window.pearlsPageActivated?.();
+    }
+  } catch (e) {
+    console.error('navLogin error:', e);
+    if (msg) { msg.textContent='Sign in failed. Please try again.'; msg.className='ward-auth-msg error'; }
   }
 };
 
@@ -5866,6 +5871,25 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
         if (_isGuest(key) || !_rtdb) { const all=_localAll(); delete all[key]; _localSet(all); return; }
         try { await _rtdb.ref('users/' + key).remove(); } catch(e){ console.error('DB.deleteUser',e); }
       },
+      // Async: find one user by email (avoids fetching entire users tree on login)
+      getUserByEmail: async (email) => {
+        const normalized = String(email || '').trim().toLowerCase();
+        if (!normalized) return null;
+        if (!_rtdb) {
+          return Object.values(_localAll()).find(u => (u?.email || '').toLowerCase() === normalized) || null;
+        }
+        try {
+          const query = _rtdb.ref('users').orderByChild('email').equalTo(normalized).limitToFirst(1).once('value');
+          const snap = await withFirebaseTimeout(query, () => ({ val: () => _localAll() }));
+          const users = snap.val() || {};
+          const first = Object.values(users)[0] || null;
+          return first ? normalizeUserStats(first) : null;
+        }
+        catch(e){
+          console.error('DB.getUserByEmail', e);
+          return Object.values(_localAll()).find(u => (u?.email || '').toLowerCase() === normalized) || null;
+        }
+      },
       // Async: get all registered users as object (for leaderboard)
       getUsers: async () => {
         if (!_rtdb) return _localAll();
@@ -5907,16 +5931,13 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const loginId = String(identifier || '').trim().toLowerCase();
     if (!loginId) return null;
     if (!loginId.includes('@')) return DB.getUser(loginId);
-    const all = await DB.getUsers();
-    const match = Object.values(all || {}).find(u => (u?.email || '').toLowerCase() === loginId);
-    return match || null;
+    return DB.getUserByEmail(loginId);
   }
 
   async function isEmailTaken(email) {
     const normalized = String(email || '').trim().toLowerCase();
     if (!normalized) return false;
-    const all = await DB.getUsers();
-    return Object.values(all || {}).some(u => (u?.email || '').toLowerCase() === normalized);
+    return !!(await DB.getUserByEmail(normalized));
   }
 
   function discordUserKey(discordId) {
@@ -6362,14 +6383,19 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const user = $('ward-login-user')?.value.trim().toLowerCase()||'';
     const pass = $('ward-login-pass')?.value||'';
     const msg  = $('ward-auth-msg');
-    if (!user||!pass){ _authMsg(msg,'Please fill in both fields.','error'); return; }
-    _authMsg(msg,'Signing in…','');
-    const ud = await findUserByLoginId(user);
-    if (!ud){ _authMsg(msg,'User not found.','error'); return; }
-    if (ud.passwordHash !== hashPass(pass,ud.username)){ _authMsg(msg,'Incorrect password.','error'); return; }
-    DB.setCurrentUser(ud.username);
-    enterWard(ud);
-    refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
+    try {
+      if (!user||!pass){ _authMsg(msg,'Please fill in both fields.','error'); return; }
+      _authMsg(msg,'Signing in…','');
+      const ud = await findUserByLoginId(user);
+      if (!ud){ _authMsg(msg,'User not found.','error'); return; }
+      if (!ud.username || !ud.passwordHash || ud.passwordHash !== hashPass(pass,ud.username)){ _authMsg(msg,'Incorrect password.','error'); return; }
+      DB.setCurrentUser(ud.username);
+      enterWard(ud);
+      refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
+    } catch (e) {
+      console.error('wardLogin error:', e);
+      _authMsg(msg,'Sign in failed. Please try again.','error');
+    }
   };
 
   window.wardSignup = async function() {
