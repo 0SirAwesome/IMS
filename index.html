@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.20 -->
+<!-- IMS v0.5.21 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2903,7 +2903,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.20</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.21</span>
   </footer>
 
 </div>
@@ -4566,13 +4566,9 @@ window.navLogin = async function() {
   try {
     if (!user||!pass){ msg.textContent='Please fill in both fields.'; msg.className='ward-auth-msg error'; return; }
     msg.textContent='Signing in…'; msg.className='ward-auth-msg';
-    const ud = await findUserByLoginId(user);
-    if (!ud){ msg.textContent='User not found.'; msg.className='ward-auth-msg error'; return; }
-    if (!ud.username || !ud.passwordHash || !(await verifyAndUpgradePassword(ud, pass))){ msg.textContent='Incorrect password.'; msg.className='ward-auth-msg error'; return; }
-    DB.setCurrentUser(ud.username);
+    const result = await loginWithLegacy(user, pass);
+    if (!result.ok) { msg.textContent=result.message || 'Sign in failed.'; msg.className='ward-auth-msg error'; return; }
     document.getElementById('nav-auth-overlay').classList.remove('open');
-    enterWard(ud);
-    refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
     if (document.getElementById('page-pearls')?.classList.contains('active')) {
       window.pearlsPageActivated?.();
     }
@@ -4599,6 +4595,7 @@ window.navSignup = async function() {
   const nu = createUser(user, pass, email);
   await DB.saveUser(nu);
   DB.setCurrentUser(user.toLowerCase());
+  setSessionMethod('legacy');
   msg.textContent='Account created! Welcome, '+nu.displayName+'.'; msg.className='ward-auth-msg success';
   setTimeout(()=>{ document.getElementById('nav-auth-overlay').classList.remove('open'); enterWard(nu); refreshWardDerivedUI({ rehydrate:true, forceRemote:true }); if (document.getElementById('page-pearls')?.classList.contains('active')) { window.pearlsPageActivated?.(); } }, 500);
 };
@@ -5891,6 +5888,25 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
           return Object.values(_localAll()).find(u => (u?.email || '').toLowerCase() === normalized) || null;
         }
       },
+      // Async: find one user by Discord identity (for Discord-only and linked accounts)
+      getUserByDiscordId: async (discordId) => {
+        const normalized = String(discordId || '').trim();
+        if (!normalized) return null;
+        if (!_rtdb) {
+          return Object.values(_localAll()).find(u => String(u?.discordId || '') === normalized) || null;
+        }
+        try {
+          const query = _rtdb.ref('users').orderByChild('discordId').equalTo(normalized).limitToFirst(1).once('value');
+          const snap = await withFirebaseTimeout(query, () => ({ val: () => _localAll() }));
+          const users = snap.val() || {};
+          const first = Object.values(users)[0] || null;
+          return first ? normalizeUserStats(first) : null;
+        }
+        catch(e){
+          console.error('DB.getUserByDiscordId', e);
+          return Object.values(_localAll()).find(u => String(u?.discordId || '') === normalized) || null;
+        }
+      },
       // Async: get all registered users as object (for leaderboard)
       getUsers: async () => {
         if (!_rtdb) return _localAll();
@@ -5951,41 +5967,152 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     return `dc_${h.toString(16).padStart(8, '0')}`;
   }
 
-  async function completeDiscordLogin() {
-    const msg = document.getElementById('nav-auth-msg');
+  const AUTH_SESSION_METHOD_KEY = 'ims_auth_method';
+
+  function setSessionMethod(method) {
+    try {
+      if (!method) localStorage.removeItem(AUTH_SESSION_METHOD_KEY);
+      else localStorage.setItem(AUTH_SESSION_METHOD_KEY, String(method));
+    } catch (e) {}
+  }
+
+  function getSessionMethod() {
+    try { return localStorage.getItem(AUTH_SESSION_METHOD_KEY); } catch (e) { return null; }
+  }
+
+  async function fetchDiscordSessionProfile() {
     try {
       const resp = await fetch('/api/auth/discord/session', { credentials: 'include' });
       const data = await resp.json().catch(() => ({}));
-      if (!resp.ok || !data?.ok || !data?.profile?.id) {
-        if (msg) { msg.textContent = 'Discord login failed. Please try again.'; msg.className = 'ward-auth-msg error'; }
-        return;
-      }
-      const profile = data.profile;
+      if (!resp.ok || !data?.ok || !data?.profile?.id) return null;
+      return data.profile;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function resolveAppUserFromDiscordAuth(profile) {
+    if (!profile?.id) return null;
+    let user = await DB.getUserByDiscordId(profile.id);
+    if (!user) {
       const username = discordUserKey(profile.id);
-      let user = await DB.getUser(username);
-      if (!user) {
-        user = createUser(username, `${profile.id}_discord_auto`, profile.email || null);
-        user.displayName = profile.username || username;
-        user.passwordHash = null;
+      user = await DB.getUser(username);
+    }
+    if (!user) {
+      const username = discordUserKey(profile.id);
+      user = createUser(username, `${profile.id}_discord_auto`, profile.email || null);
+      user.displayName = profile.username || username;
+      user.passwordHash = null;
+    }
+    user.isDiscordUser = true;
+    user.discordId = profile.id;
+    user.discordUsername = profile.username || user.discordUsername || user.displayName;
+    if (profile.avatarUrl) user.discordAvatar = profile.avatarUrl;
+    if (profile.email && !user.email) user.email = String(profile.email).toLowerCase();
+    await DB.saveUser(user);
+    return normalizeUserStats(user);
+  }
+
+  async function resolveAppUserFromLegacy(identifier) {
+    const user = await findUserByLoginId(identifier);
+    return user ? normalizeUserStats(user) : null;
+  }
+
+  async function initializeAppForUser(userRecord, authMethod = 'legacy') {
+    if (!userRecord?.username) return null;
+    DB.setCurrentUser(userRecord.username);
+    setSessionMethod(authMethod);
+    updateNavAuth(userRecord);
+    enterWard(userRecord);
+    await refreshWardDerivedUI({ rehydrate: true, forceRemote: true });
+    return userRecord;
+  }
+
+  async function loginWithLegacy(identifier, password) {
+    const userRecord = await resolveAppUserFromLegacy(identifier);
+    if (!userRecord) return { ok: false, code: 'not_found', message: 'User not found.' };
+    if (!userRecord.passwordHash) {
+      return { ok: false, code: 'discord_only', message: 'This account uses Discord login. Continue with Discord.' };
+    }
+    const valid = await verifyAndUpgradePassword(userRecord, password);
+    if (!valid) return { ok: false, code: 'wrong_password', message: 'Incorrect password.' };
+    await initializeAppForUser(userRecord, 'legacy');
+    return { ok: true, user: userRecord };
+  }
+
+  async function completeDiscordLogin() {
+    const msg = document.getElementById('nav-auth-msg');
+    try {
+      const profile = await fetchDiscordSessionProfile();
+      if (!profile) {
+        if (msg) { msg.textContent = 'Discord login failed. Please try again.'; msg.className = 'ward-auth-msg error'; }
+        return null;
       }
-      user.isDiscordUser = true;
-      user.discordId = profile.id;
-      user.discordUsername = profile.username || user.discordUsername || user.displayName;
-      if (profile.avatarUrl) user.discordAvatar = profile.avatarUrl;
-      if (profile.email && !user.email) user.email = String(profile.email).toLowerCase();
-      await DB.saveUser(user);
-      DB.setCurrentUser(user.username);
-      updateNavAuth(user);
+      const user = await resolveAppUserFromDiscordAuth(profile);
+      if (!user) {
+        if (msg) { msg.textContent = 'Discord login succeeded, but account setup is incomplete. Please contact support.'; msg.className = 'ward-auth-msg error'; }
+        return null;
+      }
       document.getElementById('nav-auth-overlay')?.classList.remove('open');
-      enterWard(user);
-      refreshWardDerivedUI({ rehydrate: true, forceRemote: true });
+      await initializeAppForUser(user, 'discord');
       if (window.location.hash.includes('discord_auth=')) {
         history.replaceState(null, '', window.location.pathname + window.location.search);
       }
+      return user;
     } catch (e) {
       console.error('completeDiscordLogin:', e);
       if (msg) { msg.textContent = 'Discord login failed. Please try again.'; msg.className = 'ward-auth-msg error'; }
+      return null;
     }
+  }
+
+  async function restoreSession() {
+    const savedUsername = DB.getCurrentUser();
+    const savedMethod = getSessionMethod();
+
+    const [legacyUser, discordProfile] = await Promise.all([
+      savedUsername ? DB.getUser(savedUsername, { preferFirebase: true }) : Promise.resolve(null),
+      fetchDiscordSessionProfile(),
+    ]);
+
+    const discordUser = discordProfile ? await resolveAppUserFromDiscordAuth(discordProfile) : null;
+
+    let selectedUser = null;
+    let selectedMethod = null;
+
+    if (savedMethod === 'legacy' && legacyUser) {
+      selectedUser = legacyUser;
+      selectedMethod = 'legacy';
+    } else if (savedMethod === 'discord' && discordUser) {
+      selectedUser = discordUser;
+      selectedMethod = 'discord';
+    } else if (discordUser) {
+      selectedUser = discordUser;
+      selectedMethod = 'discord';
+    } else if (legacyUser) {
+      selectedUser = legacyUser;
+      selectedMethod = 'legacy';
+    }
+
+    if (selectedUser) {
+      DB.setCurrentUser(selectedUser.username);
+      setSessionMethod(selectedMethod);
+      updateNavAuth(selectedUser);
+      return { user: selectedUser, method: selectedMethod };
+    }
+
+    if (savedUsername) DB.clearCurrentUser();
+    setSessionMethod(null);
+    updateNavAuth(null);
+    return null;
+  }
+
+  async function logoutCurrentSession() {
+    setSessionMethod(null);
+    DB.clearCurrentUser();
+    try {
+      await fetch('/api/auth/discord/logout', { method: 'POST', credentials: 'include' });
+    } catch (e) {}
   }
 
   function fnv1a32(input) {
@@ -6362,6 +6489,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     await DB.saveUser(ud);
     await DB.deleteUser(guestKey);
     DB.setCurrentUser(username);
+    setSessionMethod('legacy');
     setMsg('Merged! Logging you in…','success');
     setTimeout(()=>{ const o=$('ward-save-overlay'); if(o) o.remove(); enterWard(ud); },900);
   };
@@ -6386,6 +6514,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     await DB.saveUser(currentUser);
     await DB.deleteUser(oldKey);
     DB.setCurrentUser(user.toLowerCase());
+    setSessionMethod('legacy');
     setMsg('Account created! Your progress has been saved.','success');
     const nd=$('ward-user-name-display'); if(nd) nd.textContent=currentUser.displayName;
     const av=$('ward-user-avatar'); if(av) av.textContent=currentUser.displayName[0].toUpperCase();
@@ -6406,6 +6535,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       await DB.saveUser(guestUser);
     }
     DB.setCurrentUser(guestName);
+    setSessionMethod('guest');
     enterWard(guestUser);
   };
 
@@ -6416,12 +6546,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     try {
       if (!user||!pass){ _authMsg(msg,'Please fill in both fields.','error'); return; }
       _authMsg(msg,'Signing in…','');
-      const ud = await findUserByLoginId(user);
-      if (!ud){ _authMsg(msg,'User not found.','error'); return; }
-      if (!ud.username || !ud.passwordHash || !(await verifyAndUpgradePassword(ud, pass))){ _authMsg(msg,'Incorrect password.','error'); return; }
-      DB.setCurrentUser(ud.username);
-      enterWard(ud);
-      refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
+      const result = await loginWithLegacy(user, pass);
+      if (!result.ok){ _authMsg(msg, result.message || 'Sign in failed.', 'error'); return; }
     } catch (e) {
       console.error('wardLogin error:', e);
       _authMsg(msg,'Sign in failed. Please try again.','error');
@@ -6445,6 +6571,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const nu = createUser(user, pass, email || null);
     await DB.saveUser(nu);
     DB.setCurrentUser(user.toLowerCase());
+    setSessionMethod('legacy');
     _authMsg(msg,'Account created! Welcome, '+nu.displayName+'.','success');
     setTimeout(()=>{ enterWard(nu); refreshWardDerivedUI({ rehydrate:true, forceRemote:true }); }, 500);
   };
@@ -6461,7 +6588,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     }
     clearInterval(timerInterval);
     timerState='idle'; currentUser=null;
-    DB.clearCurrentUser();
+    logoutCurrentSession().catch(()=>{});
     const app=$('ward-app'); if(app) app.style.display='none';
     const auth=$('ward-auth-screen'); if(auth) auth.style.display='flex';
     // Update nav header back to logged-out state
@@ -7662,17 +7789,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   document.addEventListener('DOMContentLoaded', async ()=>{
     if (window.location.hash.includes('discord_auth=success')) {
       await completeDiscordLogin();
-    }
-
-    // ── STEP 1: NAV AUTH RESTORE ──────────────────────────────────
-    // Only restore navbar logged-in/logged-out state.
-    // Do NOT set currentUser. Do NOT call any Ward render functions.
-    // wardPageActivated() is the single, authoritative Ward initialisation
-    // entry point — it will be called in Step 2 if needed, or on tab click.
-    const savedUser = DB.getCurrentUser();
-    if (savedUser) {
-      const ud = await DB.getUser(savedUser);
-      if (ud && typeof updateNavAuth === 'function') updateNavAuth(ud);
+    } else {
+      await restoreSession();
     }
 
     // ── STEP 2: WARD INIT (if Ward page is already active) ────────
