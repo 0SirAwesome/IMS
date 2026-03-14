@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.19 -->
+<!-- IMS v0.5.20 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2903,7 +2903,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.19</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.20</span>
   </footer>
 
 </div>
@@ -4568,7 +4568,7 @@ window.navLogin = async function() {
     msg.textContent='Signing in…'; msg.className='ward-auth-msg';
     const ud = await findUserByLoginId(user);
     if (!ud){ msg.textContent='User not found.'; msg.className='ward-auth-msg error'; return; }
-    if (!ud.username || !ud.passwordHash || ud.passwordHash !== hashPass(pass,ud.username)){ msg.textContent='Incorrect password.'; msg.className='ward-auth-msg error'; return; }
+    if (!ud.username || !ud.passwordHash || !(await verifyAndUpgradePassword(ud, pass))){ msg.textContent='Incorrect password.'; msg.className='ward-auth-msg error'; return; }
     DB.setCurrentUser(ud.username);
     document.getElementById('nav-auth-overlay').classList.remove('open');
     enterWard(ud);
@@ -5988,13 +5988,42 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     }
   }
 
-  function hashPass(pass, user) {
-    const str = pass + user.toLowerCase() + 'ims_ward_2026';
+  function fnv1a32(input) {
+    const str = String(input || '');
     let h = 0x811c9dc5 >>> 0;
     for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
     return h.toString(16).padStart(8,'0');
   }
+
+  function hashPass(pass, user) {
+    const normalizedUser = String(user || '').toLowerCase();
+    return fnv1a32(String(pass || '') + normalizedUser + 'ims_ward_2026');
+  }
   window.hashPass = hashPass;
+
+  function legacyPasswordHashes(pass, user) {
+    const rawPass = String(pass || '');
+    const rawUser = String(user || '');
+    const lowerUser = rawUser.toLowerCase();
+    return [
+      fnv1a32(rawPass + rawUser + 'ims_ward_2026'),
+      fnv1a32(rawPass + lowerUser + 'ims_ward_2025'),
+      fnv1a32(rawPass + rawUser + 'ims_ward_2025'),
+      fnv1a32(rawPass + lowerUser),
+      fnv1a32(rawPass + rawUser),
+      fnv1a32(rawPass),
+    ];
+  }
+
+  async function verifyAndUpgradePassword(userRecord, pass) {
+    if (!userRecord || !userRecord.username || !userRecord.passwordHash) return false;
+    const expected = hashPass(pass, userRecord.username);
+    if (userRecord.passwordHash === expected) return true;
+    if (!legacyPasswordHashes(pass, userRecord.username).includes(userRecord.passwordHash)) return false;
+    userRecord.passwordHash = expected;
+    await DB.saveUser(userRecord);
+    return true;
+  }
 
   function createUser(username, password, email = null) {
     return normalizeUserStats({
@@ -6311,7 +6340,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     setMsg('Checking…','');
     const ud = await DB.getUser(username);
     if (!ud)                                { setMsg('Username not found.','error'); return; }
-    if (ud.passwordHash!==hashPass(pass,username)) { setMsg('Incorrect password.','error'); return; }
+    if (!(await verifyAndUpgradePassword(ud, pass))) { setMsg('Incorrect password.','error'); return; }
     const guestKey = currentUser.username;
     normalizeUserStats(ud);
     normalizeUserStats(currentUser);
@@ -6389,7 +6418,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       _authMsg(msg,'Signing in…','');
       const ud = await findUserByLoginId(user);
       if (!ud){ _authMsg(msg,'User not found.','error'); return; }
-      if (!ud.username || !ud.passwordHash || ud.passwordHash !== hashPass(pass,ud.username)){ _authMsg(msg,'Incorrect password.','error'); return; }
+      if (!ud.username || !ud.passwordHash || !(await verifyAndUpgradePassword(ud, pass))){ _authMsg(msg,'Incorrect password.','error'); return; }
       DB.setCurrentUser(ud.username);
       enterWard(ud);
       refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
