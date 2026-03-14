@@ -2644,8 +2644,8 @@
       <button class="ward-auth-tab"        id="nav-tab-signup" onclick="navAuthTab('signup')">Sign Up</button>
     </div>
     <div id="nav-login-form">
-      <label class="ward-field-label">Username</label>
-      <input class="ward-field-input" id="nav-login-user" type="text" placeholder="your username" maxlength="14" autocomplete="username"/>
+      <label class="ward-field-label">Username or Email</label>
+      <input class="ward-field-input" id="nav-login-user" type="text" placeholder="your username or email" maxlength="80" autocomplete="username"/>
       <label class="ward-field-label">Password</label>
       <input class="ward-field-input" id="nav-login-pass" type="password" placeholder="••••••••" autocomplete="current-password"/>
       <button class="ward-auth-submit" onclick="navLogin()">Enter the Ward →</button>
@@ -2654,6 +2654,8 @@
       <label class="ward-field-label">Username</label>
       <input class="ward-field-input" id="nav-signup-user" type="text" placeholder="choose a username" maxlength="14" autocomplete="username"/>
       <div class="ward-field-hint">Max 14 chars · letters, numbers, underscore only</div>
+      <label class="ward-field-label">Email</label>
+      <input class="ward-field-input" id="nav-signup-email" type="email" placeholder="you@example.com" autocomplete="email"/>
       <label class="ward-field-label">Password</label>
       <input class="ward-field-input" id="nav-signup-pass" type="password" placeholder="min 6 characters" autocomplete="new-password"/>
       <label class="ward-field-label">Confirm Password</label>
@@ -2666,6 +2668,7 @@
       <span style="font-size:0.65rem;color:rgba(140,170,220,0.28);">or</span>
       <div style="flex:1;height:1px;background:rgba(68,114,196,0.15);"></div>
     </div>
+    <button onclick="navDiscordLogin()" style="width:100%;padding:0.64rem;border-radius:99px;background:rgba(88,101,242,0.16);border:1px solid rgba(88,101,242,0.35);color:#c8d2ff;font-family:'DM Sans',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:0.45rem;">Continue with Discord</button>
     <button onclick="navContinueAsGuest()" style="width:100%;padding:0.6rem;border-radius:99px;background:rgba(140,170,220,0.07);border:1px solid rgba(140,170,220,0.22);color:rgba(160,195,240,0.65);font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(140,170,220,0.14)';this.style.borderColor='rgba(140,170,220,0.38)';this.style.color='rgba(160,195,240,0.9)'" onmouseout="this.style.background='rgba(140,170,220,0.07)';this.style.borderColor='rgba(140,170,220,0.22)';this.style.color='rgba(160,195,240,0.65)'">
       Continue as Guest
     </button>
@@ -4557,10 +4560,10 @@ window.navLogin = async function() {
   const msg  = document.getElementById('nav-auth-msg');
   if (!user||!pass){ msg.textContent='Please fill in both fields.'; msg.className='ward-auth-msg error'; return; }
   msg.textContent='Signing in…'; msg.className='ward-auth-msg';
-  const ud = await DB.getUser(user);
-  if (!ud){ msg.textContent='Username not found.'; msg.className='ward-auth-msg error'; return; }
-  if (ud.passwordHash !== hashPass(pass,user)){ msg.textContent='Incorrect password.'; msg.className='ward-auth-msg error'; return; }
-  DB.setCurrentUser(user);
+  const ud = await findUserByLoginId(user);
+  if (!ud){ msg.textContent='User not found.'; msg.className='ward-auth-msg error'; return; }
+  if (ud.passwordHash !== hashPass(pass,ud.username)){ msg.textContent='Incorrect password.'; msg.className='ward-auth-msg error'; return; }
+  DB.setCurrentUser(ud.username);
   document.getElementById('nav-auth-overlay').classList.remove('open');
   enterWard(ud);
   refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
@@ -4571,16 +4574,19 @@ window.navLogin = async function() {
 
 window.navSignup = async function() {
   const user    = (document.getElementById('nav-signup-user')?.value||'').trim();
+  const email   = (document.getElementById('nav-signup-email')?.value||'').trim().toLowerCase();
   const pass    = document.getElementById('nav-signup-pass')?.value||'';
   const confirm = document.getElementById('nav-signup-confirm')?.value||'';
   const msg     = document.getElementById('nav-auth-msg');
-  if (!user||!pass||!confirm){ msg.textContent='Please fill in all fields.'; msg.className='ward-auth-msg error'; return; }
+  if (!user||!email||!pass||!confirm){ msg.textContent='Please fill in all fields.'; msg.className='ward-auth-msg error'; return; }
   if (!/^[a-zA-Z0-9_]{1,14}$/.test(user)){ msg.textContent='Letters, numbers, underscore only (max 14).'; msg.className='ward-auth-msg error'; return; }
+  if (!isValidEmail(email)){ msg.textContent='Enter a valid email address.'; msg.className='ward-auth-msg error'; return; }
   if (pass.length < 6){ msg.textContent='Password must be at least 6 characters.'; msg.className='ward-auth-msg error'; return; }
   if (pass !== confirm){ msg.textContent='Passwords do not match.'; msg.className='ward-auth-msg error'; return; }
   msg.textContent='Checking username…'; msg.className='ward-auth-msg';
   if (await DB.getUser(user)){ msg.textContent='Username "'+user+'" is already taken.'; msg.className='ward-auth-msg error'; return; }
-  const nu = createUser(user, pass);
+  if (await isEmailTaken(email)){ msg.textContent='That email is already in use.'; msg.className='ward-auth-msg error'; return; }
+  const nu = createUser(user, pass, email);
   await DB.saveUser(nu);
   DB.setCurrentUser(user.toLowerCase());
   msg.textContent='Account created! Welcome, '+nu.displayName+'.'; msg.className='ward-auth-msg success';
@@ -4593,6 +4599,10 @@ window.navContinueAsGuest = function() {
   if (document.getElementById('page-pearls')?.classList.contains('active')) {
     setTimeout(() => window.pearlsPageActivated?.(), 400);
   }
+};
+
+window.navDiscordLogin = function() {
+  window.location.href = '/api/auth/discord/start';
 };
 
 // ── MOBILE NAV ───────────────────────────────────────────────
@@ -5830,6 +5840,73 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   }
   window.saveUserSafely = saveUserSafely;
 
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim().toLowerCase());
+  }
+
+  async function findUserByLoginId(identifier) {
+    const loginId = String(identifier || '').trim().toLowerCase();
+    if (!loginId) return null;
+    if (!loginId.includes('@')) return DB.getUser(loginId);
+    const all = await DB.getUsers();
+    const match = Object.values(all || {}).find(u => (u?.email || '').toLowerCase() === loginId);
+    return match || null;
+  }
+
+  async function isEmailTaken(email) {
+    const normalized = String(email || '').trim().toLowerCase();
+    if (!normalized) return false;
+    const all = await DB.getUsers();
+    return Object.values(all || {}).some(u => (u?.email || '').toLowerCase() === normalized);
+  }
+
+  function discordUserKey(discordId) {
+    const id = String(discordId || '0');
+    let h = 0x811c9dc5 >>> 0;
+    for (let i = 0; i < id.length; i++) {
+      h ^= id.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return `dc_${h.toString(16).padStart(8, '0')}`;
+  }
+
+  async function completeDiscordLogin() {
+    const msg = document.getElementById('nav-auth-msg');
+    try {
+      const resp = await fetch('/api/auth/discord/session', { credentials: 'include' });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok || !data?.ok || !data?.profile?.id) {
+        if (msg) { msg.textContent = 'Discord login failed. Please try again.'; msg.className = 'ward-auth-msg error'; }
+        return;
+      }
+      const profile = data.profile;
+      const username = discordUserKey(profile.id);
+      let user = await DB.getUser(username);
+      if (!user) {
+        user = createUser(username, `${profile.id}_discord_auto`, profile.email || null);
+        user.displayName = profile.username || username;
+        user.passwordHash = null;
+      }
+      user.isDiscordUser = true;
+      user.discordId = profile.id;
+      user.discordUsername = profile.username || user.discordUsername || user.displayName;
+      if (profile.avatarUrl) user.discordAvatar = profile.avatarUrl;
+      if (profile.email && !user.email) user.email = String(profile.email).toLowerCase();
+      await DB.saveUser(user);
+      DB.setCurrentUser(user.username);
+      updateNavAuth(user);
+      document.getElementById('nav-auth-overlay')?.classList.remove('open');
+      enterWard(user);
+      refreshWardDerivedUI({ rehydrate: true, forceRemote: true });
+      if (window.location.hash.includes('discord_auth=')) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    } catch (e) {
+      console.error('completeDiscordLogin:', e);
+      if (msg) { msg.textContent = 'Discord login failed. Please try again.'; msg.className = 'ward-auth-msg error'; }
+    }
+  }
+
   function hashPass(pass, user) {
     const str = pass + user.toLowerCase() + 'ims_ward_2026';
     let h = 0x811c9dc5 >>> 0;
@@ -5838,11 +5915,12 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   }
   window.hashPass = hashPass;
 
-  function createUser(username, password) {
+  function createUser(username, password, email = null) {
     return normalizeUserStats({
       username:username.toLowerCase(),
       displayName:username,
       passwordHash:hashPass(password,username),
+      email: email ? String(email).toLowerCase() : null,
       totalMins:0,
       weeklyMins:0,
       rawTotalMins:0,
@@ -6227,26 +6305,29 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const msg  = $('ward-auth-msg');
     if (!user||!pass){ _authMsg(msg,'Please fill in both fields.','error'); return; }
     _authMsg(msg,'Signing in…','');
-    const ud = await DB.getUser(user);
-    if (!ud){ _authMsg(msg,'Username not found.','error'); return; }
-    if (ud.passwordHash !== hashPass(pass,user)){ _authMsg(msg,'Incorrect password.','error'); return; }
-    DB.setCurrentUser(user);
+    const ud = await findUserByLoginId(user);
+    if (!ud){ _authMsg(msg,'User not found.','error'); return; }
+    if (ud.passwordHash !== hashPass(pass,ud.username)){ _authMsg(msg,'Incorrect password.','error'); return; }
+    DB.setCurrentUser(ud.username);
     enterWard(ud);
     refreshWardDerivedUI({ rehydrate:true, forceRemote:true });
   };
 
   window.wardSignup = async function() {
     const user    = $('ward-signup-user')?.value.trim()||'';
+    const email   = ($('ward-signup-email')?.value||'').trim().toLowerCase();
     const pass    = $('ward-signup-pass')?.value||'';
     const confirm = $('ward-signup-confirm')?.value||'';
     const msg     = $('ward-auth-msg');
     if (!user||!pass||!confirm){ _authMsg(msg,'Please fill in all fields.','error'); return; }
     if (!/^[a-zA-Z0-9_]{1,14}$/.test(user)){ _authMsg(msg,'Letters, numbers, underscore only (max 14).','error'); return; }
+    if (email && !isValidEmail(email)){ _authMsg(msg,'Enter a valid email address.','error'); return; }
     if (pass.length < 6){ _authMsg(msg,'Password must be at least 6 characters.','error'); return; }
     if (pass !== confirm){ _authMsg(msg,'Passwords do not match.','error'); return; }
     _authMsg(msg,'Checking username…','');
     if (await DB.getUser(user)){ _authMsg(msg,'Username "'+user+'" is already taken.','error'); return; }
-    const nu = createUser(user, pass);
+    if (email && await isEmailTaken(email)){ _authMsg(msg,'That email is already in use.','error'); return; }
+    const nu = createUser(user, pass, email || null);
     await DB.saveUser(nu);
     DB.setCurrentUser(user.toLowerCase());
     _authMsg(msg,'Account created! Welcome, '+nu.displayName+'.','success');
@@ -7463,6 +7544,10 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   };
 
   document.addEventListener('DOMContentLoaded', async ()=>{
+    if (window.location.hash.includes('discord_auth=success')) {
+      await completeDiscordLogin();
+    }
+
     // ── STEP 1: NAV AUTH RESTORE ──────────────────────────────────
     // Only restore navbar logged-in/logged-out state.
     // Do NOT set currentUser. Do NOT call any Ward render functions.
@@ -7485,7 +7570,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     }
 
     // ── STEP 3: KEYBOARD SHORTCUTS ────────────────────────────────
-    [['nav-login-pass', navLogin], ['nav-signup-confirm', navSignup]].forEach(([id,fn])=>{
+    [['nav-login-pass', navLogin], ['nav-signup-confirm', navSignup], ['nav-signup-email', navSignup]].forEach(([id,fn])=>{
       const el=document.getElementById(id); if(el) el.addEventListener('keydown',e=>{ if(e.key==='Enter') fn(); });
     });
     const lbfi=document.getElementById('ward-lb-friend-input');
