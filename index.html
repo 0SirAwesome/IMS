@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.27 -->
+<!-- IMS v0.5.28 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2901,7 +2901,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.27</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.28</span>
   </footer>
 
 </div>
@@ -4590,13 +4590,28 @@ window.navSignup = async function() {
   if (pass !== confirm){ msg.textContent='Passwords do not match.'; msg.className='ward-auth-msg error'; return; }
   try {
     msg.textContent='Checking username…'; msg.className='ward-auth-msg';
-    if (await DB.getUser(user)){ msg.textContent='Username "'+user+'" is already taken.'; msg.className='ward-auth-msg error'; return; }
-    const nu = createUser(user, pass);
-    await DB.saveUser(nu);
-    DB.setCurrentUser(user.toLowerCase());
-    setSessionMethod('legacy');
+
+    const db = window.DB || (typeof DB !== 'undefined' ? DB : null);
+    const createUserFn = window.createUser || (typeof createUser === 'function' ? createUser : null);
+    const enterWardFn = window.enterWard || (typeof enterWard === 'function' ? enterWard : null);
+    const refreshWardDerivedUIFn = window.refreshWardDerivedUI || (typeof refreshWardDerivedUI === 'function' ? refreshWardDerivedUI : null);
+    const setSessionMethodFn = window.setSessionMethod || (typeof setSessionMethod === 'function' ? setSessionMethod : null);
+
+    if (!db || typeof db.getUser !== 'function' || typeof db.saveUser !== 'function' || typeof db.setCurrentUser !== 'function') {
+      throw new ReferenceError('DB auth helpers are not available');
+    }
+    if (!createUserFn) throw new ReferenceError('createUser is not available');
+    if (!enterWardFn) throw new ReferenceError('enterWard is not available');
+    if (!refreshWardDerivedUIFn) throw new ReferenceError('refreshWardDerivedUI is not available');
+    if (!setSessionMethodFn) throw new ReferenceError('setSessionMethod is not available');
+
+    if (await db.getUser(user)){ msg.textContent='Username "'+user+'" is already taken.'; msg.className='ward-auth-msg error'; return; }
+    const nu = createUserFn(user, pass);
+    await db.saveUser(nu);
+    db.setCurrentUser(user.toLowerCase());
+    setSessionMethodFn('legacy');
     msg.textContent='Account created! Welcome, '+nu.displayName+'.'; msg.className='ward-auth-msg success';
-    setTimeout(()=>{ document.getElementById('nav-auth-overlay').classList.remove('open'); enterWard(nu); refreshWardDerivedUI({ rehydrate:true, forceRemote:true }); if (document.getElementById('page-pearls')?.classList.contains('active')) { window.pearlsPageActivated?.(); } }, 500);
+    setTimeout(()=>{ document.getElementById('nav-auth-overlay').classList.remove('open'); enterWardFn(nu); refreshWardDerivedUIFn({ rehydrate:true, forceRemote:true }); if (document.getElementById('page-pearls')?.classList.contains('active')) { window.pearlsPageActivated?.(); } }, 500);
   } catch (e) {
     console.error('navSignup error:', e);
     const details = (e && (e.stack || e.message)) ? String(e.stack || e.message) : 'Unknown error';
@@ -6017,6 +6032,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   function getSessionMethod() {
     try { return localStorage.getItem(AUTH_SESSION_METHOD_KEY); } catch (e) { return null; }
   }
+  window.setSessionMethod = setSessionMethod;
+  window.getSessionMethod = getSessionMethod;
 
   async function fetchDiscordSessionProfile() {
     try {
