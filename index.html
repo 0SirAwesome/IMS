@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.16 -->
+<!-- IMS v0.5.17 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2903,7 +2903,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.16</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.17</span>
   </footer>
 
 </div>
@@ -5769,6 +5769,24 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   // Guests → localStorage (no cloud storage needed, can't sync anyway)
   const DB = window.DB = (() => {
     const LS_GUESTS = 'ims_ward_users';
+    const FIREBASE_READ_TIMEOUT_MS = 7000;
+
+    async function withFirebaseTimeout(promise, fallbackFactory) {
+      let timer;
+      try {
+        return await Promise.race([
+          promise,
+          new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error('Firebase read timeout')), FIREBASE_READ_TIMEOUT_MS);
+          })
+        ]);
+      } catch (err) {
+        if (typeof fallbackFactory === 'function') return fallbackFactory(err);
+        throw err;
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
+    }
     function _isGuest(name){ return name && String(name).startsWith('guest_'); }
     function _localAll(){ try{ return JSON.parse(localStorage.getItem(LS_GUESTS)||'{}')}catch(e){return{}} }
     function _localSet(o){ localStorage.setItem(LS_GUESTS, JSON.stringify(o)); }
@@ -5781,7 +5799,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
         if (_isGuest(key)) return _localAll()[key] || null;
         if (!_rtdb) return _localAll()[key] || null;
         try {
-          const snap = await _rtdb.ref('users/' + key).once('value');
+          const snap = await withFirebaseTimeout(_rtdb.ref('users/' + key).once('value'), () => ({ val: () => _localAll()[key] || null }));
           let u = snap.val();
           const local = _localAll()[key] || null;
           if (!u) {
@@ -5851,8 +5869,11 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       // Async: get all registered users as object (for leaderboard)
       getUsers: async () => {
         if (!_rtdb) return _localAll();
-        try { const snap=await _rtdb.ref('users').once('value'); return snap.val()||{}; }
-        catch(e){ console.error('DB.getUsers',e); return {}; }
+        try {
+          const snap = await withFirebaseTimeout(_rtdb.ref('users').once('value'), () => ({ val: () => _localAll() }));
+          return snap.val() || {};
+        }
+        catch(e){ console.error('DB.getUsers',e); return _localAll(); }
       },
       // Sync: session / interrupt (stays local, device-specific)
       getCurrentUser:  ()    => localStorage.getItem('ims_ward_current'),
