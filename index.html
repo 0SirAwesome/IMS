@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.15 -->
+<!-- IMS v0.5.16 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2903,7 +2903,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.15</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.16</span>
   </footer>
 
 </div>
@@ -5162,6 +5162,37 @@ function submitGuess() {
 }
 
 // ── RECORD + SHOW POST-GAME ───────────────────────────────────
+async function notifyMedWordleCompletion(won, guessCount) {
+  const username = getUsername();
+  if (!username || username === '__guest__') return;
+
+  let discordId = null;
+  try {
+    const user = await DB.getUser(username);
+    if (user && user.isDiscordUser && user.discordId) {
+      discordId = String(user.discordId);
+    }
+  } catch (e) {
+    console.warn('Could not resolve Discord user for MedWordle webhook:', e);
+  }
+
+  try {
+    await fetch('/api/medwordle/completed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username,
+        won,
+        guessCount,
+        dateKey: todayKey,
+        discordId,
+      }),
+    });
+  } catch (e) {
+    console.warn('MedWordle completion webhook failed:', e);
+  }
+}
+
 function recordAndShow(won, guessCount) {
   const data = loadData();
 
@@ -5190,6 +5221,8 @@ function recordAndShow(won, guessCount) {
 
     data.history[todayKey] = { won, guesses: [...submittedGuesses], guessCount };
     saveData(data);
+
+    notifyMedWordleCompletion(won, guessCount);
   }
 
   showPostGame(won, guessCount);

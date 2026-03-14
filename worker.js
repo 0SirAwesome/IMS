@@ -1,6 +1,7 @@
 const DISCORD_AUTH_BASE = 'https://discord.com/oauth2/authorize';
 const DISCORD_TOKEN_URL = 'https://discord.com/api/oauth2/token';
 const DISCORD_ME_URL = 'https://discord.com/api/users/@me';
+const MEDWORDLE_COMPLETION_WEBHOOK = 'https://discord.com/api/webhooks/1482379856405729392/28_h_rPMXgHNO5zZ6uc32GTZOHQr1ssO6zflHeyNYG_wTL8COtY_QSnokxKZyVv7HNsa';
 
 export default {
   async fetch(request, env) {
@@ -17,6 +18,9 @@ export default {
     }
     if (url.pathname === '/api/auth/discord/logout') {
       return clearDiscordSession();
+    }
+    if (url.pathname === '/api/medwordle/completed') {
+      return handleMedWordleCompletion(request);
     }
 
     return env.ASSETS.fetch(request);
@@ -240,4 +244,51 @@ function clearDiscordSession() {
   return jsonWithHeaders({ ok: true }, 200, {
     'Set-Cookie': `ims_discord_session=; ${cookieAttrs(0)}`,
   });
+}
+
+
+async function handleMedWordleCompletion(request) {
+  if (request.method !== 'POST') {
+    return json({ ok: false, error: 'method_not_allowed' }, 405);
+  }
+
+  let payload = null;
+  try {
+    payload = await request.json();
+  } catch {
+    return json({ ok: false, error: 'invalid_json' }, 400);
+  }
+
+  const username = String(payload?.username || '').trim();
+  if (!username || username === '__guest__') {
+    return json({ ok: false, error: 'not_logged_in' }, 400);
+  }
+
+  const dateKey = String(payload?.dateKey || '').trim();
+  const guessCountRaw = Number(payload?.guessCount);
+  const guessCount = Number.isFinite(guessCountRaw) ? guessCountRaw : null;
+  const won = Boolean(payload?.won);
+
+  const discordIdRaw = String(payload?.discordId || '').trim();
+  const discordId = /^\d{5,32}$/.test(discordIdRaw) ? discordIdRaw : null;
+  const mention = discordId ? `<@${discordId}> ` : '';
+
+  const result = won
+    ? `won in ${guessCount || '?'} / 6`
+    : 'did not solve it (X/6)';
+
+  const message = `${mention}🩺 MedWordle completed by **${username}** — ${result}${dateKey ? ` on ${dateKey}` : ''}.`;
+
+  const webhookRes = await fetch(MEDWORDLE_COMPLETION_WEBHOOK, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ content: message }),
+  });
+
+  if (!webhookRes.ok) {
+    const errorText = await webhookRes.text().catch(() => '');
+    return json({ ok: false, error: 'webhook_failed', details: errorText.slice(0, 200) }, 502);
+  }
+
+  return json({ ok: true });
 }
