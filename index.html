@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.23 -->
+<!-- IMS v0.5.24 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2901,7 +2901,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.23</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.24</span>
   </footer>
 
 </div>
@@ -4573,7 +4573,7 @@ window.navLogin = async function() {
     }
   } catch (e) {
     console.error('navLogin error:', e);
-    if (msg) { msg.textContent='Sign in failed. Please try again.'; msg.className='ward-auth-msg error'; }
+    if (msg) { const details = (e && (e.stack || e.message)) ? String(e.stack || e.message) : 'Unknown error'; msg.textContent='Sign in failed: ' + details.slice(0, 220); msg.className='ward-auth-msg error'; }
   }
 };
 
@@ -5769,6 +5769,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
   const DB = window.DB = (() => {
     const LS_GUESTS = 'ims_ward_users';
     const FIREBASE_READ_TIMEOUT_MS = 7000;
+    const FIREBASE_WRITE_TIMEOUT_MS = 7000;
 
     async function withFirebaseTimeout(promise, fallbackFactory) {
       let timer;
@@ -5782,6 +5783,19 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       } catch (err) {
         if (typeof fallbackFactory === 'function') return fallbackFactory(err);
         throw err;
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
+    }
+    async function withFirebaseWriteTimeout(promise) {
+      let timer;
+      try {
+        return await Promise.race([
+          promise,
+          new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error('Firebase write timeout')), FIREBASE_WRITE_TIMEOUT_MS);
+          })
+        ]);
       } finally {
         if (timer) clearTimeout(timer);
       }
@@ -5846,7 +5860,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
         // Always write localStorage first as authoritative local backup
         try { const all=_localAll(); all[key]=u; _localSet(all); } catch(e){}
         try {
-          await _rtdb.ref('users/' + key).set(u);
+          await withFirebaseWriteTimeout(_rtdb.ref('users/' + key).set(u));
           // Save succeeded — hide offline bar if showing
           const sb = document.getElementById('ward-sync-bar');
           if (sb) sb.style.display = 'none';
@@ -6591,7 +6605,8 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       if (!result.ok){ _authMsg(msg, result.message || 'Sign in failed.', 'error'); return; }
     } catch (e) {
       console.error('wardLogin error:', e);
-      _authMsg(msg,'Sign in failed. Please try again.','error');
+      const details = (e && (e.stack || e.message)) ? String(e.stack || e.message) : 'Unknown error';
+      _authMsg(msg, 'Sign in failed: ' + details.slice(0, 220), 'error');
     }
   };
 
