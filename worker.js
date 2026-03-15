@@ -1,7 +1,7 @@
 const DISCORD_AUTH_BASE = 'https://discord.com/oauth2/authorize';
 const DISCORD_TOKEN_URL = 'https://discord.com/api/oauth2/token';
 const DISCORD_ME_URL = 'https://discord.com/api/users/@me';
-const MEDWORDLE_COMPLETION_WEBHOOK = 'https://discord.com/api/webhooks/1482379856405729392/28_h_rPMXgHNO5zZ6uc32GTZOHQr1ssO6zflHeyNYG_wTL8COtY_QSnokxKZyVv7HNsa';
+const DEFAULT_MEDWORDLE_COMPLETION_WEBHOOK = 'https://discord.com/api/webhooks/1482379856405729392/28_h_rPMXgHNO5zZ6uc32GTZOHQr1ssO6zflHeyNYG_wTL8COtY_QSnokxKZyVv7HNsa';
 
 export default {
   async fetch(request, env) {
@@ -20,7 +20,7 @@ export default {
       return clearDiscordSession();
     }
     if (url.pathname === '/api/medwordle/completed') {
-      return handleMedWordleCompletion(request);
+      return handleMedWordleCompletion(request, env);
     }
 
     return env.ASSETS.fetch(request);
@@ -247,7 +247,13 @@ function clearDiscordSession() {
 }
 
 
-async function handleMedWordleCompletion(request) {
+function getMedWordleWebhookUrls(env) {
+  const configured = String(env.MEDWORDLE_COMPLETION_WEBHOOK || '').trim();
+  const fallback = String(env.MEDWORDLE_COMPLETION_WEBHOOK_FALLBACK || '').trim();
+  return [configured, DEFAULT_MEDWORDLE_COMPLETION_WEBHOOK, fallback].filter(Boolean);
+}
+
+async function handleMedWordleCompletion(request, env) {
   if (request.method !== 'POST') {
     return json({ ok: false, error: 'method_not_allowed' }, 405);
   }
@@ -279,16 +285,25 @@ async function handleMedWordleCompletion(request) {
 
   const message = `${mention}🩺 MedWordle completed by **${username}** — ${result}${dateKey ? ` on ${dateKey}` : ''}.`;
 
-  const webhookRes = await fetch(MEDWORDLE_COMPLETION_WEBHOOK, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ content: message }),
-  });
-
-  if (!webhookRes.ok) {
-    const errorText = await webhookRes.text().catch(() => '');
-    return json({ ok: false, error: 'webhook_failed', details: errorText.slice(0, 200) }, 502);
+  const webhookUrls = getMedWordleWebhookUrls(env);
+  if (!webhookUrls.length) {
+    return json({ ok: false, error: 'webhook_not_configured' }, 503);
   }
 
-  return json({ ok: true });
+  let lastError = '';
+  for (const webhookUrl of webhookUrls) {
+    const webhookRes = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ content: message }),
+    });
+    if (webhookRes.ok) {
+      return json({ ok: true });
+    }
+    const errorText = await webhookRes.text().catch(() => '');
+    lastError = `${webhookRes.status}: ${errorText.slice(0, 200)}`;
+    console.warn('MedWordle webhook attempt failed', { webhookUrl, status: webhookRes.status, error: errorText.slice(0, 200) });
+  }
+
+  return json({ ok: false, error: 'webhook_failed', details: lastError }, 502);
 }
