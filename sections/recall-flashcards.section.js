@@ -5,27 +5,33 @@ document.write(`\n<!-- ═══════════════════
 /* ── RECALL FLASHCARDS PAGE STYLES ── */
 #page-recall {
   min-height: 100vh;
-  background: var(--app-bg);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 212, 122, 0.22) 0%, rgba(255, 212, 122, 0) 34%),
+    radial-gradient(circle at 86% 8%, rgba(98, 204, 255, 0.22) 0%, rgba(98, 204, 255, 0) 38%),
+    linear-gradient(160deg, #081321 0%, #11263c 46%, #0f3857 100%);
   font-family: 'DM Sans', sans-serif;
   color: var(--ink);
 }
 
 /* Hero */
 .rc-hero {
-  background: linear-gradient(135deg, #0d1628 0%, #111e35 60%, #0a1220 100%);
-  border-bottom: 1px solid rgba(68,114,196,0.2);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 221, 149, 0.28) 0%, rgba(255, 221, 149, 0) 42%),
+    radial-gradient(circle at 86% 16%, rgba(124, 214, 255, 0.24) 0%, rgba(124, 214, 255, 0) 38%),
+    linear-gradient(132deg, #12304a 0%, #1f4a6f 52%, #2f6b8d 100%);
+  border-bottom: 1px solid rgba(135,195,255,0.24);
   padding: 3rem 2rem 2.5rem;
   text-align: center;
 }
 .rc-hero-eyebrow {
   font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em;
-  color: rgba(160,195,240,0.55); text-transform: uppercase; margin-bottom: 0.5rem;
+  color: rgba(229, 245, 255, 0.8); text-transform: uppercase; margin-bottom: 0.5rem;
 }
 .rc-hero-title {
   font-family: 'Lora', serif; font-size: 2rem; font-weight: 700;
-  color: #c8dff8; margin-bottom: 0.4rem;
+  color: #f4fbff; margin-bottom: 0.4rem;
 }
-.rc-hero-sub { font-size: 0.9rem; color: rgba(160,195,240,0.5); }
+.rc-hero-sub { font-size: 0.9rem; color: rgba(230, 246, 255, 0.74); }
 
 /* Tab Bar */
 .rc-tabs {
@@ -1011,7 +1017,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.3</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.4</span>
 </footer>
 
 </div><!-- /#page-recall -->
