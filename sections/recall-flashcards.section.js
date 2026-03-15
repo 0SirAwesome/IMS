@@ -237,25 +237,33 @@ document.write(`\n<!-- ═══════════════════
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;
 }
-.rc-library-title { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:var(--ink); }
+.rc-library-title { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:#eaf4ff; }
 .rc-library-controls {
   display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
 }
 .rc-search {
   padding: 0.45rem 0.85rem; border-radius: 99px;
-  border: 1px solid var(--border); background: var(--surface);
-  font-family: 'DM Sans', sans-serif; font-size: 0.84rem; color: var(--ink);
-  width: 200px; transition: border-color 0.2s;
+  border: 1px solid rgba(120, 190, 255, 0.22); background: rgba(15, 23, 42, 0.8);
+  font-family: 'DM Sans', sans-serif; font-size: 0.84rem; color: rgba(210, 230, 255, 0.92);
+  width: 200px; transition: border-color 0.2s, background 0.2s;
 }
-.rc-search:focus { outline: none; border-color: var(--accent-light); }
-.rc-search::placeholder { color: var(--ink-3); }
+.rc-search:focus {
+  outline: none;
+  border-color: rgba(120, 190, 255, 0.4);
+  background: rgba(11, 19, 32, 0.94);
+}
+.rc-search::placeholder { color: rgba(170, 195, 225, 0.76); }
 .rc-select {
   padding: 0.45rem 0.75rem; border-radius: 99px;
-  border: 1px solid var(--border); background: var(--surface);
-  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--ink-2);
+  border: 1px solid rgba(120, 190, 255, 0.22); background: rgba(15, 23, 42, 0.8);
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: rgba(210, 230, 255, 0.9);
   cursor: pointer;
 }
-.rc-select:focus { outline: none; }
+.rc-select:focus {
+  outline: none;
+  border-color: rgba(120, 190, 255, 0.4);
+  background: rgba(11, 19, 32, 0.94);
+}
 
 /* Card table */
 .rc-card-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
@@ -293,8 +301,8 @@ document.write(`\n<!-- ═══════════════════
   text-align: center; padding: 3rem 1.5rem; color: var(--ink-3);
 }
 .rc-empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-.rc-empty-msg { font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--ink-2); }
-.rc-empty-sub { font-size: 0.82rem; }
+.rc-empty-msg { font-size: 0.95rem; margin-bottom: 0.5rem; color: rgba(210, 230, 255, 0.9); }
+.rc-empty-sub { font-size: 0.82rem; color: rgba(170, 195, 225, 0.78); }
 
 /* Pagination */
 .rc-pagination { display:flex; gap:0.5rem; align-items:center; justify-content:center; margin-top:1rem; }
@@ -313,15 +321,20 @@ document.write(`\n<!-- ═══════════════════
   display: flex; gap: 0.5rem; margin-bottom: 1.5rem;
 }
 .rc-revise-tab {
-  padding: 0.5rem 1.2rem; border-radius: 99px; border: 1px solid var(--border);
-  background: var(--surface); font-family:'DM Sans',sans-serif;
-  font-size: 0.85rem; font-weight: 600; color: var(--ink-2);
+  padding: 0.5rem 1.2rem; border-radius: 99px;
+  border: 1px solid rgba(120, 190, 255, 0.22);
+  background: rgba(15, 23, 42, 0.78); font-family:'DM Sans',sans-serif;
+  font-size: 0.85rem; font-weight: 600; color: rgba(210, 230, 255, 0.9);
   cursor: pointer; transition: all 0.2s;
 }
 .rc-revise-tab.active {
-  background: var(--accent-light); color: #fff; border-color: var(--accent-light);
+  background: linear-gradient(135deg, #4d7fe0 0%, #3d6fd1 100%);
+  color: #fff; border-color: rgba(120, 190, 255, 0.4);
 }
-.rc-revise-tab:hover:not(.active) { background: var(--surface-2); }
+.rc-revise-tab:hover:not(.active) {
+  background: rgba(15, 23, 42, 0.92);
+  border-color: rgba(120, 190, 255, 0.35);
+}
 
 /* Stats row */
 .rc-stats-grid {
@@ -330,11 +343,14 @@ document.write(`\n<!-- ═══════════════════
 @media(max-width:640px){ .rc-stats-grid { grid-template-columns: repeat(3,1fr); } }
 @media(max-width:420px){ .rc-stats-grid { grid-template-columns: repeat(2,1fr); } }
 .rc-stat-tile {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(120, 190, 255, 0.16);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   padding: 0.85rem 0.75rem; text-align: center;
 }
-.rc-stat-val { font-family:'Lora',serif; font-size:1.5rem; font-weight:700; color:var(--ink); }
-.rc-stat-label { font-size:0.7rem; color:var(--ink-3); text-transform:uppercase; letter-spacing:0.06em; margin-top:0.15rem; }
+.rc-stat-val { font-family:'Lora',serif; font-size:1.5rem; font-weight:700; color:#eaf4ff; }
+.rc-stat-label { font-size:0.7rem; color:rgba(170, 195, 225, 0.78); text-transform:uppercase; letter-spacing:0.06em; margin-top:0.15rem; }
 
 /* Review card */
 .rc-review-wrap {
@@ -358,30 +374,32 @@ document.write(`\n<!-- ═══════════════════
 .rc-card-inner.flipped { transform: rotateY(180deg); }
 .rc-card-face {
   position: absolute; width: 100%; backface-visibility: hidden;
-  background: var(--surface-2); border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(120, 190, 255, 0.16);
   border-radius: var(--radius); padding: 1.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
   min-height: 200px; display: flex; flex-direction: column; justify-content: center;
 }
 .rc-card-back { transform: rotateY(180deg); }
 .rc-card-front-label {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-  color: var(--ink-2); text-transform: uppercase; margin-bottom: 0.75rem;
+  color: rgba(170, 195, 225, 0.78); text-transform: uppercase; margin-bottom: 0.75rem;
 }
 .rc-card-question {
-  font-family: 'Lora', serif; font-size: 1.15rem; font-weight: 600; color: var(--ink);
+  font-family: 'Lora', serif; font-size: 1.15rem; font-weight: 600; color: #eaf4ff;
   line-height: 1.55;
 }
 .rc-card-show-hint {
   margin-top: auto; padding-top: 1rem;
-  font-size: 0.78rem; color: var(--ink-2); text-align: center;
+  font-size: 0.78rem; color: rgba(170, 195, 225, 0.78); text-align: center;
   display: flex; align-items: center; justify-content: center; gap: 0.35rem;
 }
 .rc-card-answer-label {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-  color: var(--ink-2); text-transform: uppercase; margin-bottom: 0.75rem;
+  color: rgba(170, 195, 225, 0.78); text-transform: uppercase; margin-bottom: 0.75rem;
 }
 .rc-card-answer {
-  font-size: 0.95rem; color: var(--ink); line-height: 1.7; white-space: pre-wrap;
+  font-size: 0.95rem; color: #eaf4ff; line-height: 1.7; white-space: pre-wrap;
 }
 .rc-card-images {
   display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;
@@ -469,10 +487,12 @@ document.write(`\n<!-- ═══════════════════
 .rc-deck-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
 @media(max-width:640px){ .rc-deck-grid { grid-template-columns: 1fr; } }
 .rc-deck-card {
-  background: var(--surface); border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(120, 190, 255, 0.16);
   border-radius: var(--radius); padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
-.rc-deck-card h3 { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:var(--ink); margin-bottom:1rem; }
+.rc-deck-card h3 { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:#eaf4ff; margin-bottom:1rem; }
 .rc-tag-selector { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 1rem; }
 .rc-tag-select-pill {
   padding: 0.3rem 0.75rem; border-radius: 99px;
@@ -488,26 +508,29 @@ document.write(`\n<!-- ═══════════════════
 }
 .rc-match-btn {
   flex: 1; padding: 0.45rem; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); background: var(--surface-2);
+  border: 1px solid rgba(120, 190, 255, 0.2); background: rgba(11, 19, 32, 0.9);
   font-family:'DM Sans',sans-serif; font-size: 0.82rem; font-weight: 600;
-  color: var(--ink-2); cursor: pointer; transition: all 0.18s; text-align: center;
+  color: rgba(210, 230, 255, 0.88); cursor: pointer; transition: all 0.18s; text-align: center;
 }
-.rc-match-btn.active { background: var(--accent-light); color: #fff; border-color: var(--accent-light); }
+.rc-match-btn.active {
+  background: linear-gradient(135deg, #4d7fe0 0%, #3d6fd1 100%);
+  color: #fff; border-color: rgba(120, 190, 255, 0.42);
+}
 .rc-preview-count {
-  font-size: 0.83rem; color: var(--ink-2); margin-bottom: 1rem;
-  padding: 0.5rem 0.75rem; background: var(--surface-2);
+  font-size: 0.83rem; color: rgba(210, 230, 255, 0.86); margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem; background: rgba(11, 19, 32, 0.88);
   border-radius: var(--radius-sm); border-left: 3px solid var(--accent-light);
 }
 .rc-saved-deck-display {
   background: rgba(68,114,196,0.06); border: 1px solid rgba(68,114,196,0.2);
   border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem;
 }
-.rc-saved-deck-name { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:var(--ink); margin-bottom:0.3rem; }
-.rc-saved-deck-meta { font-size:0.8rem; color:var(--ink-3); }
+.rc-saved-deck-name { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:#eaf4ff; margin-bottom:0.3rem; }
+.rc-saved-deck-meta { font-size:0.8rem; color:rgba(170, 195, 225, 0.78); }
 .rc-deck-name-input {
   width: 100%; padding: 0.55rem 0.85rem; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); background: var(--bg);
-  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--ink);
+  border: 1px solid rgba(120, 190, 255, 0.2); background: rgba(11, 19, 32, 0.9);
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: #eaf4ff;
   margin-bottom: 0.75rem; transition: border-color 0.2s;
 }
 .rc-deck-name-input:focus { outline: none; border-color: var(--accent-light); }
@@ -537,11 +560,13 @@ document.write(`\n<!-- ═══════════════════
 }
 .rc-modal-overlay.open { display: flex; }
 .rc-modal {
-  background: var(--surface); border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(120, 190, 255, 0.2);
   border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 540px;
   max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.45);
 }
-.rc-modal-title { font-family:'Lora',serif; font-size:1.15rem; font-weight:700; color:var(--ink); margin-bottom:1rem; }
+.rc-modal-title { font-family:'Lora',serif; font-size:1.15rem; font-weight:700; color:#eaf4ff; margin-bottom:1rem; }
 .rc-modal-actions { display:flex; gap:0.6rem; justify-content:flex-end; margin-top:1.5rem; }
 
 /* ── IMAGE LIGHTBOX ── */
@@ -923,9 +948,9 @@ document.write(`\n<!-- ═══════════════════
           <div class="rc-deck-card">
             <h3>Build Custom Deck</h3>
 
-            <div style="font-size:0.8rem;color:var(--ink-3);margin-bottom:0.6rem;">Select tags to include:</div>
+            <div style="font-size:0.8rem;color:rgba(170, 195, 225, 0.78);margin-bottom:0.6rem;">Select tags to include:</div>
             <div class="rc-tag-selector" id="rc-deck-tag-selector">
-              <span style="font-size:0.82rem;color:var(--ink-3);">No tags yet. Create cards with tags first.</span>
+              <span style="font-size:0.82rem;color:rgba(170, 195, 225, 0.72);">No tags yet. Create cards with tags first.</span>
             </div>
 
             <div class="rc-match-toggle">
@@ -969,14 +994,14 @@ document.write(`\n<!-- ═══════════════════
         <div id="rc-deck-review-area" style="display:none;margin-top:1.5rem;">
           <div class="rc-review-wrap">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-              <span style="font-size:0.82rem;color:var(--ink-2);font-weight:600;" id="rc-deck-review-name"></span>
+              <span style="font-size:0.82rem;color:rgba(210, 230, 255, 0.88);font-weight:600;" id="rc-deck-review-name"></span>
               <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcEndDeckReview()">✕ End</button>
             </div>
             <div style="display:flex;align-items:center;gap:0.75rem;">
               <div class="rc-review-progress-bar-bg" style="flex:1;">
                 <div class="rc-review-progress-bar-fill" id="rc-deck-prog-fill" style="width:0%"></div>
               </div>
-              <div style="font-size:0.78rem;color:var(--ink-3);white-space:nowrap;" id="rc-deck-prog-label">0 / 0</div>
+              <div style="font-size:0.78rem;color:rgba(170, 195, 225, 0.78);white-space:nowrap;" id="rc-deck-prog-label">0 / 0</div>
             </div>
             <div class="rc-card-scene">
               <div class="rc-card-inner" id="rc-deck-card-inner">
@@ -1017,7 +1042,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.4</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.7</span>
 </footer>
 
 </div><!-- /#page-recall -->
@@ -2225,7 +2250,7 @@ document.write(`\n<!-- ═══════════════════
     const sel = _el('rc-deck-tag-selector');
     if (!sel) return;
     const tags = allTags();
-    if (!tags.length) { sel.innerHTML = '<span style="font-size:0.82rem;color:var(--ink-3);">No tags yet. Create cards with tags first.</span>'; return; }
+    if (!tags.length) { sel.innerHTML = '<span style="font-size:0.82rem;color:rgba(170, 195, 225, 0.72);">No tags yet. Create cards with tags first.</span>'; return; }
     sel.innerHTML = tags.map(t =>
       '<button class="rc-tag-select-pill ' + (_deckSelectedTags.includes(t) ? 'selected' : '') + '" onclick="rcToggleDeckTag(\'' + sanitize(t) + '\')">' + sanitize(t) + '</button>'
     ).join('');
