@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.36 -->
+<!-- IMS v0.5.37 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2913,7 +2913,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.36</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.37</span>
   </footer>
 
 </div>
@@ -5253,7 +5253,7 @@ async function notifyMedWordleCompletion(won, guessCount) {
   }
 
   try {
-    await fetch('/api/medwordle/completed', {
+    const res = await fetch('/api/medwordle/completed', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5264,6 +5264,10 @@ async function notifyMedWordleCompletion(won, guessCount) {
         discordId,
       }),
     });
+    if (!res.ok) {
+      const details = await res.text().catch(() => '');
+      console.warn('MedWordle completion webhook returned non-OK response:', res.status, details.slice(0, 200));
+    }
   } catch (e) {
     console.warn('MedWordle completion webhook failed:', e);
   }
