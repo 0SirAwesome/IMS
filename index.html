@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.35 -->
+<!-- IMS v0.5.36 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2913,7 +2913,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.35</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.36</span>
   </footer>
 
 </div>
@@ -4656,7 +4656,9 @@ window.loginWithGoogle = async function() {
     if (!window._firebaseAuth) throw new Error('Firebase Auth is unavailable.');
     const provider = new firebase.auth.GoogleAuthProvider();
     const result = await window._firebaseAuth.signInWithPopup(provider);
-    const user = await resolveAppUserFromGoogleAuth(result.user);
+    const resolver = window.resolveAppUserFromGoogleAuth || (typeof resolveAppUserFromGoogleAuth === 'function' ? resolveAppUserFromGoogleAuth : null);
+    if (!resolver) throw new ReferenceError('resolveAppUserFromGoogleAuth is not available');
+    const user = await resolver(result.user);
     if (!user) throw new Error('Account setup incomplete.');
     document.getElementById('nav-auth-overlay')?.classList.remove('open');
     await initializeAppForUser(user, 'google');
@@ -6085,7 +6087,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     return ('g_' + String(googleUid || '').replace(/[^a-z0-9]/gi, '').toLowerCase()).slice(0, 14);
   }
 
-  async function resolveAppUserFromGoogleAuth(firebaseUser) {
+  const resolveAppUserFromGoogleAuth = window.resolveAppUserFromGoogleAuth = async function(firebaseUser) {
     if (!firebaseUser?.uid) return null;
     let user = await DB.getUserByGoogleId(firebaseUser.uid);
     if (!user && firebaseUser.email) {
@@ -6107,7 +6109,7 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
 
     await DB.saveUser(user);
     return normalizeUserStats(user);
-  }
+  };
 
   const AUTH_SESSION_METHOD_KEY = 'ims_auth_method';
 
