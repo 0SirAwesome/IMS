@@ -1061,7 +1061,7 @@ document.write(`\n<!-- ═══════════════════
               <div class="rc-summary-item"><div class="val" id="rc-sum-hard">0</div><div class="lbl">Hard</div></div>
               <div class="rc-summary-item"><div class="val" id="rc-sum-next">—</div><div class="lbl">Next Due</div></div>
             </div>
-            <button class="rc-btn rc-btn-primary" onclick="rcInitReviewSession()">Review Again</button>
+            <button class="rc-btn rc-btn-primary" onclick="rcInitReviewSession()">Continue Today's Reviews</button>
           </div>
         </div>
 
@@ -1170,7 +1170,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.12</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.13</span>
 </footer>
 
 </div><!-- /#page-recall -->
@@ -1556,6 +1556,8 @@ document.write(`\n<!-- ═══════════════════
         _currentUser = username;
         _pageActive = false;
         window.recallPageActivated();
+      } else if (_currentUser) {
+        rcInitReviewSession();
       } else if (!_currentUser) {
         _showAuthGates();
       }
