@@ -330,7 +330,15 @@ document.write(`\n<!-- ═══════════════════
 
 /* Review card - use consistent spacing so buttons stay visible */
 .rc-review-wrap { max-width: 660px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
-/* Scene height = front face height. Back face scrolls within itself. */
+.rc-review-answer-layout { display:flex; flex-direction:column; gap:20px; }
+.rc-review-answer-panel {
+  background: linear-gradient(145deg, rgba(13,28,58,0.25), rgba(8,18,38,0.15));
+  border: 1px solid rgba(68,114,196,0.2);
+  border-radius: var(--radius);
+  padding: 0.7rem;
+}
+.rc-review-controls-panel { display:flex; flex-direction:column; }
+/* Scene height is synced in JS so the revealed answer never overlaps controls. */
 .rc-card-scene { perspective: 1200px; width: 100%; min-height: 220px; position: relative; }
 .rc-review-progress-bar-bg { height: 4px; background: rgba(68,114,196,0.15); border-radius: 99px; }
 .rc-review-progress-bar-fill {
@@ -340,7 +348,7 @@ document.write(`\n<!-- ═══════════════════
 }
 .rc-card-scene { perspective: 1200px; width: 100%; min-height: 200px; }
 .rc-card-inner {
-  position: relative; width: 100%; min-height: 200px;
+  position: relative; width: 100%; height: 100%; min-height: 200px;
   transform-style: preserve-3d; transition: transform 0.5s;
 }
 .rc-card-inner.flipped { transform: rotateY(180deg); }
@@ -350,7 +358,7 @@ document.write(`\n<!-- ═══════════════════
   background: linear-gradient(145deg, rgba(13,28,58,0.92), rgba(8,18,38,0.96));
   border: 1px solid rgba(68,114,196,0.25);
   border-radius: var(--radius); padding: 1.75rem;
-  min-height: 200px; display: flex; flex-direction: column; justify-content: center;
+  min-height: 200px; height: 100%; display: flex; flex-direction: column; justify-content: center;
   box-shadow: 0 8px 40px rgba(0,0,0,0.4);
   box-sizing: border-box;
 }
@@ -584,7 +592,7 @@ document.write(`\n<!-- ═══════════════════
 
 /* Review card quick actions */
 .rc-review-card-actions {
-  display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:center;
+  display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:center; margin-top:12px;
   opacity:0; pointer-events:none; transition:opacity 0.3s;
 }
 .rc-review-card-actions.visible { opacity:1; pointer-events:auto; }
@@ -664,6 +672,7 @@ document.write(`\n<!-- ═══════════════════
   .rc-rating-row { grid-template-columns:repeat(2,1fr); }
   .rc-rate-btn { padding:0.72rem 0.4rem; }
   .rc-rev-action-btn { font-size:0.72rem; padding:0.25rem 0.55rem; }
+  .rc-review-answer-layout { gap:16px; }
 }
 </style>
 
@@ -1101,49 +1110,53 @@ document.write(`\n<!-- ═══════════════════
               ⏳ No cards due right now — showing cards returning within the next 6 hours
             </div>
 
-            <!-- Card -->
-            <div class="rc-card-scene" id="rc-card-scene">
-              <div class="rc-card-inner" id="rc-card-inner">
-                <!-- Front -->
-                <div class="rc-card-face" id="rc-card-front">
-                  <div class="rc-card-front-label">Question</div>
-                  <div class="rc-card-question" id="rc-card-question"></div>
-                  <div id="rc-card-hint-row" style="display:none;margin-top:0.65rem;padding:0.35rem 0.6rem;background:rgba(68,114,196,0.06);border-radius:var(--radius-sm);font-size:0.81rem;color:rgba(140,175,220,0.5);border-left:2px solid rgba(68,114,196,0.3);">
-                    <span style="font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-right:0.3rem;">Hint</span>
-                    <span id="rc-card-hint-text"></span>
+            <div class="rc-review-answer-layout">
+              <div class="rc-review-answer-panel">
+                <!-- Card -->
+                <div class="rc-card-scene" id="rc-card-scene">
+                  <div class="rc-card-inner" id="rc-card-inner">
+                    <!-- Front -->
+                    <div class="rc-card-face" id="rc-card-front">
+                      <div class="rc-card-front-label">Question</div>
+                      <div class="rc-card-question" id="rc-card-question"></div>
+                      <div id="rc-card-hint-row" style="display:none;margin-top:0.65rem;padding:0.35rem 0.6rem;background:rgba(68,114,196,0.06);border-radius:var(--radius-sm);font-size:0.81rem;color:rgba(140,175,220,0.5);border-left:2px solid rgba(68,114,196,0.3);">
+                        <span style="font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-right:0.3rem;">Hint</span>
+                        <span id="rc-card-hint-text"></span>
+                      </div>
+                      <div class="rc-card-show-hint">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+                        Tap to reveal
+                      </div>
+                    </div>
+                    <!-- Back: scrollable content area -->
+                    <div class="rc-card-face rc-card-back" id="rc-card-back" style="overflow-y:auto;max-height:340px;justify-content:flex-start;">
+                      <div class="rc-card-answer-label">Answer</div>
+                      <div class="rc-card-answer" id="rc-card-answer"></div>
+                      <div class="rc-card-images" id="rc-card-images"></div>
+                      <div id="rc-card-mnemonic-row" style="display:none;">
+                        <hr class="rc-card-extra-divider">
+                        <div class="rc-card-extra-label">Mnemonic</div>
+                        <div class="rc-card-extra-text" id="rc-card-mnemonic-text"></div>
+                      </div>
+                      <div id="rc-card-pearl-row" style="display:none;">
+                        <hr class="rc-card-extra-divider">
+                        <div class="rc-card-extra-label">💡 Clinical Pearl</div>
+                        <div class="rc-card-pearl-text" id="rc-card-pearl-text"></div>
+                      </div>
+                      <div id="rc-card-source-row" style="display:none;">
+                        <div class="rc-card-source-text" id="rc-card-source-text"></div>
+                      </div>
+                      <div class="rc-card-tags" id="rc-card-tags"></div>
+                    </div>
                   </div>
-                  <div class="rc-card-show-hint">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
-                    Tap to reveal
-                  </div>
-                </div>
-                <!-- Back: scrollable content area, buttons pinned outside -->
-                <div class="rc-card-face rc-card-back" id="rc-card-back" style="overflow-y:auto;max-height:340px;justify-content:flex-start;">
-                  <div class="rc-card-answer-label">Answer</div>
-                  <div class="rc-card-answer" id="rc-card-answer"></div>
-                  <div class="rc-card-images" id="rc-card-images"></div>
-                  <div id="rc-card-mnemonic-row" style="display:none;">
-                    <hr class="rc-card-extra-divider">
-                    <div class="rc-card-extra-label">Mnemonic</div>
-                    <div class="rc-card-extra-text" id="rc-card-mnemonic-text"></div>
-                  </div>
-                  <div id="rc-card-pearl-row" style="display:none;">
-                    <hr class="rc-card-extra-divider">
-                    <div class="rc-card-extra-label">💡 Clinical Pearl</div>
-                    <div class="rc-card-pearl-text" id="rc-card-pearl-text"></div>
-                  </div>
-                  <div id="rc-card-source-row" style="display:none;">
-                    <div class="rc-card-source-text" id="rc-card-source-text"></div>
-                  </div>
-                  <div class="rc-card-tags" id="rc-card-tags"></div>
                 </div>
               </div>
-            </div>
 
-            <!-- Show answer / rating -->
-            <button class="rc-show-answer-btn" id="rc-show-answer-btn" onclick="rcFlipCard()">Show Answer</button>
+              <div class="rc-review-controls-panel">
+                <!-- Show answer / rating -->
+                <button class="rc-show-answer-btn" id="rc-show-answer-btn" onclick="rcFlipCard()">Show Answer</button>
 
-            <div class="rc-rating-row" id="rc-rating-row">
+                <div class="rc-rating-row" id="rc-rating-row">
               <button class="rc-rate-btn rc-rate-again" onclick="rcRate('again')">
                 <span class="rc-rate-label">Again</span>
                 <span class="rc-rate-sub" id="rc-lbl-again">1 min</span>
@@ -1160,13 +1173,15 @@ document.write(`\n<!-- ═══════════════════
                 <span class="rc-rate-label">Easy</span>
                 <span class="rc-rate-sub" id="rc-lbl-easy">4 days</span>
               </button>
-            </div>
+                </div>
 
-            <!-- Quick actions from review screen (appear after flip) -->
-            <div class="rc-review-card-actions" id="rc-review-card-actions">
-              <button class="rc-rev-action-btn" onclick="rcBuryFromReview()" title="Hide until tomorrow">⌛ Bury</button>
-              <button class="rc-rev-action-btn" id="rc-rev-suspend-btn" onclick="rcSuspendFromReview()">⏸ Suspend</button>
-              <button class="rc-rev-action-btn" onclick="rcResetFromReview()" title="Reset to new">↺ Reset</button>
+                <!-- Quick actions from review screen (appear after flip) -->
+                <div class="rc-review-card-actions" id="rc-review-card-actions">
+                  <button class="rc-rev-action-btn" onclick="rcBuryFromReview()" title="Hide until tomorrow">⌛ Bury</button>
+                  <button class="rc-rev-action-btn" id="rc-rev-suspend-btn" onclick="rcSuspendFromReview()">⏸ Suspend</button>
+                  <button class="rc-rev-action-btn" onclick="rcResetFromReview()" title="Reset to new">↺ Reset</button>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -1266,8 +1281,10 @@ document.write(`\n<!-- ═══════════════════
               </div>
               <div style="font-size:0.78rem;color:var(--ink-3);white-space:nowrap;" id="rc-deck-prog-label">0 / 0</div>
             </div>
-            <div class="rc-card-scene" id="rc-deck-card-scene">
-              <div class="rc-card-inner" id="rc-deck-card-inner">
+            <div class="rc-review-answer-layout">
+              <div class="rc-review-answer-panel">
+                <div class="rc-card-scene" id="rc-deck-card-scene">
+                  <div class="rc-card-inner" id="rc-deck-card-inner">
                 <div class="rc-card-face" id="rc-deck-card-front">
                   <div class="rc-card-front-label">Question</div>
                   <div class="rc-card-question" id="rc-deck-card-question"></div>
@@ -1286,15 +1303,18 @@ document.write(`\n<!-- ═══════════════════
                     <div class="rc-card-pearl-text" id="rc-deck-card-pearl"></div>
                   </div>
                   <div class="rc-card-tags" id="rc-deck-card-tags"></div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <button class="rc-show-answer-btn" id="rc-deck-show-btn" onclick="rcDeckFlipCard()">Show Answer</button>
-            <div class="rc-rating-row" id="rc-deck-rating-row">
+              <div class="rc-review-controls-panel">
+                <button class="rc-show-answer-btn" id="rc-deck-show-btn" onclick="rcDeckFlipCard()">Show Answer</button>
+                <div class="rc-rating-row" id="rc-deck-rating-row">
               <button class="rc-rate-btn rc-rate-again" onclick="rcDeckRate('again')"><span class="rc-rate-label">Again</span><span class="rc-rate-sub">1 min</span></button>
               <button class="rc-rate-btn rc-rate-hard" onclick="rcDeckRate('hard')"><span class="rc-rate-label">Hard</span><span class="rc-rate-sub">5 min</span></button>
               <button class="rc-rate-btn rc-rate-good" onclick="rcDeckRate('good')"><span class="rc-rate-label">Good</span><span class="rc-rate-sub">1 day</span></button>
               <button class="rc-rate-btn rc-rate-easy" onclick="rcDeckRate('easy')"><span class="rc-rate-label">Easy</span><span class="rc-rate-sub">4 days</span></button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1310,7 +1330,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.0</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.1</span>
 </footer>
 
 </div><!-- /#page-recall -->
@@ -1701,9 +1721,26 @@ document.write(`\n<!-- ═══════════════════
     } else {
       rcInitReviewSession();
     }
+    setTimeout(_syncAllReviewSceneHeights, 0);
   }
 
   function _el(id) { return document.getElementById(id); }
+
+  function _syncReviewCardSceneHeight(sceneId, frontId, backId, flipped) {
+    const scene = _el(sceneId), front = _el(frontId), back = _el(backId);
+    if (!scene || !front || !back) return;
+    const minH = 200;
+    const frontH = Math.max(minH, Math.ceil(front.scrollHeight));
+    const backH = Math.max(minH, Math.ceil(back.scrollHeight));
+    const target = flipped ? Math.min(340, backH) : frontH;
+    scene.style.height = target + 'px';
+    scene.style.minHeight = target + 'px';
+  }
+
+  function _syncAllReviewSceneHeights() {
+    _syncReviewCardSceneHeight('rc-card-scene', 'rc-card-front', 'rc-card-back', _reviewFlipped);
+    _syncReviewCardSceneHeight('rc-deck-card-scene', 'rc-deck-card-front', 'rc-deck-card-back', _deckFlipped);
+  }
 
   // ── TOAST ──────────────────────────────────────────────────────
   function rcToast(msg, type = 'success') {
@@ -2636,6 +2673,7 @@ document.write(`\n<!-- ═══════════════════
     if (suspBtn) suspBtn.textContent = card.suspended ? '▶ Unsuspend' : '⏸ Suspend';
 
     _reviewMode = 'general';
+    _syncReviewCardSceneHeight('rc-card-scene', 'rc-card-front', 'rc-card-back', false);
   }
 
   window.rcFlipCard = function() {
@@ -2647,6 +2685,7 @@ document.write(`\n<!-- ═══════════════════
     if (showBtn) showBtn.style.display = 'none';
     if (rateRow) rateRow.classList.add('visible');
     if (actRow)  actRow.classList.add('visible');
+    _syncReviewCardSceneHeight('rc-card-scene', 'rc-card-front', 'rc-card-back', true);
   };
 
   window.rcRate = function(rating) {
@@ -3031,6 +3070,7 @@ document.write(`\n<!-- ═══════════════════
     const showBtn = _el('rc-deck-show-btn'), rateRow = _el('rc-deck-rating-row');
     if (showBtn) showBtn.style.display = '';
     if (rateRow) rateRow.classList.remove('visible');
+    _syncReviewCardSceneHeight('rc-deck-card-scene', 'rc-deck-card-front', 'rc-deck-card-back', false);
   }
 
   window.rcDeckFlipCard = function() {
@@ -3040,6 +3080,7 @@ document.write(`\n<!-- ═══════════════════
     if (inner)   inner.classList.add('flipped');
     if (showBtn) showBtn.style.display = 'none';
     if (rateRow) rateRow.classList.add('visible');
+    _syncReviewCardSceneHeight('rc-deck-card-scene', 'rc-deck-card-front', 'rc-deck-card-back', true);
   };
 
   window.rcDeckRate = function(rating) {
@@ -3095,6 +3136,8 @@ document.write(`\n<!-- ═══════════════════
   // ── INIT HOOK ─────────────────────────────────────────────────
   // Called when user logs in/out
   // ── CARD SCENE CLICK-TO-REVEAL ────────────────────────────────
+  window.addEventListener('resize', _syncAllReviewSceneHeights);
+
   // General review: click card face to flip (not buttons/links)
   document.addEventListener('click', function(e) {
     const scene = _el('rc-card-scene');
