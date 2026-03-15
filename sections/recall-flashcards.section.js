@@ -4,63 +4,28 @@ document.write(`\n<!-- ═══════════════════
 <style>
 /* ── RECALL FLASHCARDS PAGE STYLES ── */
 #page-recall {
-  --bg-main: #0A2A47;
-  --bg-panel: #0F3558;
-  --bg-panel-hover: #154167;
-  --border-soft: rgba(255,255,255,0.16);
-  --border-strong: rgba(255,255,255,0.28);
-
-  --text-primary: #F4F8FC;
-  --text-secondary: #B8C7D9;
-  --text-muted: #88A0B8;
-
-  --accent-blue: #6EA8FF;
-  --accent-cyan: #7FD4FF;
-
-  --success-bg: rgba(34, 197, 94, 0.18);
-  --success-text: #4ADE80;
-
-  --info-bg: rgba(59, 130, 246, 0.18);
-  --info-text: #7CB7FF;
-
-  --warning-bg: rgba(251, 146, 60, 0.18);
-  --warning-text: #FDBA74;
-
-  --danger-bg: rgba(239, 68, 68, 0.14);
-  --danger-text: #FF6B6B;
-
-  --input-bg: rgba(255,255,255,0.08);
-  --input-text: #F4F8FC;
-  --input-placeholder: #88A0B8;
-
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 12% 18%, rgba(255, 212, 122, 0.22) 0%, rgba(255, 212, 122, 0) 34%),
-    radial-gradient(circle at 86% 8%, rgba(98, 204, 255, 0.22) 0%, rgba(98, 204, 255, 0) 38%),
-    linear-gradient(160deg, #081321 0%, #11263c 46%, #0f3857 100%);
+  background: var(--bg);
   font-family: 'DM Sans', sans-serif;
   color: var(--ink);
 }
 
 /* Hero */
 .rc-hero {
-  background:
-    radial-gradient(circle at 12% 18%, rgba(255, 221, 149, 0.28) 0%, rgba(255, 221, 149, 0) 42%),
-    radial-gradient(circle at 86% 16%, rgba(124, 214, 255, 0.24) 0%, rgba(124, 214, 255, 0) 38%),
-    linear-gradient(132deg, #12304a 0%, #1f4a6f 52%, #2f6b8d 100%);
-  border-bottom: 1px solid rgba(135,195,255,0.24);
+  background: linear-gradient(135deg, #0d1628 0%, #111e35 60%, #0a1220 100%);
+  border-bottom: 1px solid rgba(68,114,196,0.2);
   padding: 3rem 2rem 2.5rem;
   text-align: center;
 }
 .rc-hero-eyebrow {
   font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em;
-  color: rgba(229, 245, 255, 0.8); text-transform: uppercase; margin-bottom: 0.5rem;
+  color: rgba(160,195,240,0.55); text-transform: uppercase; margin-bottom: 0.5rem;
 }
 .rc-hero-title {
   font-family: 'Lora', serif; font-size: 2rem; font-weight: 700;
-  color: #f4fbff; margin-bottom: 0.4rem;
+  color: #c8dff8; margin-bottom: 0.4rem;
 }
-.rc-hero-sub { font-size: 0.9rem; color: rgba(230, 246, 255, 0.74); }
+.rc-hero-sub { font-size: 0.9rem; color: rgba(160,195,240,0.5); }
 
 /* Tab Bar */
 .rc-tabs {
@@ -107,51 +72,39 @@ document.write(`\n<!-- ═══════════════════
 @media(max-width:768px){ .rc-creator-grid { grid-template-columns: 1fr; } }
 
 .rc-card-form {
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid rgba(120, 190, 255, 0.16);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 1.5rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(8px);
 }
 .rc-form-title {
   font-family: 'Lora', serif; font-size: 1.1rem; font-weight: 700;
-  color: #eaf4ff; margin-bottom: 1.25rem;
+  color: var(--ink); margin-bottom: 1.25rem;
 }
 .rc-field { margin-bottom: 1.1rem; }
 .rc-label {
   display: block; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em;
-  color: rgba(210, 230, 255, 0.78); text-transform: uppercase; margin-bottom: 0.4rem;
+  color: var(--ink-2); text-transform: uppercase; margin-bottom: 0.4rem;
 }
-.rc-label span { color: rgba(170, 195, 225, 0.62); font-weight: 400; text-transform: none; font-size: 0.76rem; }
+.rc-label span { color: var(--ink-3); font-weight: 400; text-transform: none; font-size: 0.76rem; }
 .rc-textarea {
   width: 100%; padding: 0.7rem 0.9rem; border-radius: var(--radius-sm);
-  border: 1px solid rgba(120, 190, 255, 0.18); background: rgba(11, 19, 32, 0.9);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
-  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: #eaf4ff;
+  border: 1px solid var(--border); background: var(--bg);
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--ink);
   resize: vertical; transition: border-color 0.2s;
   min-height: 80px;
 }
-.rc-textarea:focus {
-  outline: none;
-  border-color: rgba(103, 208, 255, 0.55);
-  box-shadow: 0 0 0 3px rgba(70, 170, 255, 0.14);
-}
-.rc-textarea::placeholder { color: rgba(170, 195, 225, 0.52); }
-.rc-char-count { text-align: right; font-size: 0.72rem; color: rgba(170, 195, 225, 0.62); margin-top: 0.2rem; }
+.rc-textarea:focus { outline: none; border-color: var(--accent-light); }
+.rc-textarea::placeholder { color: var(--ink-3); }
+.rc-char-count { text-align: right; font-size: 0.72rem; color: var(--ink-3); margin-top: 0.2rem; }
 .rc-char-count.warn { color: var(--orange); }
 
 /* Tag input */
 .rc-tag-input-wrap {
   display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;
   padding: 0.5rem 0.7rem; border-radius: var(--radius-sm);
-  border: 1px solid rgba(120, 190, 255, 0.18); background: rgba(11, 19, 32, 0.9);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+  border: 1px solid var(--border); background: var(--bg);
   cursor: text; transition: border-color 0.2s; min-height: 42px;
 }
-.rc-tag-input-wrap:focus-within {
-  border-color: rgba(103, 208, 255, 0.55);
-  box-shadow: 0 0 0 3px rgba(70, 170, 255, 0.14);
-}
+.rc-tag-input-wrap:focus-within { border-color: var(--accent-light); }
 .rc-tag-chip {
   display: inline-flex; align-items: center; gap: 0.3rem;
   background: rgba(68,114,196,0.15); border: 1px solid rgba(68,114,196,0.3);
@@ -166,24 +119,20 @@ document.write(`\n<!-- ═══════════════════
 .rc-tag-chip button:hover { color: #e53e3e; }
 .rc-tag-input {
   border: none; outline: none; background: transparent;
-  font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: #eaf4ff;
+  font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--ink);
   min-width: 120px; flex: 1;
 }
-.rc-tag-input::placeholder { color: rgba(170, 195, 225, 0.52); }
+.rc-tag-input::placeholder { color: var(--ink-3); }
 
 /* Image upload */
 .rc-img-upload-area {
-  border: 1px dashed rgba(120, 190, 255, 0.28); border-radius: var(--radius-sm);
+  border: 2px dashed var(--border); border-radius: var(--radius-sm);
   padding: 1rem; text-align: center; cursor: pointer;
-  transition: all 0.2s; color: rgba(210, 230, 255, 0.72); font-size: 0.84rem;
-  background: rgba(10, 18, 30, 0.75);
+  transition: all 0.2s; color: var(--ink-3); font-size: 0.84rem;
+  background: var(--bg);
 }
-.rc-img-upload-area:hover {
-  border-color: rgba(120, 210, 255, 0.48);
-  background: rgba(14, 24, 40, 0.9);
-  color: rgba(210, 230, 255, 0.82);
-}
-.rc-img-upload-area.drag-over { border-color: rgba(120, 210, 255, 0.48); background: rgba(14, 24, 40, 0.9); }
+.rc-img-upload-area:hover { border-color: var(--accent-light); color: var(--ink-2); }
+.rc-img-upload-area.drag-over { border-color: var(--accent-light); background: rgba(68,114,196,0.05); }
 .rc-img-previews {
   display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.75rem;
 }
@@ -209,16 +158,9 @@ document.write(`\n<!-- ═══════════════════
   cursor: pointer; transition: all 0.2s; border: none;
 }
 .rc-btn-primary {
-  background: linear-gradient(135deg, #4d7fe0 0%, #3d6fd1 100%);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 8px 22px rgba(61, 111, 209, 0.28);
+  background: var(--accent-light); color: #fff;
 }
-.rc-btn-primary:hover {
-  background: linear-gradient(135deg, #588bea 0%, #4778d9 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(61, 111, 209, 0.34);
-}
+.rc-btn-primary:hover { background: #3561b0; transform: translateY(-1px); }
 .rc-btn-primary:disabled { background: var(--ink-3); cursor: not-allowed; transform: none; opacity: 0.6; }
 .rc-btn-ghost {
   background: transparent; color: var(--ink-2);
@@ -235,15 +177,12 @@ document.write(`\n<!-- ═══════════════════
 /* Sidebar */
 .rc-sidebar { display: flex; flex-direction: column; gap: 1rem; }
 .rc-sidebar-card {
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid rgba(120, 190, 255, 0.16);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 1.25rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(8px);
 }
 .rc-sidebar-card h4 {
   font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em;
-  color: #eaf4ff; text-transform: uppercase; margin-bottom: 0.75rem;
+  color: var(--ink-2); text-transform: uppercase; margin-bottom: 0.75rem;
 }
 .rc-limit-bar-bg {
   height: 6px; background: var(--surface-2); border-radius: 99px; margin: 0.5rem 0;
@@ -255,10 +194,10 @@ document.write(`\n<!-- ═══════════════════
 }
 .rc-limit-bar-fill.warn { background: linear-gradient(90deg, var(--orange), #ffc000); }
 .rc-limit-bar-fill.full { background: linear-gradient(90deg, #e53e3e, #c53030); }
-.rc-limit-text { font-size: 0.82rem; color: rgba(210, 230, 255, 0.78); }
+.rc-limit-text { font-size: 0.82rem; color: var(--ink-2); }
 
 /* Tips list */
-.rc-tips { list-style: none; font-size: 0.82rem; color: rgba(210, 230, 255, 0.78); line-height: 1.8; }
+.rc-tips { list-style: none; font-size: 0.82rem; color: var(--ink-3); line-height: 1.8; }
 .rc-tips li::before { content: "→ "; color: var(--accent-light); }
 
 /* ── MY CARDS LIBRARY ── */
@@ -266,73 +205,54 @@ document.write(`\n<!-- ═══════════════════
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;
 }
-.rc-library-title {
-  font-family:'Lora',serif;
-  font-size:1rem;
-  font-weight:600;
-  color:var(--text-primary);
-}
+.rc-library-title { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:var(--ink); }
 .rc-library-controls {
   display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
 }
 .rc-search {
   padding: 0.45rem 0.85rem; border-radius: 99px;
-  border: 1px solid var(--border-soft); background: var(--input-bg);
-  font-family: 'DM Sans', sans-serif; font-size: 0.84rem; color: var(--input-text);
-  width: 200px; transition: border-color 0.2s, background 0.2s;
+  border: 1px solid var(--border); background: var(--surface);
+  font-family: 'DM Sans', sans-serif; font-size: 0.84rem; color: var(--ink);
+  width: 200px; transition: border-color 0.2s;
 }
-.rc-search:focus {
-  outline: none;
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 3px rgba(127, 212, 255, 0.15);
-}
-.rc-search::placeholder { color: var(--input-placeholder); }
+.rc-search:focus { outline: none; border-color: var(--accent-light); }
+.rc-search::placeholder { color: var(--ink-3); }
 .rc-select {
   padding: 0.45rem 0.75rem; border-radius: 99px;
-  border: 1px solid var(--border-soft); background: var(--input-bg);
-  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--input-text);
+  border: 1px solid var(--border); background: var(--surface);
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--ink-2);
   cursor: pointer;
 }
-.rc-select:focus {
-  outline: none;
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 3px rgba(127, 212, 255, 0.15);
-}
+.rc-select:focus { outline: none; }
 
 /* Card table */
 .rc-card-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
 .rc-card-table th {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
-  color: var(--text-secondary); text-transform: uppercase; text-align: left;
-  padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border-strong);
+  color: var(--ink-3); text-transform: uppercase; text-align: left;
+  padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border);
 }
 .rc-card-table td {
-  padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border-soft);
-  font-size: 0.85rem; color: var(--text-primary); vertical-align: middle;
+  padding: 0.65rem 0.75rem; border-bottom: 1px solid rgba(200,214,235,0.4);
+  font-size: 0.85rem; color: var(--ink); vertical-align: middle;
 }
-.rc-card-table tr:hover td { background: rgba(255,255,255,0.03); }
+.rc-card-table tr:hover td { background: rgba(68,114,196,0.04); }
 .rc-card-table .rc-q-cell {
   max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.rc-muted-cell { color: var(--text-muted); font-size: 0.75rem; }
 .rc-badge {
   display: inline-block; padding: 0.15rem 0.55rem; border-radius: 99px;
   font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
-  border: 1px solid transparent;
 }
-.rc-badge-new { background: var(--info-bg); color: var(--info-text); border-color: rgba(124, 183, 255, 0.22); }
+.rc-badge-new { background: rgba(68,114,196,0.15); color: var(--accent-light); }
 .rc-badge-learning { background: rgba(255,192,0,0.15); color: #b8860b; }
 .rc-badge-review { background: rgba(22,101,52,0.15); color: var(--green); }
 .rc-badge-relearning { background: rgba(237,125,49,0.15); color: var(--orange); }
 .rc-badge-suspended { background: rgba(122,143,166,0.15); color: var(--ink-3); }
-.rc-badge-easy { background: var(--success-bg); color: var(--success-text); border-color: rgba(74, 222, 128, 0.2); }
+.rc-badge-easy { background: rgba(22,101,52,0.1); color: var(--green); }
 .rc-badge-medium { background: rgba(255,192,0,0.12); color: #b8860b; }
 .rc-badge-hard { background: rgba(229,62,62,0.12); color: #c53030; }
-.rc-badge-due {
-  background: var(--warning-bg);
-  color: var(--warning-text);
-  border-color: rgba(253, 186, 116, 0.2);
-}
+.rc-badge-due { background: rgba(237,125,49,0.15); color: var(--orange); }
 .rc-star { cursor: pointer; font-size: 1rem; transition: transform 0.15s; user-select:none; }
 .rc-star:hover { transform: scale(1.25); }
 
@@ -341,60 +261,35 @@ document.write(`\n<!-- ═══════════════════
   text-align: center; padding: 3rem 1.5rem; color: var(--ink-3);
 }
 .rc-empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-.rc-empty-msg { font-size: 0.95rem; margin-bottom: 0.5rem; color: rgba(210, 230, 255, 0.9); }
-.rc-empty-sub { font-size: 0.82rem; color: rgba(170, 195, 225, 0.78); }
+.rc-empty-msg { font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--ink-2); }
+.rc-empty-sub { font-size: 0.82rem; }
 
 /* Pagination */
 .rc-pagination { display:flex; gap:0.5rem; align-items:center; justify-content:center; margin-top:1rem; }
 .rc-page-btn {
-  background: rgba(255,255,255,0.12); border: 1px solid transparent;
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 0.3rem 0.65rem;
   font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer;
-  color: var(--text-secondary); transition: all 0.15s;
+  color: var(--ink-2); transition: all 0.15s;
 }
-.rc-page-btn:hover { background: rgba(255,255,255,0.18); color: var(--text-primary); }
-.rc-page-btn.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); font-weight: 600; }
+.rc-page-btn:hover { background: var(--surface-2); }
+.rc-page-btn.active { background: var(--accent-light); color: #fff; border-color: var(--accent-light); }
 .rc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.rc-action-btn-secondary {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-strong);
-}
-.rc-action-btn-secondary:hover {
-  background: rgba(255,255,255,0.06);
-  color: var(--text-primary);
-  border-color: rgba(255,255,255,0.38);
-}
-.rc-action-btn-danger {
-  background: transparent;
-  color: var(--danger-text);
-  border: 1px solid rgba(255, 107, 107, 0.4);
-}
-.rc-action-btn-danger:hover {
-  background: rgba(255, 107, 107, 0.08);
-  border-color: rgba(255, 107, 107, 0.65);
-}
 
 /* ── REVISE PANEL ── */
 .rc-revise-tabs {
   display: flex; gap: 0.5rem; margin-bottom: 1.5rem;
 }
 .rc-revise-tab {
-  padding: 0.5rem 1.2rem; border-radius: 99px;
-  border: 1px solid rgba(120, 190, 255, 0.22);
-  background: rgba(15, 23, 42, 0.78); font-family:'DM Sans',sans-serif;
-  font-size: 0.85rem; font-weight: 600; color: rgba(210, 230, 255, 0.9);
+  padding: 0.5rem 1.2rem; border-radius: 99px; border: 1px solid var(--border);
+  background: var(--surface); font-family:'DM Sans',sans-serif;
+  font-size: 0.85rem; font-weight: 600; color: var(--ink-2);
   cursor: pointer; transition: all 0.2s;
 }
 .rc-revise-tab.active {
-  background: linear-gradient(135deg, #4d7fe0 0%, #3d6fd1 100%);
-  color: #fff; border-color: rgba(120, 190, 255, 0.4);
+  background: var(--accent-light); color: #fff; border-color: var(--accent-light);
 }
-.rc-revise-tab:hover:not(.active) {
-  background: rgba(15, 23, 42, 0.92);
-  border-color: rgba(120, 190, 255, 0.35);
-}
+.rc-revise-tab:hover:not(.active) { background: var(--surface-2); }
 
 /* Stats row */
 .rc-stats-grid {
@@ -403,14 +298,11 @@ document.write(`\n<!-- ═══════════════════
 @media(max-width:640px){ .rc-stats-grid { grid-template-columns: repeat(3,1fr); } }
 @media(max-width:420px){ .rc-stats-grid { grid-template-columns: repeat(2,1fr); } }
 .rc-stat-tile {
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid rgba(120, 190, 255, 0.16);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 0.85rem 0.75rem; text-align: center;
 }
-.rc-stat-val { font-family:'Lora',serif; font-size:1.5rem; font-weight:700; color:#eaf4ff; }
-.rc-stat-label { font-size:0.7rem; color:rgba(170, 195, 225, 0.78); text-transform:uppercase; letter-spacing:0.06em; margin-top:0.15rem; }
+.rc-stat-val { font-family:'Lora',serif; font-size:1.5rem; font-weight:700; color:var(--ink); }
+.rc-stat-label { font-size:0.7rem; color:var(--ink-3); text-transform:uppercase; letter-spacing:0.06em; margin-top:0.15rem; }
 
 /* Review card */
 .rc-review-wrap {
@@ -434,32 +326,30 @@ document.write(`\n<!-- ═══════════════════
 .rc-card-inner.flipped { transform: rotateY(180deg); }
 .rc-card-face {
   position: absolute; width: 100%; backface-visibility: hidden;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(120, 190, 255, 0.16);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 1.75rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
   min-height: 200px; display: flex; flex-direction: column; justify-content: center;
 }
 .rc-card-back { transform: rotateY(180deg); }
 .rc-card-front-label {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-  color: rgba(170, 195, 225, 0.78); text-transform: uppercase; margin-bottom: 0.75rem;
+  color: var(--ink-3); text-transform: uppercase; margin-bottom: 0.75rem;
 }
 .rc-card-question {
-  font-family: 'Lora', serif; font-size: 1.15rem; font-weight: 600; color: #eaf4ff;
+  font-family: 'Lora', serif; font-size: 1.15rem; font-weight: 600; color: var(--ink);
   line-height: 1.55;
 }
 .rc-card-show-hint {
   margin-top: auto; padding-top: 1rem;
-  font-size: 0.78rem; color: rgba(170, 195, 225, 0.78); text-align: center;
+  font-size: 0.78rem; color: var(--ink-3); text-align: center;
   display: flex; align-items: center; justify-content: center; gap: 0.35rem;
 }
 .rc-card-answer-label {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-  color: rgba(170, 195, 225, 0.78); text-transform: uppercase; margin-bottom: 0.75rem;
+  color: rgba(68,114,196,0.7); text-transform: uppercase; margin-bottom: 0.75rem;
 }
 .rc-card-answer {
-  font-size: 0.95rem; color: #eaf4ff; line-height: 1.7; white-space: pre-wrap;
+  font-size: 0.95rem; color: var(--ink); line-height: 1.7; white-space: pre-wrap;
 }
 .rc-card-images {
   display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;
@@ -484,92 +374,26 @@ document.write(`\n<!-- ═══════════════════
 }
 .rc-rating-row.visible { opacity: 1; pointer-events: auto; }
 .rc-rate-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 68px;
-  padding: 0.7rem 0.8rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(120, 190, 255, 0.2);
-  background: rgba(17, 32, 52, 0.88);
-  font-family: 'DM Sans', sans-serif;
-  cursor: pointer;
-  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-  overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+  padding: 0.6rem 0.5rem; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface);
+  font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s;
 }
-.rc-rate-btn .rc-rate-label {
-  font-size: 0.9rem;
-  font-weight: 700;
-  line-height: 1.1;
-}
-.rc-rate-btn .rc-rate-sub {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  margin-top: 0;
-  font-size: 0.76rem;
-  line-height: 1.1;
-  transform: translateY(-4px);
-  transition:
-    max-height 0.18s ease,
-    opacity 0.18s ease,
-    transform 0.18s ease,
-    margin-top 0.18s ease;
-  pointer-events: none;
-}
-@media (hover: hover) and (pointer: fine) {
-  .rc-rate-btn:hover .rc-rate-sub {
-    max-height: 20px;
-    opacity: 1;
-    margin-top: 0.2rem;
-    transform: translateY(0);
-  }
-}
-.rc-rate-btn:focus-visible .rc-rate-sub {
-  max-height: 20px;
-  opacity: 1;
-  margin-top: 0.2rem;
-  transform: translateY(0);
-}
-.rc-rate-btn:hover,
-.rc-rate-btn:focus-visible { transform: translateY(-2px); }
-.rc-rate-again {
-  border-color: rgba(229,62,62,0.38);
-  background: rgba(229,62,62,0.13);
-}
+.rc-rate-btn .rc-rate-label { font-size: 0.85rem; font-weight: 700; }
+.rc-rate-btn .rc-rate-sub { font-size: 0.68rem; color: var(--ink-3); }
+.rc-rate-btn:hover { transform: translateY(-2px); }
+.rc-rate-again { border-color: rgba(229,62,62,0.3); }
 .rc-rate-again:hover { background: rgba(229,62,62,0.08); border-color: rgba(229,62,62,0.6); }
 .rc-rate-again .rc-rate-label { color: #c53030; }
-.rc-rate-again .rc-rate-sub { color: #c53030; }
-.rc-rate-hard {
-  border-color: rgba(237,125,49,0.42);
-  background: rgba(237,125,49,0.13);
-}
+.rc-rate-hard { border-color: rgba(237,125,49,0.3); }
 .rc-rate-hard:hover { background: rgba(237,125,49,0.08); border-color: rgba(237,125,49,0.6); }
 .rc-rate-hard .rc-rate-label { color: var(--orange); }
-.rc-rate-hard .rc-rate-sub { color: var(--orange); }
-.rc-rate-good {
-  border-color: rgba(68,114,196,0.42);
-  background: rgba(68,114,196,0.13);
-}
+.rc-rate-good { border-color: rgba(68,114,196,0.3); }
 .rc-rate-good:hover { background: rgba(68,114,196,0.08); border-color: rgba(68,114,196,0.6); }
 .rc-rate-good .rc-rate-label { color: var(--accent-light); }
-.rc-rate-good .rc-rate-sub { color: var(--accent-light); }
-.rc-rate-easy {
-  border-color: rgba(22,101,52,0.45);
-  background: rgba(22,101,52,0.16);
-}
+.rc-rate-easy { border-color: rgba(22,101,52,0.3); }
 .rc-rate-easy:hover { background: rgba(22,101,52,0.08); border-color: rgba(22,101,52,0.6); }
 .rc-rate-easy .rc-rate-label { color: var(--green); }
-.rc-rate-easy .rc-rate-sub { color: var(--green); }
-@media (hover: none) {
-  .rc-rate-btn .rc-rate-sub {
-    max-height: 0;
-    opacity: 0;
-    margin-top: 0;
-    transform: translateY(-4px);
-  }
-}
 
 /* Show answer button */
 .rc-show-answer-btn {
@@ -613,12 +437,10 @@ document.write(`\n<!-- ═══════════════════
 .rc-deck-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
 @media(max-width:640px){ .rc-deck-grid { grid-template-columns: 1fr; } }
 .rc-deck-card {
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid rgba(120, 190, 255, 0.16);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 1.5rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
-.rc-deck-card h3 { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:#eaf4ff; margin-bottom:1rem; }
+.rc-deck-card h3 { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:var(--ink); margin-bottom:1rem; }
 .rc-tag-selector { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 1rem; }
 .rc-tag-select-pill {
   padding: 0.3rem 0.75rem; border-radius: 99px;
@@ -634,29 +456,26 @@ document.write(`\n<!-- ═══════════════════
 }
 .rc-match-btn {
   flex: 1; padding: 0.45rem; border-radius: var(--radius-sm);
-  border: 1px solid rgba(120, 190, 255, 0.2); background: rgba(11, 19, 32, 0.9);
+  border: 1px solid var(--border); background: var(--surface-2);
   font-family:'DM Sans',sans-serif; font-size: 0.82rem; font-weight: 600;
-  color: rgba(210, 230, 255, 0.88); cursor: pointer; transition: all 0.18s; text-align: center;
+  color: var(--ink-2); cursor: pointer; transition: all 0.18s; text-align: center;
 }
-.rc-match-btn.active {
-  background: linear-gradient(135deg, #4d7fe0 0%, #3d6fd1 100%);
-  color: #fff; border-color: rgba(120, 190, 255, 0.42);
-}
+.rc-match-btn.active { background: var(--accent-light); color: #fff; border-color: var(--accent-light); }
 .rc-preview-count {
-  font-size: 0.83rem; color: rgba(210, 230, 255, 0.86); margin-bottom: 1rem;
-  padding: 0.5rem 0.75rem; background: rgba(11, 19, 32, 0.88);
+  font-size: 0.83rem; color: var(--ink-2); margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem; background: var(--surface-2);
   border-radius: var(--radius-sm); border-left: 3px solid var(--accent-light);
 }
 .rc-saved-deck-display {
   background: rgba(68,114,196,0.06); border: 1px solid rgba(68,114,196,0.2);
   border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem;
 }
-.rc-saved-deck-name { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:#eaf4ff; margin-bottom:0.3rem; }
-.rc-saved-deck-meta { font-size:0.8rem; color:rgba(170, 195, 225, 0.78); }
+.rc-saved-deck-name { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:var(--ink); margin-bottom:0.3rem; }
+.rc-saved-deck-meta { font-size:0.8rem; color:var(--ink-3); }
 .rc-deck-name-input {
   width: 100%; padding: 0.55rem 0.85rem; border-radius: var(--radius-sm);
-  border: 1px solid rgba(120, 190, 255, 0.2); background: rgba(11, 19, 32, 0.9);
-  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: #eaf4ff;
+  border: 1px solid var(--border); background: var(--bg);
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--ink);
   margin-bottom: 0.75rem; transition: border-color 0.2s;
 }
 .rc-deck-name-input:focus { outline: none; border-color: var(--accent-light); }
@@ -686,13 +505,11 @@ document.write(`\n<!-- ═══════════════════
 }
 .rc-modal-overlay.open { display: flex; }
 .rc-modal {
-  background: rgba(15, 23, 42, 0.96);
-  border: 1px solid rgba(120, 190, 255, 0.2);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 540px;
   max-height: 90vh; overflow-y: auto;
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.45);
 }
-.rc-modal-title { font-family:'Lora',serif; font-size:1.15rem; font-weight:700; color:#eaf4ff; margin-bottom:1rem; }
+.rc-modal-title { font-family:'Lora',serif; font-size:1.15rem; font-weight:700; color:var(--ink); margin-bottom:1rem; }
 .rc-modal-actions { display:flex; gap:0.6rem; justify-content:flex-end; margin-top:1.5rem; }
 
 /* ── IMAGE LIGHTBOX ── */
@@ -714,6 +531,125 @@ document.write(`\n<!-- ═══════════════════
   animation: rcSpin 0.7s linear infinite; margin: 2rem auto;
 }
 @keyframes rcSpin { to { transform: rotate(360deg); } }
+
+/* ── v2 NEW STYLES ── */
+.rc-badge-buried { background: rgba(91,33,182,0.15); color: var(--purple); }
+.rc-badge-leech  { background: rgba(229,62,62,0.18); color:#c53030; border:1px solid rgba(229,62,62,0.3); }
+
+/* Flag dots */
+.rc-flag-dot { display:inline-block; width:8px; height:8px; border-radius:50%; flex-shrink:0; vertical-align:middle; }
+.rc-flag-red    { background:#e53e3e; }
+.rc-flag-orange { background:var(--orange); }
+.rc-flag-green  { background:#22c55e; }
+.rc-flag-blue   { background:var(--accent-light); }
+
+/* Flag button row */
+.rc-flag-btns { display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center; }
+.rc-flag-btn {
+  width:26px; height:26px; border-radius:50%; border:2px solid transparent;
+  cursor:pointer; transition:all 0.15s; font-size:0; line-height:0;
+}
+.rc-flag-btn:hover { transform:scale(1.15); }
+.rc-flag-btn.active { border-color:var(--ink); transform:scale(1.15); }
+.rc-flag-btn-none {
+  background:var(--surface-2); border:1px solid var(--border);
+  width:auto; height:auto; font-size:0.72rem; border-radius:99px;
+  padding:0.2rem 0.6rem; color:var(--ink-3); font-family:'DM Sans',sans-serif; font-weight:600;
+}
+.rc-flag-btn-none.active { background:var(--surface); color:var(--ink-2); border-color:var(--accent-light); }
+
+/* Bulk bar */
+.rc-bulk-bar {
+  display:none; align-items:center; gap:0.4rem; flex-wrap:wrap;
+  padding:0.55rem 0.85rem; background:rgba(68,114,196,0.08);
+  border:1px solid rgba(68,114,196,0.22); border-radius:var(--radius-sm);
+  margin-bottom:0.5rem; font-size:0.82rem; color:var(--ink-2);
+}
+.rc-bulk-bar.visible { display:flex; }
+.rc-bulk-count { font-weight:700; color:var(--accent-light); margin-right:0.2rem; }
+
+/* Review card quick actions */
+.rc-review-card-actions {
+  display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity 0.3s;
+}
+.rc-review-card-actions.visible { opacity:1; pointer-events:auto; }
+.rc-rev-action-btn {
+  padding:0.28rem 0.7rem; border-radius:99px;
+  border:1px solid var(--border); background:var(--surface);
+  font-family:'DM Sans',sans-serif; font-size:0.75rem; font-weight:600;
+  color:var(--ink-3); cursor:pointer; transition:all 0.18s;
+}
+.rc-rev-action-btn:hover { background:var(--surface-2); color:var(--ink-2); }
+
+/* Card back extras */
+.rc-card-extra-divider { border:none; border-top:1px solid rgba(200,214,235,0.3); margin:0.65rem 0 0.45rem; }
+.rc-card-extra-label { font-size:0.64rem; font-weight:700; letter-spacing:0.1em; color:var(--ink-3); text-transform:uppercase; margin-bottom:0.2rem; }
+.rc-card-extra-text  { font-size:0.85rem; color:var(--ink-2); line-height:1.6; }
+.rc-card-pearl-text  { font-size:0.84rem; color:#b8860b; background:rgba(255,192,0,0.06); border-left:3px solid rgba(255,192,0,0.4); padding:0.35rem 0.6rem; border-radius:0 var(--radius-sm) var(--radius-sm) 0; line-height:1.5; }
+.rc-card-source-text { font-size:0.73rem; color:var(--ink-3); font-style:italic; margin-top:0.2rem; }
+
+/* Advanced fields toggle */
+.rc-adv-toggle {
+  width:100%; text-align:left; background:none;
+  border:1px dashed rgba(68,114,196,0.22); border-radius:var(--radius-sm);
+  padding:0.42rem 0.85rem; font-family:'DM Sans',sans-serif;
+  font-size:0.79rem; font-weight:600; color:var(--ink-3); cursor:pointer; transition:all 0.2s;
+}
+.rc-adv-toggle:hover { border-color:var(--accent-light); color:var(--ink-2); }
+.rc-adv-toggle.open  { color:var(--ink-2); border-color:rgba(68,114,196,0.38); }
+.rc-adv-fields       { display:none; margin-top:0.7rem; }
+.rc-adv-fields.open  { display:block; }
+
+/* Single-line input */
+.rc-input {
+  width:100%; padding:0.58rem 0.88rem; border-radius:var(--radius-sm);
+  border:1px solid var(--border); background:var(--bg);
+  font-family:'DM Sans',sans-serif; font-size:0.88rem; color:var(--ink); transition:border-color 0.2s;
+}
+.rc-input:focus { outline:none; border-color:var(--accent-light); }
+.rc-input::placeholder { color:var(--ink-3); }
+
+/* Medical preset chips */
+.rc-presets-wrap { background:rgba(68,114,196,0.04); border:1px solid rgba(68,114,196,0.1); border-radius:var(--radius-sm); padding:0.7rem; margin-bottom:0.5rem; }
+.rc-preset-group { margin-bottom:0.45rem; }
+.rc-preset-group:last-child { margin-bottom:0; }
+.rc-preset-group-label { font-size:0.63rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-3); margin-bottom:0.3rem; }
+.rc-preset-chips { display:flex; flex-wrap:wrap; gap:0.28rem; }
+.rc-preset-chip {
+  padding:0.16rem 0.55rem; border-radius:99px;
+  background:rgba(68,114,196,0.09); border:1px solid rgba(68,114,196,0.18);
+  color:var(--ink-2); font-family:'DM Sans',sans-serif; font-size:0.73rem; font-weight:600; cursor:pointer; transition:all 0.15s;
+}
+.rc-preset-chip:hover { background:rgba(68,114,196,0.2); border-color:rgba(68,114,196,0.38); color:var(--accent-light); }
+
+/* Tag manager */
+.rc-tagmgr-row { display:flex; align-items:center; gap:0.55rem; padding:0.48rem 0.2rem; border-bottom:1px solid rgba(200,214,235,0.3); font-size:0.85rem; flex-wrap:wrap; }
+.rc-tagmgr-row:last-child { border-bottom:none; }
+.rc-tagmgr-name    { flex:1; font-weight:600; color:var(--accent-light); min-width:80px; }
+.rc-tagmgr-count   { font-size:0.73rem; color:var(--ink-3); min-width:50px; }
+.rc-tagmgr-actions { display:flex; gap:0.3rem; flex-shrink:0; }
+.rc-tagmgr-edit-wrap { display:none; width:100%; margin-top:0.35rem; }
+.rc-tagmgr-edit-wrap.open { display:flex; gap:0.35rem; }
+
+/* Search hint */
+.rc-search-wrap { position:relative; }
+.rc-search-hint {
+  display:none; position:absolute; top:calc(100% + 6px); left:0; min-width:340px;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:0.7rem 0.85rem; font-size:0.75rem; color:var(--ink-3); line-height:1.9;
+  z-index:200; box-shadow:0 4px 16px rgba(0,0,0,0.15);
+}
+.rc-search-hint.open { display:block; }
+
+/* Mobile */
+@media(max-width:640px){
+  .rc-card-table th:nth-child(4),.rc-card-table td:nth-child(4),
+  .rc-card-table th:nth-child(6),.rc-card-table td:nth-child(6) { display:none; }
+  .rc-rating-row { grid-template-columns:repeat(2,1fr); }
+  .rc-rate-btn { padding:0.72rem 0.4rem; }
+  .rc-rev-action-btn { font-size:0.72rem; padding:0.25rem 0.55rem; }
+}
 </style>
 
 <!-- ══ TOAST CONTAINER ══ -->
@@ -736,10 +672,25 @@ document.write(`\n<!-- ═══════════════════
   </div>
 </div>
 
+<!-- ══ TAG MANAGER MODAL ══ -->
+<div class="rc-modal-overlay" id="rc-tagmgr-modal">
+  <div class="rc-modal" style="max-width:460px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.85rem;">
+      <div class="rc-modal-title" style="margin:0;">🏷️ Tag Manager</div>
+      <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcCloseTagManager()">✕</button>
+    </div>
+    <div style="font-size:0.78rem;color:var(--ink-3);margin-bottom:0.85rem;">Rename or delete tags across all cards instantly.</div>
+    <div id="rc-tagmgr-list"><div class="rc-spinner"></div></div>
+  </div>
+</div>
+
 <!-- ══ EDIT CARD MODAL ══ -->
 <div class="rc-modal-overlay" id="rc-edit-modal">
-  <div class="rc-modal">
-    <div class="rc-modal-title">Edit Flashcard</div>
+  <div class="rc-modal" style="max-width:600px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+      <div class="rc-modal-title" style="margin:0;">Edit Flashcard</div>
+      <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcCloseEditModal()">✕</button>
+    </div>
     <div class="rc-field">
       <label class="rc-label">Question <span>(required)</span></label>
       <textarea class="rc-textarea" id="rc-edit-question" maxlength="500" rows="3" oninput="rcUpdateCharCount('rc-edit-question','rc-edit-q-count',500)"></textarea>
@@ -751,14 +702,66 @@ document.write(`\n<!-- ═══════════════════
       <div class="rc-char-count" id="rc-edit-a-count">0 / 2000</div>
     </div>
     <div class="rc-field">
-      <label class="rc-label">Tags <span>(optional, press Enter or comma)</span></label>
+      <label class="rc-label">Tags <span>(Enter or comma · dots OK e.g. anatomy.upper_limb)</span></label>
       <div class="rc-tag-input-wrap" id="rc-edit-tag-wrap" onclick="document.getElementById('rc-edit-tag-input').focus()">
         <input type="text" class="rc-tag-input" id="rc-edit-tag-input" placeholder="Add tag..." onkeydown="rcEditTagKeydown(event)" oninput="rcEditTagInput(event)">
       </div>
     </div>
+    <div class="rc-field">
+      <label class="rc-label">Images <span>(click × to remove existing)</span></label>
+      <div class="rc-img-previews" id="rc-edit-existing-imgs"></div>
+      <div class="rc-img-upload-area" style="margin-top:0.5rem;" onclick="document.getElementById('rc-edit-file-input').click()">📎 Add more images</div>
+      <input type="file" id="rc-edit-file-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="rcEditHandleFiles(this.files)">
+      <div class="rc-img-previews" id="rc-edit-new-imgs"></div>
+    </div>
+    <div class="rc-field" style="display:flex;gap:1.25rem;flex-wrap:wrap;">
+      <div style="flex:1;min-width:180px;">
+        <label class="rc-label">Flag</label>
+        <div class="rc-flag-btns">
+          <button class="rc-flag-btn rc-flag-btn-none active" id="rc-eflag-none" onclick="rcEditSetFlag(null)">None</button>
+          <button class="rc-flag-btn rc-flag-red"    id="rc-eflag-red"    onclick="rcEditSetFlag('red')"    title="Red — high yield"></button>
+          <button class="rc-flag-btn rc-flag-orange" id="rc-eflag-orange" onclick="rcEditSetFlag('orange')" title="Orange — weak area"></button>
+          <button class="rc-flag-btn rc-flag-green"  id="rc-eflag-green"  onclick="rcEditSetFlag('green')"  title="Green — exam near"></button>
+          <button class="rc-flag-btn rc-flag-blue"   id="rc-eflag-blue"   onclick="rcEditSetFlag('blue')"   title="Blue — image heavy"></button>
+        </div>
+      </div>
+      <div style="flex:1;min-width:180px;display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.85rem;color:var(--ink-2);">
+          <input type="checkbox" id="rc-edit-starred"   style="accent-color:var(--gold);"> ⭐ Starred
+        </label>
+        <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.85rem;color:var(--ink-2);">
+          <input type="checkbox" id="rc-edit-suspended" style="accent-color:var(--orange);"> ⏸ Suspended
+        </label>
+      </div>
+    </div>
+    <button class="rc-adv-toggle" id="rc-edit-adv-toggle" onclick="rcToggleEditAdvanced()">
+      ↓ Advanced fields — hint, mnemonic, clinical pearl, source, chapter
+    </button>
+    <div class="rc-adv-fields" id="rc-edit-adv-fields">
+      <div class="rc-field" style="margin-top:0.7rem;">
+        <label class="rc-label">Hint <span>(memory hook)</span></label>
+        <input type="text" class="rc-input" id="rc-edit-hint" maxlength="200" placeholder="e.g. Think of MUDPILES...">
+      </div>
+      <div class="rc-field">
+        <label class="rc-label">Mnemonic</label>
+        <input type="text" class="rc-input" id="rc-edit-mnemonic" maxlength="300" placeholder="e.g. ABCDE for trauma primary survey">
+      </div>
+      <div class="rc-field">
+        <label class="rc-label">Clinical Pearl</label>
+        <textarea class="rc-textarea" id="rc-edit-pearl" maxlength="500" rows="2" placeholder="Clinical significance, exam tip, applied anatomy..."></textarea>
+      </div>
+      <div class="rc-field">
+        <label class="rc-label">Source / Reference</label>
+        <input type="text" class="rc-input" id="rc-edit-source" maxlength="120" placeholder="e.g. Gray's Anatomy p.342 / Harrison's 20e Ch.23">
+      </div>
+      <div class="rc-field">
+        <label class="rc-label">Chapter / Topic</label>
+        <input type="text" class="rc-input" id="rc-edit-chapter" maxlength="80" placeholder="e.g. Brachial Plexus / Shock">
+      </div>
+    </div>
     <div class="rc-modal-actions">
       <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcCloseEditModal()">Cancel</button>
-      <button class="rc-btn rc-btn-primary rc-btn-sm" onclick="rcSaveEditCard()">Save Changes</button>
+      <button class="rc-btn rc-btn-primary rc-btn-sm" id="rc-edit-save-btn" onclick="rcSaveEditCard()">Save Changes</button>
     </div>
   </div>
 </div>
@@ -808,7 +811,7 @@ document.write(`\n<!-- ═══════════════════
               <label class="rc-label" for="rc-question">Question <span>(required · max 500 chars)</span></label>
               <textarea class="rc-textarea" id="rc-question" maxlength="500" rows="3"
                 placeholder="e.g. What nerve supplies the deltoid muscle?"
-                oninput="rcUpdateCharCount('rc-question','rc-q-count',500)"></textarea>
+                oninput="rcUpdateCharCount('rc-question','rc-q-count',500);rcCheckDupWarning()"></textarea>
               <div class="rc-char-count" id="rc-q-count">0 / 500</div>
             </div>
 
@@ -821,17 +824,61 @@ document.write(`\n<!-- ═══════════════════
             </div>
 
             <div class="rc-field">
-              <label class="rc-label">Tags <span>(optional · press Enter or comma · max 10)</span></label>
+              <label class="rc-label">Tags <span>(Enter or comma · dots OK e.g. anatomy.upper_limb · max 10)</span></label>
               <div class="rc-tag-input-wrap" id="rc-tag-wrap" onclick="document.getElementById('rc-tag-input').focus()">
                 <input type="text" class="rc-tag-input" id="rc-tag-input"
                   placeholder="Add a tag..."
                   onkeydown="rcTagKeydown(event)"
                   oninput="rcTagInput(event)">
               </div>
+              <div class="rc-presets-wrap" style="margin-top:0.55rem;">
+                <div class="rc-preset-group">
+                  <div class="rc-preset-group-label">Subject</div>
+                  <div class="rc-preset-chips">
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('anatomy')">anatomy</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('physiology')">physiology</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('biochemistry')">biochemistry</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('pathology')">pathology</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('pharmacology')">pharmacology</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('microbiology')">microbiology</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('psm')">psm</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('medicine')">medicine</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('surgery')">surgery</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('obgy')">obgy</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('pediatrics')">pediatrics</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('fmt')">fmt</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('radiology')">radiology</span>
+                  </div>
+                </div>
+                <div class="rc-preset-group">
+                  <div class="rc-preset-group-label">Year / Exam</div>
+                  <div class="rc-preset-chips">
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('1st_year')">1st year</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('2nd_year')">2nd year</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('3rd_year')">3rd year</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('final_year')">final year</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('next')">NExT</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('neet_pg')">NEET PG</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('ini_cet')">INI-CET</span>
+                  </div>
+                </div>
+                <div class="rc-preset-group">
+                  <div class="rc-preset-group-label">Type</div>
+                  <div class="rc-preset-chips">
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('high_yield')">high yield</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('viva')">viva</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('must_know')">must know</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('one_liner')">one liner</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('image_based')">image based</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('classification')">classification</span>
+                    <span class="rc-preset-chip" onclick="rcAddPresetTag('drug_dosage')">drug dosage</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="rc-field">
-              <label class="rc-label">Images <span>(optional · max 5 · jpg/png/webp · 5MB each)</span></label>
+              <label class="rc-label">Images <span>(optional · max 5 · jpg/png/webp · 10MB each)</span></label>
               <div class="rc-img-upload-area" id="rc-drop-zone"
                 onclick="document.getElementById('rc-file-input').click()"
                 ondragover="rcDragOver(event)" ondragleave="rcDragLeave(event)" ondrop="rcDrop(event)">
@@ -839,6 +886,44 @@ document.write(`\n<!-- ═══════════════════
               </div>
               <input type="file" id="rc-file-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="rcHandleFiles(this.files)">
               <div class="rc-img-previews" id="rc-img-previews"></div>
+            </div>
+
+            <div class="rc-field">
+              <button class="rc-adv-toggle" id="rc-create-adv-toggle" onclick="rcToggleCreateAdvanced()">
+                ↓ Advanced — hint, mnemonic, clinical pearl, source, chapter, flag
+              </button>
+              <div class="rc-adv-fields" id="rc-create-adv-fields">
+                <div class="rc-field" style="margin-top:0.7rem;">
+                  <label class="rc-label">Hint <span>(memory hook shown on front)</span></label>
+                  <input type="text" class="rc-input" id="rc-hint" maxlength="200" placeholder="e.g. Think of MUDPILES...">
+                </div>
+                <div class="rc-field">
+                  <label class="rc-label">Mnemonic</label>
+                  <input type="text" class="rc-input" id="rc-mnemonic" maxlength="300" placeholder="e.g. ABCDE for trauma primary survey">
+                </div>
+                <div class="rc-field">
+                  <label class="rc-label">Clinical Pearl</label>
+                  <textarea class="rc-textarea" id="rc-pearl" maxlength="500" rows="2" placeholder="Clinical significance, exam tip, applied anatomy..."></textarea>
+                </div>
+                <div class="rc-field">
+                  <label class="rc-label">Source / Reference</label>
+                  <input type="text" class="rc-input" id="rc-source" maxlength="120" placeholder="e.g. Gray's Anatomy p.342">
+                </div>
+                <div class="rc-field">
+                  <label class="rc-label">Chapter / Topic</label>
+                  <input type="text" class="rc-input" id="rc-chapter" maxlength="80" placeholder="e.g. Brachial Plexus / Shock">
+                </div>
+                <div class="rc-field">
+                  <label class="rc-label">Flag</label>
+                  <div class="rc-flag-btns">
+                    <button class="rc-flag-btn rc-flag-btn-none active" id="rc-cflag-none"   onclick="rcCreateSetFlag(null)">None</button>
+                    <button class="rc-flag-btn rc-flag-red"    id="rc-cflag-red"    onclick="rcCreateSetFlag('red')"    title="Red — high yield"></button>
+                    <button class="rc-flag-btn rc-flag-orange" id="rc-cflag-orange" onclick="rcCreateSetFlag('orange')" title="Orange — weak area"></button>
+                    <button class="rc-flag-btn rc-flag-green"  id="rc-cflag-green"  onclick="rcCreateSetFlag('green')"  title="Green — exam near"></button>
+                    <button class="rc-flag-btn rc-flag-blue"   id="rc-cflag-blue"   onclick="rcCreateSetFlag('blue')"   title="Blue — image heavy"></button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div id="rc-limit-warning" style="display:none;font-size:0.83rem;color:#c53030;margin-bottom:0.75rem;padding:0.6rem 0.85rem;background:rgba(229,62,62,0.08);border-radius:var(--radius-sm);border:1px solid rgba(229,62,62,0.2);">
@@ -857,9 +942,25 @@ document.write(`\n<!-- ═══════════════════
           <!-- My Cards Library -->
           <div class="rc-section-gap">
             <div class="rc-library-header">
-              <div class="rc-library-title">📚 My Cards</div>
+              <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+                <div class="rc-library-title">📚 My Cards</div>
+                <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcOpenTagManager()">🏷️ Tags</button>
+              </div>
               <div class="rc-library-controls">
-                <input type="text" class="rc-search" id="rc-search" placeholder="Search cards…" oninput="rcRenderLibrary()">
+                <div class="rc-search-wrap">
+                  <input type="text" class="rc-search" id="rc-search"
+                    placeholder="Search · tag:anatomy · status:new…"
+                    oninput="rcRenderLibrary()"
+                    onfocus="rcShowSearchHint(true)" onblur="rcHideSearchHintDelayed()">
+                  <div class="rc-search-hint" id="rc-search-hint">
+                    <strong style="color:var(--ink-2);">Search syntax:</strong><br>
+                    tag:anatomy · tag:anatomy.upper_limb · tag:untagged<br>
+                    status:new · status:learning · status:review · status:suspended · status:buried<br>
+                    flag:red · flag:orange · flag:green · flag:blue<br>
+                    is:due · is:leech · is:buried · starred:true<br>
+                    "exact phrase" · plain text searches all fields
+                  </div>
+                </div>
                 <select class="rc-select" id="rc-filter-tag" onchange="rcRenderLibrary()">
                   <option value="">All tags</option>
                 </select>
@@ -870,6 +971,7 @@ document.write(`\n<!-- ═══════════════════
                   <option value="review">Review</option>
                   <option value="relearning">Relearning</option>
                   <option value="suspended">Suspended</option>
+                  <option value="buried">Buried</option>
                   <option value="starred">Starred</option>
                 </select>
                 <select class="rc-select" id="rc-sort" onchange="rcRenderLibrary()">
@@ -877,9 +979,25 @@ document.write(`\n<!-- ═══════════════════
                   <option value="oldest">Oldest</option>
                   <option value="due">Due soon</option>
                   <option value="hardest">Hardest</option>
+                  <option value="lapses">Most lapses</option>
+                  <option value="edited">Recently edited</option>
                   <option value="alpha">A–Z</option>
                 </select>
               </div>
+            </div>
+            <!-- Bulk bar -->
+            <div class="rc-bulk-bar" id="rc-bulk-bar">
+              <span class="rc-bulk-count" id="rc-bulk-count">0</span> selected —
+              <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcBulkSuspend()">Suspend</button>
+              <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcBulkUnsuspend()">Unsuspend</button>
+              <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcBulkBury()">Bury</button>
+              <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcBulkReset()">Reset</button>
+              <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcBulkAddTag()">+ Tag</button>
+              <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcBulkFlag('red')"    style="color:#e53e3e;">🔴</button>
+              <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcBulkFlag('orange')" style="color:var(--orange);">🟠</button>
+              <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcBulkFlag(null)">⬜ Clear</button>
+              <button class="rc-btn rc-btn-danger rc-btn-sm" onclick="rcBulkDelete()">Delete</button>
+              <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcClearBulkSelect()">✕</button>
             </div>
             <div id="rc-library-body">
               <div class="rc-spinner"></div>
@@ -901,11 +1019,11 @@ document.write(`\n<!-- ═══════════════════
           <div class="rc-sidebar-card">
             <h4>Quick Tips</h4>
             <ul class="rc-tips">
-              <li>Keep questions specific</li>
-              <li>Use tags consistently</li>
+              <li>Use dots: anatomy.upper_limb</li>
+              <li>Click preset chips to tag fast</li>
+              <li>🔴 Red flag = high yield</li>
               <li>One fact per card works best</li>
-              <li>Review daily for best results</li>
-              <li>Use images for anatomy & diagrams</li>
+              <li>Review daily for best retention</li>
             </ul>
           </div>
 
@@ -939,11 +1057,13 @@ document.write(`\n<!-- ═══════════════════
 
     <!-- Revise main -->
     <div id="rc-revise-main" style="display:none;">
-      <div class="rc-revise-tabs">
-        <button class="rc-revise-tab active" id="rc-rtab-general" onclick="rcShowReviseTab('general')">📖 General Revision</button>
-        <button class="rc-revise-tab" id="rc-rtab-deck" onclick="rcShowReviseTab('deck')">🗂️ Custom Deck</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem;">
+        <div class="rc-revise-tabs" style="margin-bottom:0;">
+          <button class="rc-revise-tab active" id="rc-rtab-general" onclick="rcShowReviseTab('general')">📖 General Revision</button>
+          <button class="rc-revise-tab" id="rc-rtab-deck" onclick="rcShowReviseTab('deck')">🗂️ Custom Deck</button>
+        </div>
+        <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcStartCramDeck()" title="Cram: due + flagged red/orange cards">🚨 Cram Mode</button>
       </div>
-
       <!-- General Revision -->
       <div id="rc-rev-general">
 
@@ -981,21 +1101,27 @@ document.write(`\n<!-- ═══════════════════
             </div>
 
             <!-- Progress bar -->
-              <div style="display:flex;align-items:center;gap:0.75rem;">
-                <div class="rc-review-progress-bar-bg" style="flex:1;">
-                  <div class="rc-review-progress-bar-fill" id="rc-rev-prog-fill" style="width:0%"></div>
-                </div>
-                <div style="font-size:0.78rem;color:var(--ink-3);white-space:nowrap;" id="rc-rev-prog-label">0 / 0</div>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <div class="rc-review-progress-bar-bg" style="flex:1;">
+                <div class="rc-review-progress-bar-fill" id="rc-rev-prog-fill" style="width:0%"></div>
               </div>
-              <div id="rc-review-queue-note" style="display:none;font-size:0.82rem;color:rgba(210,230,255,0.82);background:rgba(59,130,246,0.12);border:1px solid rgba(125,180,255,0.25);border-radius:10px;padding:0.45rem 0.65rem;margin-top:0.6rem;"></div>
+              <div style="font-size:0.78rem;color:var(--ink-3);white-space:nowrap;" id="rc-rev-prog-label">0 / 0</div>
+            </div>
 
             <!-- Card -->
             <div class="rc-card-scene" id="rc-card-scene">
               <div class="rc-card-inner" id="rc-card-inner">
                 <!-- Front -->
                 <div class="rc-card-face" id="rc-card-front">
-                  <div class="rc-card-front-label">Question</div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+                    <div class="rc-card-front-label" style="margin:0;">Question</div>
+                    <div id="rc-card-flag-indicator" style="display:none;"></div>
+                  </div>
                   <div class="rc-card-question" id="rc-card-question"></div>
+                  <div id="rc-card-hint-row" style="display:none;margin-top:0.65rem;padding:0.35rem 0.6rem;background:rgba(68,114,196,0.06);border-radius:var(--radius-sm);font-size:0.81rem;color:var(--ink-3);border-left:2px solid rgba(68,114,196,0.3);">
+                    <span style="font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-right:0.3rem;">Hint</span>
+                    <span id="rc-card-hint-text"></span>
+                  </div>
                   <div class="rc-card-show-hint">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
                     Tap to reveal
@@ -1006,6 +1132,19 @@ document.write(`\n<!-- ═══════════════════
                   <div class="rc-card-answer-label">Answer</div>
                   <div class="rc-card-answer" id="rc-card-answer"></div>
                   <div class="rc-card-images" id="rc-card-images"></div>
+                  <div id="rc-card-mnemonic-row" style="display:none;">
+                    <hr class="rc-card-extra-divider">
+                    <div class="rc-card-extra-label">Mnemonic</div>
+                    <div class="rc-card-extra-text" id="rc-card-mnemonic-text"></div>
+                  </div>
+                  <div id="rc-card-pearl-row" style="display:none;">
+                    <hr class="rc-card-extra-divider">
+                    <div class="rc-card-extra-label">💡 Clinical Pearl</div>
+                    <div class="rc-card-pearl-text" id="rc-card-pearl-text"></div>
+                  </div>
+                  <div id="rc-card-source-row" style="display:none;">
+                    <div class="rc-card-source-text" id="rc-card-source-text"></div>
+                  </div>
                   <div class="rc-card-tags" id="rc-card-tags"></div>
                 </div>
               </div>
@@ -1017,11 +1156,11 @@ document.write(`\n<!-- ═══════════════════
             <div class="rc-rating-row" id="rc-rating-row">
               <button class="rc-rate-btn rc-rate-again" onclick="rcRate('again')">
                 <span class="rc-rate-label">Again</span>
-                <span class="rc-rate-sub" id="rc-lbl-again">&lt; 1 min</span>
+                <span class="rc-rate-sub" id="rc-lbl-again">1 min</span>
               </button>
               <button class="rc-rate-btn rc-rate-hard" onclick="rcRate('hard')">
                 <span class="rc-rate-label">Hard</span>
-                <span class="rc-rate-sub" id="rc-lbl-hard">&lt; 5 min</span>
+                <span class="rc-rate-sub" id="rc-lbl-hard">5 min</span>
               </button>
               <button class="rc-rate-btn rc-rate-good" onclick="rcRate('good')">
                 <span class="rc-rate-label">Good</span>
@@ -1031,6 +1170,17 @@ document.write(`\n<!-- ═══════════════════
                 <span class="rc-rate-label">Easy</span>
                 <span class="rc-rate-sub" id="rc-lbl-easy">4 days</span>
               </button>
+            </div>
+
+            <!-- Quick actions from review screen (appear after flip) -->
+            <div class="rc-review-card-actions" id="rc-review-card-actions">
+              <button class="rc-rev-action-btn" onclick="rcBuryFromReview()" title="Hide until tomorrow">⌛ Bury</button>
+              <button class="rc-rev-action-btn" id="rc-rev-suspend-btn" onclick="rcSuspendFromReview()">⏸ Suspend</button>
+              <button class="rc-rev-action-btn" onclick="rcFlagFromReview('red')"    style="color:#e53e3e;" title="Flag red">🔴</button>
+              <button class="rc-rev-action-btn" onclick="rcFlagFromReview('orange')" style="color:var(--orange);" title="Flag orange">🟠</button>
+              <button class="rc-rev-action-btn" onclick="rcFlagFromReview(null)"     title="Clear flag">⬜</button>
+              <button class="rc-rev-action-btn" onclick="rcResetFromReview()" title="Reset to new">↺ Reset</button>
+              <button class="rc-rev-action-btn" onclick="rcEditFromReview()">✏️ Edit</button>
             </div>
 
           </div>
@@ -1045,8 +1195,8 @@ document.write(`\n<!-- ═══════════════════
 
         <div id="rc-rev-empty-done" class="rc-empty" style="display:none;">
           <div class="rc-empty-icon">🎉</div>
-          <div class="rc-empty-msg">No cards due right now.</div>
-          <div class="rc-empty-sub">Nothing in this review set is returning within the next 6 hours.</div>
+          <div class="rc-empty-msg">You're caught up. Nothing is due right now.</div>
+          <div class="rc-empty-sub">Come back later or review your custom deck.</div>
         </div>
 
         <!-- Session summary -->
@@ -1061,7 +1211,7 @@ document.write(`\n<!-- ═══════════════════
               <div class="rc-summary-item"><div class="val" id="rc-sum-hard">0</div><div class="lbl">Hard</div></div>
               <div class="rc-summary-item"><div class="val" id="rc-sum-next">—</div><div class="lbl">Next Due</div></div>
             </div>
-            <button class="rc-btn rc-btn-primary" onclick="rcInitReviewSession()">Continue Today's Reviews</button>
+            <button class="rc-btn rc-btn-primary" onclick="rcInitReviewSession()">Review Again</button>
           </div>
         </div>
 
@@ -1075,9 +1225,9 @@ document.write(`\n<!-- ═══════════════════
           <div class="rc-deck-card">
             <h3>Build Custom Deck</h3>
 
-            <div style="font-size:0.8rem;color:rgba(170, 195, 225, 0.78);margin-bottom:0.6rem;">Select tags to include:</div>
+            <div style="font-size:0.8rem;color:var(--ink-3);margin-bottom:0.6rem;">Select tags to include:</div>
             <div class="rc-tag-selector" id="rc-deck-tag-selector">
-              <span style="font-size:0.82rem;color:rgba(170, 195, 225, 0.72);">No tags yet. Create cards with tags first.</span>
+              <span style="font-size:0.82rem;color:var(--ink-3);">No tags yet. Create cards with tags first.</span>
             </div>
 
             <div class="rc-match-toggle">
@@ -1121,16 +1271,15 @@ document.write(`\n<!-- ═══════════════════
         <div id="rc-deck-review-area" style="display:none;margin-top:1.5rem;">
           <div class="rc-review-wrap">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-              <span style="font-size:0.82rem;color:rgba(210, 230, 255, 0.88);font-weight:600;" id="rc-deck-review-name"></span>
+              <span style="font-size:0.82rem;color:var(--ink-2);font-weight:600;" id="rc-deck-review-name"></span>
               <button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcEndDeckReview()">✕ End</button>
             </div>
             <div style="display:flex;align-items:center;gap:0.75rem;">
               <div class="rc-review-progress-bar-bg" style="flex:1;">
                 <div class="rc-review-progress-bar-fill" id="rc-deck-prog-fill" style="width:0%"></div>
               </div>
-              <div style="font-size:0.78rem;color:rgba(170, 195, 225, 0.78);white-space:nowrap;" id="rc-deck-prog-label">0 / 0</div>
+              <div style="font-size:0.78rem;color:var(--ink-3);white-space:nowrap;" id="rc-deck-prog-label">0 / 0</div>
             </div>
-            <div id="rc-deck-review-queue-note" style="display:none;font-size:0.82rem;color:rgba(210,230,255,0.82);background:rgba(59,130,246,0.12);border:1px solid rgba(125,180,255,0.25);border-radius:10px;padding:0.45rem 0.65rem;margin-top:0.6rem;"></div>
             <div class="rc-card-scene">
               <div class="rc-card-inner" id="rc-deck-card-inner">
                 <div class="rc-card-face" id="rc-deck-card-front">
@@ -1151,10 +1300,10 @@ document.write(`\n<!-- ═══════════════════
             </div>
             <button class="rc-show-answer-btn" id="rc-deck-show-btn" onclick="rcDeckFlipCard()">Show Answer</button>
             <div class="rc-rating-row" id="rc-deck-rating-row">
-              <button class="rc-rate-btn rc-rate-again" onclick="rcDeckRate('again')"><span class="rc-rate-label">Again</span><span class="rc-rate-sub" id="rc-deck-lbl-again">&lt; 1 min</span></button>
-              <button class="rc-rate-btn rc-rate-hard" onclick="rcDeckRate('hard')"><span class="rc-rate-label">Hard</span><span class="rc-rate-sub" id="rc-deck-lbl-hard">&lt; 5 min</span></button>
-              <button class="rc-rate-btn rc-rate-good" onclick="rcDeckRate('good')"><span class="rc-rate-label">Good</span><span class="rc-rate-sub" id="rc-deck-lbl-good">1 day</span></button>
-              <button class="rc-rate-btn rc-rate-easy" onclick="rcDeckRate('easy')"><span class="rc-rate-label">Easy</span><span class="rc-rate-sub" id="rc-deck-lbl-easy">4 days</span></button>
+              <button class="rc-rate-btn rc-rate-again" onclick="rcDeckRate('again')"><span class="rc-rate-label">Again</span><span class="rc-rate-sub">1 min</span></button>
+              <button class="rc-rate-btn rc-rate-hard" onclick="rcDeckRate('hard')"><span class="rc-rate-label">Hard</span><span class="rc-rate-sub">5 min</span></button>
+              <button class="rc-rate-btn rc-rate-good" onclick="rcDeckRate('good')"><span class="rc-rate-label">Good</span><span class="rc-rate-sub">1 day</span></button>
+              <button class="rc-rate-btn rc-rate-easy" onclick="rcDeckRate('easy')"><span class="rc-rate-label">Easy</span><span class="rc-rate-sub">4 days</span></button>
             </div>
           </div>
         </div>
@@ -1170,7 +1319,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.15</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.0</span>
 </footer>
 
 </div><!-- /#page-recall -->
@@ -1183,100 +1332,141 @@ document.write(`\n<!-- ═══════════════════
 (function() {
   'use strict';
 
+  // ── CLOUDINARY CONFIG ──────────────────────────────────────────
+  const RC_CLOUDINARY_CLOUD  = 'dt2bxjok1';
+  const RC_CLOUDINARY_PRESET = 'ims_flashcards';
+
   // ── CONSTANTS ──────────────────────────────────────────────────
-  const RC_LS_KEY  = 'ims_recall_cards';
-  const RC_DB_PATH = 'users/{uid}/recall';
-  const MAX_CARDS_DEFAULT = 50;
-  const MAX_INTERVAL_DAYS = 60;
-  const LEARNING_STEPS_MIN = [1, 10];
+  const RC_LS_KEY           = 'ims_recall_cards';
+  const RC_DB_PATH          = 'users/{uid}/recall';
+  const MAX_CARDS_DEFAULT   = 50;
+  const MAX_INTERVAL_DAYS   = 60;
+  const LEARNING_STEPS_MIN  = [1, 10];
   const GRADUATING_INTERVAL = 1;
-  const EASY_INTERVAL = 4;
-  const STARTING_EASE = 2.5;
-  const MIN_EASE = 1.3;
-  const DAILY_NEW_CAP = 20;
-  const CARDS_PER_PAGE = 20;
-  const MINUTE_MS = 60 * 1000;
-  const HOUR_MS = 60 * MINUTE_MS;
-  const SIX_HOURS_MS = 6 * HOUR_MS;
+  const EASY_INTERVAL       = 4;
+  const STARTING_EASE       = 2.5;
+  const MIN_EASE            = 1.3;
+  const DAILY_NEW_CAP       = 20;
+  const CARDS_PER_PAGE      = 20;
+  const LEECH_THRESHOLD     = 5;
 
   // ── STATE ──────────────────────────────────────────────────────
   let _state = {
-    cards: {},           // { cardId: {...} }
-    customDeck: null,    // { id, name, selectedTags, matchMode, cardIds, ... }
-    stats: {
-      streakDays: 0,
-      totalReviews: 0,
-      lastStudyDate: null,
-      reviewedTodayCount: 0,
-    },
-    settings: {
-      cardLimit: MAX_CARDS_DEFAULT,
-      maxIntervalDays: MAX_INTERVAL_DAYS,
-      dailyNewCardLimit: DAILY_NEW_CAP,
-    }
+    cards: {},
+    customDeck: null,
+    stats: { streakDays: 0, totalReviews: 0, lastStudyDate: null, reviewedTodayCount: 0 },
+    settings: { cardLimit: MAX_CARDS_DEFAULT, maxIntervalDays: MAX_INTERVAL_DAYS, dailyNewCardLimit: DAILY_NEW_CAP }
   };
 
   let _currentUser = null;
-  let _pageActive = false;
+  let _pageActive  = false;
   let _saveTimeout = null;
 
   // Creator state
-  let _pendingTags = [];
-  let _pendingImages = [];   // { dataUrl, file }
-  let _editTags = [];
-  let _editCardId = null;
+  let _pendingTags   = [];
+  let _pendingImages = [];   // { dataUrl (blob URL), file }
+  let _createFlag    = null;
+
+  // Edit modal state
+  let _editCardId         = null;
+  let _editTags           = [];
+  let _editExistingImages = [];
+  let _editNewImages      = [];
+  let _editFlag           = null;
 
   // Review state
-  let _reviewQueue = [];
-  let _reviewIndex = 0;
+  let _reviewQueue   = [];
+  let _reviewIndex   = 0;
   let _reviewFlipped = false;
-  let _sessionStats = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
-  let _undoSnapshot = null;  // { cardId, prevReviewData }
-  let _undoTimer = null;
-  let _reviewMode = 'general'; // 'general' | 'deck'
-  let _reviewQueueMode = 'empty'; // 'due' | 'upcoming_short' | 'empty'
-  let _deckQueueMode = 'empty'; // 'due' | 'upcoming_short' | 'empty'
-  let _deckQueue = [];
-  let _deckIndex = 0;
-  let _deckFlipped = false;
+  let _sessionStats  = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
+  let _undoSnapshot  = null;
+  let _undoTimer     = null;
+  let _reviewMode    = 'general';
+  let _deckQueue     = [];
+  let _deckIndex     = 0;
+  let _deckFlipped   = false;
 
-  // Library pagination
-  let _libPage = 1;
-  let _libFiltered = [];
+  // Library state
+  let _libPage      = 1;
+  let _libFiltered  = [];
+  let _bulkSelected = new Set();
 
   // Deck builder
   let _deckSelectedTags = [];
-  let _deckMatchMode = 'any';
+  let _deckMatchMode    = 'any';
+
+  // ── SCHEMA MIGRATION ──────────────────────────────────────────
+  function defaultReviewData() {
+    return { status:'new', dueDate:Date.now(), lastReviewedAt:null, lastRating:null,
+      intervalDays:0, easeFactor:STARTING_EASE, stepIndex:0, lapses:0, reviewCount:0, graduated:false };
+  }
+
+  function normalizeCard(card) {
+    if (!card) return card;
+    card.hint        = card.hint        ?? '';
+    card.mnemonic    = card.mnemonic    ?? '';
+    card.pearl       = card.pearl       ?? '';
+    card.source      = card.source      ?? '';
+    card.chapter     = card.chapter     ?? '';
+    card.flag        = card.flag        ?? null;
+    card.buriedUntil = card.buriedUntil ?? null;
+    card.lastEditedAt= card.lastEditedAt?? null;
+    card.tags        = card.tags        ?? [];
+    card.images      = card.images      ?? [];
+    card.suspended   = card.suspended   ?? false;
+    card.starred     = card.starred     ?? false;
+    if (!card.reviewData) card.reviewData = defaultReviewData();
+    return card;
+  }
+
+  function _migrateAllCards() { Object.values(_state.cards || {}).forEach(normalizeCard); }
+
+  function _unburyExpired() {
+    const now = nowMs();
+    Object.values(_state.cards || {}).forEach(c => { if (c.buriedUntil && c.buriedUntil <= now) c.buriedUntil = null; });
+  }
 
   // ── UTILITY ───────────────────────────────────────────────────
   function uid() {
     return 'rc_' + Math.random().toString(36).slice(2, 11) + '_' + Date.now().toString(36);
   }
 
-  function nowMs() { return Date.now(); }
-  function todayStr() { return new Date().toISOString().split('T')[0]; }
+  function nowMs()      { return Date.now(); }
+  function todayStr()   { return new Date().toISOString().split('T')[0]; }
+  function tomorrowMs() { return nowMs() + 86400000; }
   function daysFromNow(d) { return nowMs() + d * 86400000; }
   function minsFromNow(m) { return nowMs() + m * 60000; }
 
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-  function roundDays(d) { return Math.round(clamp(d, 1, MAX_INTERVAL_DAYS)); }
+  function roundDays(d)     { return Math.round(clamp(d, 1, MAX_INTERVAL_DAYS)); }
 
   function sanitize(s) {
     if (typeof s !== 'string') return '';
     return s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+  // FIXED: dots allowed for hierarchical tags (anatomy.upper_limb)
+  // Spaces become underscores. Max 40 chars.
   function normalizeTag(t) {
-    return t.trim().toLowerCase().replace(/[^a-z0-9\-_\s]/g, '').trim().slice(0, 24);
+    return String(t || '').trim().toLowerCase()
+      .replace(/\s+/g, '_').replace(/[^a-z0-9\-_.]/g, '').slice(0, 40);
   }
+
+  function normalizeTags(arr) {
+    const seen = new Set();
+    return (arr || []).map(normalizeTag).filter(t => t && !seen.has(t) && seen.add(t));
+  }
+
+  function isBuried(card)  { return !!(card && card.buriedUntil && card.buriedUntil > nowMs()); }
+  function isLeech(card)   { return !!(card && card.reviewData && card.reviewData.lapses >= LEECH_THRESHOLD); }
 
   function isDue(card) {
     if (!card || !card.reviewData) return false;
     if (card.suspended) return false;
+    if (isBuried(card)) return false;
     const rd = card.reviewData;
     if (rd.status === 'new') return true;
-    const dueAtMs = _dueAtMsFromCard(card);
-    return Number.isFinite(dueAtMs) && dueAtMs <= nowMs();
+    return rd.dueDate <= nowMs();
   }
 
   function getDifficultyLabel(card) {
@@ -1288,123 +1478,124 @@ document.write(`\n<!-- ═══════════════════
   }
 
   function getStatusBadgeClass(status) {
-    const map = { new: 'rc-badge-new', learning: 'rc-badge-learning', review: 'rc-badge-review', relearning: 'rc-badge-relearning', suspended: 'rc-badge-suspended' };
+    const map = { new:'rc-badge-new', learning:'rc-badge-learning', review:'rc-badge-review',
+      relearning:'rc-badge-relearning', suspended:'rc-badge-suspended', buried:'rc-badge-buried' };
     return map[status] || 'rc-badge-new';
   }
 
   function formatDue(card) {
     if (!card || !card.reviewData) return '—';
-    const status = card.reviewData.status;
-    const dueDate = _dueAtMsFromCard(card);
-    if (status === 'new') return 'New';
     if (card.suspended) return 'Suspended';
+    if (isBuried(card)) return 'Buried';
+    const { status, dueDate } = card.reviewData;
+    if (status === 'new') return 'New';
     const diff = Math.round((dueDate - nowMs()) / 86400000);
-    if (diff < 0) return `${Math.abs(diff)}d overdue`;
+    if (diff < 0)  return Math.abs(diff) + 'd overdue';
     if (diff === 0) return 'Today';
     if (diff === 1) return 'Tomorrow';
-    return `In ${diff}d`;
+    return 'In ' + diff + 'd';
   }
 
-  function _formatLongInterval(durationMs) {
-    const mins = Math.round(durationMs / MINUTE_MS);
-    if (mins < 60) return mins + ' min';
-    const hours = Math.round(durationMs / HOUR_MS);
-    if (hours < 24) return hours + ' hr';
-    const days = Math.round(durationMs / 86400000);
-    if (days === 1) return '1 day';
-    return days + ' days';
-  }
-
-  function formatReviewIntervalLabel(durationMs) {
-    if (durationMs <= 1 * MINUTE_MS) return '< 1 min';
-    if (durationMs <= 5 * MINUTE_MS) return '< 5 min';
-    if (durationMs <= 10 * MINUTE_MS) return '< 10 min';
-    if (durationMs <= 30 * MINUTE_MS) return '< 30 min';
-    if (durationMs <= 1 * HOUR_MS) return '< 1 hr';
-    if (durationMs <= 3 * HOUR_MS) return '< 3 hr';
-    if (durationMs <= 6 * HOUR_MS) return '< 6 hr';
-    return _formatLongInterval(durationMs);
-  }
-
-  function _dueAtMsFromCard(card) {
-    if (!card || !card.reviewData) return NaN;
-    const dueAt = card.reviewData.dueAt != null ? card.reviewData.dueAt : card.reviewData.dueDate;
-    if (dueAt == null) return NaN;
-    const ms = typeof dueAt === 'number' ? dueAt : new Date(dueAt).getTime();
-    return Number.isFinite(ms) ? ms : NaN;
-  }
-
-  function _normalizeDueAt(card) {
-    if (!card || !card.reviewData) return;
-    if (card.reviewData.dueAt == null && card.reviewData.dueDate != null) {
-      card.reviewData.dueAt = card.reviewData.dueDate;
-    }
-  }
-
-  function _buildReviewQueue(cards, now) {
-    const eligible = cards.filter(card => {
-      if (!card || card._deleted || card.suspended || card.buried) return false;
-      if (!card.reviewData || card.reviewData.status === 'new') return false;
-      const dueAtMs = _dueAtMsFromCard(card);
-      if (!Number.isFinite(dueAtMs)) return false;
-      return true;
-    }).map(card => ({ card, dueAtMs: _dueAtMsFromCard(card), createdAtMs: card.createdAt || 0 }));
-
-    const dueNow = eligible
-      .filter(item => item.dueAtMs <= now)
-      .sort((a, b) => a.dueAtMs - b.dueAtMs || a.createdAtMs - b.createdAtMs || String(a.card.id).localeCompare(String(b.card.id)))
-      .map(item => item.card);
-
-    const todayNewCount = _state.stats.reviewedTodayCount || 0;
-    const newCap = _state.settings.dailyNewCardLimit || DAILY_NEW_CAP;
-    const freshNewCards = cards
-      .filter(card => (
-        card &&
-        !card._deleted &&
-        !card.suspended &&
-        !card.buried &&
-        card.reviewData &&
-        card.reviewData.status === 'new' &&
-        card.reviewData.reviewCount === 0 &&
-        card.reviewData.forceStudyNow === true
-      ))
-      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0) || String(a.id).localeCompare(String(b.id)));
-
-    const backlogNewCards = cards
-      .filter(card => (
-        card &&
-        !card._deleted &&
-        !card.suspended &&
-        !card.buried &&
-        card.reviewData &&
-        card.reviewData.status === 'new' &&
-        card.reviewData.forceStudyNow !== true
-      ))
-      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0) || String(a.id).localeCompare(String(b.id)));
-
-    const cappedBacklogNewCards = backlogNewCards.slice(0, Math.max(0, newCap - todayNewCount));
-    const dueAndNewQueue = [...dueNow, ...freshNewCards, ...cappedBacklogNewCards];
-
-    if (dueAndNewQueue.length > 0) return { mode: 'due', items: dueAndNewQueue };
-
-    const upcomingShort = eligible
-      .filter(item => item.dueAtMs > now && item.dueAtMs <= now + SIX_HOURS_MS)
-      .sort((a, b) => a.dueAtMs - b.dueAtMs || a.createdAtMs - b.createdAtMs || String(a.card.id).localeCompare(String(b.card.id)))
-      .map(item => item.card);
-
-    if (upcomingShort.length > 0) return { mode: 'upcoming_short', items: upcomingShort };
-
-    return { mode: 'empty', items: [] };
-  }
-
-  function allCards() { return Object.values(_state.cards || {}); }
-
+  function allCards()  { return Object.values(_state.cards || {}); }
   function cardCount() { return allCards().filter(c => !c._deleted).length; }
 
   function allTags() {
     const tags = new Set();
     allCards().forEach(c => (c.tags || []).forEach(t => tags.add(t)));
     return Array.from(tags).sort();
+  }
+
+  function allTagsWithCounts() {
+    const map = {};
+    allCards().filter(c => !c._deleted).forEach(c => {
+      (c.tags || []).forEach(t => { map[t] = (map[t] || 0) + 1; });
+    });
+    return map;
+  }
+
+  // ── ADVANCED SEARCH ───────────────────────────────────────────
+  function parseCardSearchQuery(raw) {
+    const q = (raw || '').trim();
+    if (!q) return {};
+    const result = {};
+    let remaining = q.replace(/(\w+):(\S+)/g, (_, key, val) => { result[key.toLowerCase()] = val.toLowerCase(); return ''; });
+    remaining = remaining.replace(/"([^"]+)"/g, (_, phrase) => { result.exact = phrase.toLowerCase(); return ''; });
+    const plain = remaining.trim();
+    if (plain) result.text = plain.toLowerCase();
+    return result;
+  }
+
+  function filterCards(cards, parsed, opts) {
+    const filterTag    = (opts && opts.filterTag)    || '';
+    const filterStatus = (opts && opts.filterStatus) || '';
+    return cards.filter(c => {
+      if (c._deleted) return false;
+      if (filterTag) {
+        if (filterTag === '__untagged__') { if ((c.tags || []).length) return false; }
+        else if (!(c.tags || []).includes(filterTag)) return false;
+      }
+      if (filterStatus) {
+        if (filterStatus === 'starred'   && !c.starred)   return false;
+        if (filterStatus === 'suspended' && !c.suspended)  return false;
+        if (filterStatus === 'buried'    && !isBuried(c)) return false;
+        if (!['starred','suspended','buried'].includes(filterStatus)) {
+          if (!c.reviewData || c.reviewData.status !== filterStatus) return false;
+        }
+      }
+      if (!Object.keys(parsed).length) return true;
+      if (parsed.tag) {
+        const t = parsed.tag;
+        if (t === 'untagged') { if ((c.tags || []).length) return false; }
+        else if (!(c.tags || []).some(ct => ct === t || ct.startsWith(t + '.'))) return false;
+      }
+      if (parsed.status) {
+        if (parsed.status === 'suspended' && !c.suspended)  return false;
+        else if (parsed.status === 'buried' && !isBuried(c)) return false;
+        else if (!['suspended','buried'].includes(parsed.status)) {
+          if (!c.reviewData || c.reviewData.status !== parsed.status) return false;
+        }
+      }
+      if (parsed.flag) {
+        if (parsed.flag === 'none' && c.flag) return false;
+        else if (parsed.flag !== 'none' && c.flag !== parsed.flag) return false;
+      }
+      if (parsed.starred === 'true' && !c.starred) return false;
+      if (parsed.is === 'due'       && !isDue(c))             return false;
+      if (parsed.is === 'leech'     && !isLeech(c))           return false;
+      if (parsed.is === 'suspended' && !c.suspended)          return false;
+      if (parsed.is === 'untagged'  && (c.tags || []).length) return false;
+      if (parsed.is === 'buried'    && !isBuried(c))          return false;
+      if (parsed.is === 'starred'   && !c.starred)            return false;
+      const needle = parsed.exact || parsed.text;
+      if (needle) {
+        const hay = [c.question||'', c.answer||'', (c.tags||[]).join(' '),
+          c.hint||'', c.mnemonic||'', c.pearl||'', c.source||'', c.chapter||''].join(' ').toLowerCase();
+        if (!hay.includes(needle)) return false;
+      }
+      return true;
+    });
+  }
+
+  // ── CLOUDINARY UPLOAD ─────────────────────────────────────────
+  async function _uploadOneToCloudinary(file) {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('upload_preset', RC_CLOUDINARY_PRESET);
+    const res = await fetch('https://api.cloudinary.com/v1_1/' + RC_CLOUDINARY_CLOUD + '/image/upload', { method:'POST', body:form });
+    if (!res.ok) {
+      let detail = 'HTTP ' + res.status;
+      try { const j = await res.json(); if (j.error && j.error.message) detail = j.error.message; } catch(_) {}
+      throw new Error('Cloudinary upload failed: ' + detail);
+    }
+    const data = await res.json();
+    if (!data.secure_url) throw new Error('Cloudinary returned no URL.');
+    return data.secure_url;
+  }
+
+  async function _uploadFiles(files) {
+    const urls = [];
+    for (const f of files) urls.push(await _uploadOneToCloudinary(f.file));
+    return urls;
   }
 
   // ── LOCAL STORAGE PERSISTENCE ─────────────────────────────────
@@ -1476,6 +1667,9 @@ document.write(`\n<!-- ═══════════════════
       _state.stats    = { ...{ streakDays:0, totalReviews:0, lastStudyDate:null, reviewedTodayCount:0 }, ...(chosen.stats || {}) };
       _state.settings = { ...{ cardLimit:MAX_CARDS_DEFAULT, maxIntervalDays:MAX_INTERVAL_DAYS, dailyNewCardLimit:DAILY_NEW_CAP }, ...(chosen.settings || {}) };
     }
+    // Migrate schema + daily maintenance
+    _migrateAllCards();
+    _unburyExpired();
     // Daily reset of reviewedTodayCount
     if (_state.stats.lastStudyDate !== todayStr()) {
       _state.stats.reviewedTodayCount = 0;
@@ -1484,17 +1678,11 @@ document.write(`\n<!-- ═══════════════════
 
   // ── PAGE ACTIVATION ───────────────────────────────────────────
   window.recallPageActivated = async function() {
-    if (_pageActive) {
-      _refreshUI();
-      return;
-    }
-    _pageActive = true;
     const username = window.DB ? window.DB.getCurrentUser() : null;
+    if (_pageActive && username === _currentUser) { _refreshUI(); return; }
+    _pageActive = true;
     _currentUser = username;
-    if (!_currentUser) {
-      _showAuthGates();
-      return;
-    }
+    if (!_currentUser) { _showAuthGates(); return; }
     _hideAuthGates();
     await _loadState();
     _refreshUI();
@@ -1503,20 +1691,27 @@ document.write(`\n<!-- ═══════════════════
   function _showAuthGates() {
     _el('rc-creator-gate').style.display = '';
     _el('rc-creator-main').style.display = 'none';
-    _el('rc-revise-gate').style.display = '';
-    _el('rc-revise-main').style.display = 'none';
+    _el('rc-revise-gate').style.display  = '';
+    _el('rc-revise-main').style.display  = 'none';
   }
 
   function _hideAuthGates() {
     _el('rc-creator-gate').style.display = 'none';
     _el('rc-creator-main').style.display = '';
-    _el('rc-revise-gate').style.display = 'none';
-    _el('rc-revise-main').style.display = '';
+    _el('rc-revise-gate').style.display  = 'none';
+    _el('rc-revise-main').style.display  = '';
+  }
+
+  // Call after any operation that changes tag data
+  function _refreshAllTagUI() {
+    _updateTagsCloud();
+    _renderDeckTagSelector();
+    _updateDeckPreview();
   }
 
   function _refreshUI() {
     _updateLimitUI();
-    _updateTagsCloud();
+    _refreshAllTagUI();
     rcRenderLibrary();
     _updateStatsUI();
     _updateDeckUI();
@@ -1586,8 +1781,6 @@ document.write(`\n<!-- ═══════════════════
         _currentUser = username;
         _pageActive = false;
         window.recallPageActivated();
-      } else if (_currentUser) {
-        rcInitReviewSession();
       } else if (!_currentUser) {
         _showAuthGates();
       }
@@ -1653,64 +1846,25 @@ document.write(`\n<!-- ═══════════════════
 
   window.rcTagInput = function(e) {
     const input = _el('rc-tag-input');
-    if (input.value.endsWith(',')) {
-      _addPendingTag(input.value.slice(0, -1));
-      input.value = '';
-    }
-    _checkDupWarning();
+    if (input.value.endsWith(',')) { _addPendingTag(input.value.slice(0, -1)); input.value = ''; }
+    window.rcCheckDupWarning();
   };
 
-  // ── DUPLICATE CHECK ───────────────────────────────────────────
-  function _checkDupWarning() {
-    const q = (_el('rc-question') ? _el('rc-question').value : '').trim().toLowerCase();
-    if (!q) { _el('rc-dup-warning').style.display = 'none'; return; }
-    const dup = allCards().find(c => !c._deleted && c.question && c.question.trim().toLowerCase() === q);
-    _el('rc-dup-warning').style.display = dup ? '' : 'none';
-  }
-
-  // ── CLOUDINARY CONFIG ─────────────────────────────────────────
-  // To activate image uploads:
-  //   1. Sign up free at https://cloudinary.com
-  //   2. Copy your Cloud Name from the dashboard home page
-  //   3. Go to Settings → Upload → Upload Presets → Add upload preset
-  //      Set Mode = Unsigned
-  //      (Optional) Add incoming transformation: c_limit,w_1200/q_auto,f_auto
-  //      to auto-compress and resize server-side before storage
-  //   4. Paste both values below and deploy.
-  //
-  // The cloud name and unsigned preset name are safe in client-side code —
-  // this is Cloudinary's official browser-upload pattern. No secrets exposed.
-  const RC_CLOUDINARY_CLOUD  = 'dt2bxjok1';
-  const RC_CLOUDINARY_PRESET = 'ims_flashcards';
-  const RC_CLOUDINARY_CONFIGURED = (
-    RC_CLOUDINARY_CLOUD  !== 'YOUR_CLOUD_NAME' &&
-    RC_CLOUDINARY_PRESET !== 'YOUR_UPLOAD_PRESET'
-  );
-
-  // ── IMAGE HANDLING ────────────────────────────────────────────
-  // _pendingImages entries: { dataUrl, file }
-  //   dataUrl — local blob URL used only for the preview thumbnail
-  //   file    — original File object, sent as FormData to Cloudinary on save
-
-  window.rcDragOver = function(e) { e.preventDefault(); _el('rc-drop-zone').classList.add('drag-over'); };
+  // ── IMAGE HANDLING (CREATOR) ──────────────────────────────────
+  window.rcDragOver  = function(e) { e.preventDefault(); _el('rc-drop-zone').classList.add('drag-over'); };
   window.rcDragLeave = function(e) { _el('rc-drop-zone').classList.remove('drag-over'); };
-  window.rcDrop = function(e) {
-    e.preventDefault();
-    _el('rc-drop-zone').classList.remove('drag-over');
-    rcHandleFiles(e.dataTransfer.files);
+  window.rcDrop      = function(e) {
+    e.preventDefault(); _el('rc-drop-zone').classList.remove('drag-over'); rcHandleFiles(e.dataTransfer.files);
   };
 
   window.rcHandleFiles = function(files) {
     if (!files) return;
     const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-    Array.from(files).forEach(function(file) {
-      if (_pendingImages.length >= 5) { rcToast('Max 5 images per card', 'error'); return; }
-      if (!allowed.includes(file.type)) { rcToast('Unsupported format: ' + file.name, 'error'); return; }
-      if (file.size > 10 * 1024 * 1024) { rcToast('File too large (max 10 MB): ' + file.name, 'error'); return; }
-
-      // Show a local preview instantly without reading the whole file as base64
-      const previewUrl = URL.createObjectURL(file);
-      _pendingImages.push({ dataUrl: previewUrl, file: file });
+    Array.from(files).forEach(file => {
+      if (_pendingImages.length >= 5)      { rcToast('Max 5 images per card', 'error'); return; }
+      if (!allowed.includes(file.type))   { rcToast('Unsupported format: ' + file.name, 'error'); return; }
+      if (file.size > 10 * 1024 * 1024)  { rcToast('File too large (max 10 MB): ' + file.name, 'error'); return; }
+      _pendingImages.push({ dataUrl: URL.createObjectURL(file), file });
       _renderImagePreviews();
     });
   };
@@ -1719,7 +1873,7 @@ document.write(`\n<!-- ═══════════════════
     const wrap = _el('rc-img-previews');
     if (!wrap) return;
     wrap.innerHTML = '';
-    _pendingImages.forEach(function(img, i) {
+    _pendingImages.forEach((img, i) => {
       const thumb = document.createElement('div');
       thumb.className = 'rc-img-thumb';
       thumb.innerHTML = '<img src="' + img.dataUrl + '" alt="preview"><button onclick="rcRemoveImage(' + i + ')">×</button>';
@@ -1728,47 +1882,58 @@ document.write(`\n<!-- ═══════════════════
   }
 
   window.rcRemoveImage = function(idx) {
-    // Revoke the object URL to free memory
-    const entry = _pendingImages[idx];
-    if (entry && entry.dataUrl && entry.dataUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(entry.dataUrl);
-    }
+    const e = _pendingImages[idx];
+    if (e && e.dataUrl && e.dataUrl.startsWith('blob:')) URL.revokeObjectURL(e.dataUrl);
     _pendingImages.splice(idx, 1);
     _renderImagePreviews();
   };
 
-  // Upload a single File object to Cloudinary using an unsigned preset.
-  // Returns the secure_url string. Throws on failure.
-  async function _uploadOneToCloudinary(file) {
-    const form = new FormData();
-    form.append('file', file);
-    form.append('upload_preset', RC_CLOUDINARY_PRESET);
+  // ── IMAGE HANDLING (EDIT MODAL) ────────────────────────────────
+  window.rcEditHandleFiles = function(files) {
+    if (!files) return;
+    const allowed = ['image/jpeg','image/png','image/webp'];
+    Array.from(files).forEach(file => {
+      const total = _editExistingImages.length + _editNewImages.length;
+      if (total >= 5)                    { rcToast('Max 5 images per card', 'error'); return; }
+      if (!allowed.includes(file.type)) { rcToast('Unsupported format: ' + file.name, 'error'); return; }
+      if (file.size > 10*1024*1024)     { rcToast('File too large', 'error'); return; }
+      _editNewImages.push({ dataUrl: URL.createObjectURL(file), file });
+      _renderEditNewImages();
+    });
+  };
 
-    const res = await fetch(
-      'https://api.cloudinary.com/v1_1/' + RC_CLOUDINARY_CLOUD + '/image/upload',
-      { method: 'POST', body: form }
-    );
-
-    if (!res.ok) {
-      let detail = 'HTTP ' + res.status;
-      try { const j = await res.json(); detail = j.error && j.error.message ? j.error.message : detail; } catch(_) {}
-      throw new Error('Cloudinary upload failed: ' + detail);
-    }
-
-    const data = await res.json();
-    if (!data.secure_url) throw new Error('Cloudinary returned no URL.');
-    return data.secure_url; // always https://res.cloudinary.com/...
+  function _renderEditExistingImages() {
+    const wrap = _el('rc-edit-existing-imgs');
+    if (!wrap) return;
+    if (!_editExistingImages.length) { wrap.innerHTML = '<span style="font-size:0.78rem;color:var(--ink-3);">No existing images.</span>'; return; }
+    wrap.innerHTML = '';
+    _editExistingImages.forEach((url, i) => {
+      const thumb = document.createElement('div');
+      thumb.className = 'rc-img-thumb';
+      thumb.innerHTML = '<img src="' + sanitize(url) + '" alt="image"><button onclick="rcRemoveEditExisting(' + i + ')">×</button>';
+      wrap.appendChild(thumb);
+    });
   }
 
-  // Upload all pending images sequentially. Returns array of hosted URLs.
-  // Throws on first failure so rcSaveCard can abort before writing to Firebase.
-  async function _uploadPendingImages() {
-    const urls = [];
-    for (let i = 0; i < _pendingImages.length; i++) {
-      urls.push(await _uploadOneToCloudinary(_pendingImages[i].file));
-    }
-    return urls;
+  function _renderEditNewImages() {
+    const wrap = _el('rc-edit-new-imgs');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    _editNewImages.forEach((img, i) => {
+      const thumb = document.createElement('div');
+      thumb.className = 'rc-img-thumb';
+      thumb.innerHTML = '<img src="' + img.dataUrl + '" alt="new"><button onclick="rcRemoveEditNew(' + i + ')">×</button>';
+      wrap.appendChild(thumb);
+    });
   }
+
+  window.rcRemoveEditExisting = function(idx) { _editExistingImages.splice(idx, 1); _renderEditExistingImages(); };
+  window.rcRemoveEditNew = function(idx) {
+    const e = _editNewImages[idx];
+    if (e && e.dataUrl && e.dataUrl.startsWith('blob:')) URL.revokeObjectURL(e.dataUrl);
+    _editNewImages.splice(idx, 1);
+    _renderEditNewImages();
+  };
 
   // ── CARD SAVE ─────────────────────────────────────────────────
   let _saving = false;
@@ -1776,96 +1941,72 @@ document.write(`\n<!-- ═══════════════════
   window.rcSaveCard = async function() {
     if (!_currentUser) { rcToast('Please log in first', 'error'); return; }
     if (_saving) return;
-
-    const questionEl = _el('rc-question');
-    const answerEl = _el('rc-answer');
+    const questionEl = _el('rc-question'), answerEl = _el('rc-answer');
     const question = questionEl ? questionEl.value.trim() : '';
-    const answer = answerEl ? answerEl.value.trim() : '';
-
+    const answer   = answerEl   ? answerEl.value.trim()   : '';
     if (!question) { rcToast('Question is required', 'error'); questionEl && questionEl.focus(); return; }
-    if (!answer)   { rcToast('Answer is required', 'error'); answerEl && answerEl.focus(); return; }
-    if (question.length > 500) { rcToast('Question too long (max 500)', 'error'); return; }
-    if (answer.length > 2000)  { rcToast('Answer too long (max 2000)', 'error'); return; }
-
+    if (!answer)   { rcToast('Answer is required',   'error'); answerEl   && answerEl.focus();   return; }
+    if (question.length > 500)  { rcToast('Question too long (max 500)',  'error'); return; }
+    if (answer.length   > 2000) { rcToast('Answer too long (max 2000)',   'error'); return; }
     const limit = _state.settings.cardLimit || MAX_CARDS_DEFAULT;
     if (cardCount() >= limit) { rcToast('Card limit reached (' + limit + ')', 'error'); return; }
-
-    // Guard: if images selected but Cloudinary not configured, warn and abort
-    if (_pendingImages.length > 0 && !RC_CLOUDINARY_CONFIGURED) {
-      rcToast('Image hosting not set up. Add your Cloudinary config or remove images.', 'error');
-      return;
-    }
 
     _saving = true;
     const btn = _el('rc-save-btn');
     if (btn) { btn.disabled = true; btn.textContent = _pendingImages.length ? 'Uploading…' : 'Saving…'; }
 
-    // Upload images first. If any fail, abort — never save a card with broken image refs.
-    let hostedImageUrls = [];
+    let hostedUrls = [];
     if (_pendingImages.length > 0) {
       try {
         rcToast('Uploading ' + _pendingImages.length + ' image' + (_pendingImages.length > 1 ? 's' : '') + '…', 'info');
-        hostedImageUrls = await _uploadPendingImages();
+        hostedUrls = await _uploadFiles(_pendingImages);
       } catch(err) {
         rcToast('Image upload failed — card not saved. ' + err.message, 'error');
         _saving = false;
-        if (btn) { btn.disabled = false; btn.textContent = 'Save Card'; }
+        if (btn) { btn.disabled = false; btn.textContent = '✓ Save Card'; }
         return;
       }
     }
 
+    const now    = nowMs();
     const cardId = uid();
-    const now = nowMs();
-    const card = {
-      id: cardId,
-      question,
-      answer,
-      images: hostedImageUrls,  // always hosted URLs from Cloudinary CDN
-      tags: [..._pendingTags],
-      createdAt: now,
-      updatedAt: now,
-      suspended: false,
-      starred: false,
-      reviewData: {
-        status: 'new',
-        dueAt: now,
-        dueDate: now,
-        lastReviewedAt: null,
-        lastRating: null,
-        intervalDays: 0,
-        easeFactor: STARTING_EASE,
-        stepIndex: 0,
-        lapses: 0,
-        reviewCount: 0,
-        graduated: false,
-        forceStudyNow: true,
-      }
-    };
+    const card   = normalizeCard({
+      id: cardId, question, answer,
+      images: hostedUrls,
+      tags: normalizeTags(_pendingTags),
+      hint:     _el('rc-hint')     ? _el('rc-hint').value.trim()     : '',
+      mnemonic: _el('rc-mnemonic') ? _el('rc-mnemonic').value.trim() : '',
+      pearl:    _el('rc-pearl')    ? _el('rc-pearl').value.trim()    : '',
+      source:   _el('rc-source')   ? _el('rc-source').value.trim()   : '',
+      chapter:  _el('rc-chapter')  ? _el('rc-chapter').value.trim()  : '',
+      flag:     _createFlag,
+      starred: false, suspended: false,
+      createdAt: now, updatedAt: now, lastEditedAt: now,
+      reviewData: defaultReviewData()
+    });
 
     _state.cards[cardId] = card;
     _scheduleAutoSave();
 
-    // Free blob URLs and reset form
-    _pendingImages.forEach(function(img) {
-      if (img.dataUrl && img.dataUrl.startsWith('blob:')) URL.revokeObjectURL(img.dataUrl);
-    });
+    // Revoke blob URLs
+    _pendingImages.forEach(img => { if (img.dataUrl && img.dataUrl.startsWith('blob:')) URL.revokeObjectURL(img.dataUrl); });
+
+    // Reset form
     if (questionEl) questionEl.value = '';
-    if (answerEl) answerEl.value = '';
-    _pendingTags = [];
-    _pendingImages = [];
-    _renderPendingTags();
-    _renderImagePreviews();
+    if (answerEl)   answerEl.value   = '';
+    _pendingTags = []; _pendingImages = []; _createFlag = null;
+    _renderPendingTags(); _renderImagePreviews();
+    if (_el('rc-create-adv-fields')) { _el('rc-create-adv-fields').classList.remove('open'); }
+    if (_el('rc-create-adv-toggle')) { _el('rc-create-adv-toggle').classList.remove('open'); _el('rc-create-adv-toggle').textContent = '↓ Advanced — hint, mnemonic, clinical pearl, source, chapter, flag'; }
+    ['rc-hint','rc-mnemonic','rc-pearl','rc-source','rc-chapter'].forEach(id => { const el = _el(id); if(el) el.value = ''; });
+    rcCreateSetFlag(null);
     _el('rc-dup-warning').style.display = 'none';
-    ['rc-q-count','rc-a-count'].forEach(function(id) { const el = _el(id); if(el) el.textContent = '0 / ' + (id.includes('q') ? '500' : '2000'); });
+    ['rc-q-count','rc-a-count'].forEach(id => { const el = _el(id); if(el) el.textContent = '0 / ' + (id.includes('q') ? '500' : '2000'); });
 
     rcToast('Card saved!');
-    _updateLimitUI();
-    _updateTagsCloud();
-    rcRenderLibrary();
-    rcInitReviewSession();
-
+    _updateLimitUI(); _refreshAllTagUI(); rcRenderLibrary(); rcInitReviewSession();
     _saving = false;
-    if (btn) { btn.disabled = false; btn.textContent = 'Save Card'; }
+    if (btn) { btn.disabled = false; btn.textContent = '✓ Save Card'; }
   };
 
   // ── LIMIT UI ──────────────────────────────────────────────────
@@ -1889,21 +2030,19 @@ document.write(`\n<!-- ═══════════════════
   // ── TAGS CLOUD ────────────────────────────────────────────────
   function _updateTagsCloud() {
     const cloud = _el('rc-all-tags-cloud');
-    if (!cloud) return;
-    const tags = allTags();
-    if (!tags.length) { cloud.innerHTML = '<span style="color:var(--ink-3);">No tags yet.</span>'; return; }
-    cloud.innerHTML = tags.map(t =>
-      '<span class="rc-tag-chip" style="cursor:pointer;" onclick="rcFilterByTag(\'' + sanitize(t) + '\')">' + sanitize(t) + '</span>'
-    ).join('');
-    // Update filter dropdowns
-    const filterTag = _el('rc-filter-tag');
-    const deckTagSel = _el('rc-deck-tag-selector');
-    if (filterTag) {
-      const current = filterTag.value;
-      filterTag.innerHTML = '<option value="">All tags</option>' + tags.map(t => '<option value="' + sanitize(t) + '">' + sanitize(t) + '</option>').join('');
-      filterTag.value = current;
+    const tags  = allTags();
+    if (cloud) {
+      cloud.innerHTML = tags.length
+        ? tags.map(t => '<span class="rc-tag-chip" style="cursor:pointer;" onclick="rcFilterByTag(\'' + sanitize(t) + '\')">' + sanitize(t) + '</span>').join('')
+        : '<span style="color:var(--ink-3);">No tags yet.</span>';
     }
-    if (deckTagSel) { _renderDeckTagSelector(); }
+    const filterTag = _el('rc-filter-tag');
+    if (filterTag) {
+      const cur = filterTag.value;
+      filterTag.innerHTML = '<option value="">All tags</option>' + tags.map(t => '<option value="' + sanitize(t) + '">' + sanitize(t) + '</option>').join('');
+      filterTag.value = cur;
+    }
+    _renderDeckTagSelector();
   }
   window.rcFilterByTag = function(tag) {
     const el = _el('rc-filter-tag');
@@ -1914,151 +2053,298 @@ document.write(`\n<!-- ═══════════════════
   // ── LIBRARY RENDER ────────────────────────────────────────────
   window.rcRenderLibrary = function() {
     if (!_currentUser) return;
-    const searchVal = (_el('rc-search') ? _el('rc-search').value : '').toLowerCase();
-    const filterTag = _el('rc-filter-tag') ? _el('rc-filter-tag').value : '';
+    const searchVal    = _el('rc-search')        ? _el('rc-search').value        : '';
+    const filterTag    = _el('rc-filter-tag')    ? _el('rc-filter-tag').value    : '';
     const filterStatus = _el('rc-filter-status') ? _el('rc-filter-status').value : '';
-    const sort = _el('rc-sort') ? _el('rc-sort').value : 'newest';
-    const now = nowMs();
+    const sort         = _el('rc-sort')          ? _el('rc-sort').value          : 'newest';
+    const parsed       = parseCardSearchQuery(searchVal);
 
-    let cards = allCards().filter(c => !c._deleted);
-
-    if (searchVal) cards = cards.filter(c => c.question && c.question.toLowerCase().includes(searchVal));
-    if (filterTag) cards = cards.filter(c => (c.tags || []).includes(filterTag));
-    if (filterStatus === 'starred') cards = cards.filter(c => c.starred);
-    else if (filterStatus === 'suspended') cards = cards.filter(c => c.suspended);
-    else if (filterStatus) cards = cards.filter(c => c.reviewData && c.reviewData.status === filterStatus);
+    let cards = filterCards(allCards(), parsed, { filterTag, filterStatus });
 
     cards.sort((a, b) => {
-      if (sort === 'newest')  return b.createdAt - a.createdAt;
-      if (sort === 'oldest')  return a.createdAt - b.createdAt;
+      if (sort === 'newest')  return (b.createdAt || 0) - (a.createdAt || 0);
+      if (sort === 'oldest')  return (a.createdAt || 0) - (b.createdAt || 0);
       if (sort === 'due')     return (a.reviewData ? a.reviewData.dueDate : 0) - (b.reviewData ? b.reviewData.dueDate : 0);
       if (sort === 'hardest') return (a.reviewData ? a.reviewData.easeFactor : 99) - (b.reviewData ? b.reviewData.easeFactor : 99);
+      if (sort === 'lapses')  return (b.reviewData ? b.reviewData.lapses : 0) - (a.reviewData ? a.reviewData.lapses : 0);
+      if (sort === 'edited')  return (b.lastEditedAt || b.updatedAt || 0) - (a.lastEditedAt || a.updatedAt || 0);
       if (sort === 'alpha')   return (a.question || '').localeCompare(b.question || '');
       return 0;
     });
 
     _libFiltered = cards;
-    const total = cards.length;
+    const total      = cards.length;
     const totalPages = Math.max(1, Math.ceil(total / CARDS_PER_PAGE));
-    _libPage = Math.min(_libPage, totalPages);
-    const start = (_libPage - 1) * CARDS_PER_PAGE;
-    const pageCards = cards.slice(start, start + CARDS_PER_PAGE);
+    _libPage         = Math.min(_libPage, totalPages);
+    const pageCards  = cards.slice((_libPage - 1) * CARDS_PER_PAGE, _libPage * CARDS_PER_PAGE);
 
     const body = _el('rc-library-body');
     if (!body) return;
 
     if (!total) {
-      body.innerHTML = '<div class="rc-empty"><div class="rc-empty-icon">📭</div><div class="rc-empty-msg">No flashcards yet. Build your first recall card.</div></div>';
-      _el('rc-pagination').innerHTML = '';
-      return;
+      const msg = (searchVal || filterTag || filterStatus) ? 'No cards match your search or filter.' : 'No flashcards yet. Build your first recall card.';
+      body.innerHTML = '<div class="rc-empty"><div class="rc-empty-icon">📭</div><div class="rc-empty-msg">' + sanitize(msg) + '</div></div>';
+      if (_el('rc-pagination')) _el('rc-pagination').innerHTML = '';
+      _updateBulkBar(); return;
     }
 
-    body.innerHTML = '<table class="rc-card-table">' +
-      '<thead><tr><th style="width:30px"></th><th>Question</th><th>Tags</th><th>Status</th><th>Difficulty</th><th>Due</th><th>Actions</th></tr></thead>' +
-      '<tbody>' + pageCards.map(card => _cardRow(card)).join('') + '</tbody></table>';
+    body.innerHTML = '<table class="rc-card-table"><thead><tr>' +
+      '<th style="width:22px"><input type="checkbox" id="rc-select-all" onchange="rcToggleSelectAll(this.checked)" title="Select all"></th>' +
+      '<th style="width:18px"></th><th>Question</th><th>Tags</th><th>Status</th><th>Due</th><th>Actions</th>' +
+      '</tr></thead><tbody>' + pageCards.map(c => _cardRow(c)).join('') + '</tbody></table>';
 
-    // Pagination
     const pag = _el('rc-pagination');
     if (pag) {
       let html = '<button class="rc-page-btn" onclick="rcLibPage(' + (_libPage - 1) + ')" ' + (_libPage <= 1 ? 'disabled' : '') + '>‹</button>';
-      for (let i = 1; i <= totalPages; i++) {
-        html += '<button class="rc-page-btn' + (i === _libPage ? ' active' : '') + '" onclick="rcLibPage(' + i + ')">' + i + '</button>';
-      }
+      for (let i = 1; i <= totalPages; i++) html += '<button class="rc-page-btn' + (i === _libPage ? ' active' : '') + '" onclick="rcLibPage(' + i + ')">' + i + '</button>';
       html += '<button class="rc-page-btn" onclick="rcLibPage(' + (_libPage + 1) + ')" ' + (_libPage >= totalPages ? 'disabled' : '') + '>›</button>';
       pag.innerHTML = html;
     }
+    _updateBulkBar();
   };
   window.rcLibPage = function(p) { _libPage = p; rcRenderLibrary(); };
 
   function _cardRow(card) {
-    const rd = card.reviewData || {};
-    const diff = getDifficultyLabel(card);
-    const due = formatDue(card);
+    const rd       = card.reviewData || {};
     const isDueNow = isDue(card);
     const starIcon = card.starred ? '⭐' : '☆';
-    const tagHtml = (card.tags || []).slice(0, 3).map(t => '<span class="rc-badge rc-badge-new" style="margin:1px;">' + sanitize(t) + '</span>').join('') + ((card.tags || []).length > 3 ? '<span class="rc-muted-cell">+' + ((card.tags || []).length - 3) + '</span>' : '');
+    const isChkd   = _bulkSelected.has(card.id);
+    const tagHtml  = (card.tags || []).slice(0, 2).map(t => '<span class="rc-badge rc-badge-new" style="margin:1px;">' + sanitize(t) + '</span>').join('') +
+      ((card.tags || []).length > 2 ? '<span style="font-size:0.68rem;color:var(--ink-3);">+' + ((card.tags||[]).length-2) + '</span>' : '');
+    const flagHtml = card.flag ? '<span class="rc-flag-dot rc-flag-' + card.flag + '" style="margin-right:3px;" title="' + card.flag + '"></span>' : '';
+    const leechBadge = isLeech(card) ? ' <span class="rc-badge rc-badge-leech">🐛</span>' : '';
+    let statusDisplay = rd.status || 'new';
+    if (card.suspended) statusDisplay = 'suspended';
+    else if (isBuried(card)) statusDisplay = 'buried';
+    const due = formatDue(card);
 
     return '<tr>' +
-      '<td><span class="rc-star" onclick="rcToggleStar(\'' + card.id + '\')" title="Star">' + starIcon + '</span></td>' +
-      '<td class="rc-q-cell" title="' + sanitize(card.question) + '">' + sanitize(card.question.slice(0, 80)) + (card.question.length > 80 ? '…' : '') + (card.suspended ? ' <span class="rc-badge rc-badge-suspended">Suspended</span>' : '') + '</td>' +
-      '<td>' + (tagHtml || '<span class="rc-muted-cell">—</span>') + '</td>' +
-      '<td><span class="rc-badge ' + getStatusBadgeClass(rd.status || 'new') + '">' + (rd.status || 'new') + '</span></td>' +
-      '<td><span class="rc-badge rc-badge-' + diff + '">' + diff + '</span></td>' +
-      '<td>' + (isDueNow ? '<span class="rc-badge rc-badge-due">' + due + '</span>' : '<span class="rc-muted-cell">' + due + '</span>') + '</td>' +
-      '<td style="white-space:nowrap;display:flex;gap:0.35rem;align-items:center;">' +
-        '<button class="rc-btn rc-btn-sm rc-action-btn-secondary" onclick="rcOpenEditModal(\'' + card.id + '\')">Edit</button>' +
-        '<button class="rc-btn rc-btn-sm rc-action-btn-secondary" onclick="rcToggleSuspend(\'' + card.id + '\')">' + (card.suspended ? 'Unsuspend' : 'Suspend') + '</button>' +
-        '<button class="rc-btn rc-btn-sm rc-action-btn-danger" onclick="rcDeleteCard(\'' + card.id + '\')">Delete</button>' +
-      '</td>' +
+      '<td><input type="checkbox" onchange="rcToggleCardSelect(\'' + card.id + '\',this.checked)" ' + (isChkd ? 'checked' : '') + '></td>' +
+      '<td><span class="rc-star" onclick="rcToggleStar(\'' + card.id + '\')">'+starIcon+'</span></td>' +
+      '<td class="rc-q-cell" title="' + sanitize(card.question) + '">' + flagHtml + sanitize(card.question.slice(0,72)) + (card.question.length>72?'…':'') + leechBadge + '</td>' +
+      '<td>' + (tagHtml || '<span style="color:var(--ink-3);font-size:0.74rem;">—</span>') + '</td>' +
+      '<td><span class="rc-badge ' + getStatusBadgeClass(statusDisplay) + '">' + sanitize(statusDisplay) + '</span></td>' +
+      '<td style="' + (isDueNow ? 'color:var(--orange);font-weight:600;' : '') + '">' + due + '</td>' +
+      '<td><div style="display:flex;gap:0.28rem;flex-wrap:nowrap;">' +
+        '<button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcOpenEditModal(\'' + card.id + '\')">Edit</button>' +
+        '<button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcToggleSuspend(\'' + card.id + '\')">' + (card.suspended ? 'Unsuspend' : 'Suspend') + '</button>' +
+        '<button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcBuryCard(\'' + card.id + '\')" title="Bury until tomorrow">Bury</button>' +
+        '<button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcResetProgress(\'' + card.id + '\')" title="Reset to new">↺</button>' +
+        '<button class="rc-btn rc-btn-danger rc-btn-sm" onclick="rcDeleteCard(\'' + card.id + '\')">✕</button>' +
+      '</div></td>' +
     '</tr>';
   }
 
   // ── CARD ACTIONS ──────────────────────────────────────────────
   window.rcToggleStar = function(id) {
-    const c = _state.cards[id];
-    if (!c) return;
-    c.starred = !c.starred;
-    c.updatedAt = nowMs();
-    _scheduleAutoSave();
-    rcRenderLibrary();
+    const c = _state.cards[id]; if (!c) return;
+    c.starred = !c.starred; c.updatedAt = nowMs();
+    _scheduleAutoSave(); rcRenderLibrary();
   };
 
   window.rcToggleSuspend = async function(id) {
-    const c = _state.cards[id];
-    if (!c) return;
-    c.suspended = !c.suspended;
-    c.updatedAt = nowMs();
-    _scheduleAutoSave();
-    rcToast(c.suspended ? 'Card suspended' : 'Card unsuspended', 'info');
-    rcRenderLibrary();
-    rcInitReviewSession();
+    const c = _state.cards[id]; if (!c) return;
+    c.suspended = !c.suspended; c.updatedAt = nowMs();
+    _scheduleAutoSave(); rcToast(c.suspended ? 'Card suspended' : 'Card unsuspended', 'info');
+    rcRenderLibrary(); rcInitReviewSession();
+  };
+
+  window.rcBuryCard = function(id) {
+    const c = _state.cards[id]; if (!c) return;
+    c.buriedUntil = tomorrowMs(); c.updatedAt = nowMs();
+    _scheduleAutoSave(); rcToast('Buried until tomorrow', 'info');
+    rcRenderLibrary(); rcInitReviewSession();
+  };
+
+  window.rcResetProgress = async function(id) {
+    const c = _state.cards[id]; if (!c) return;
+    const ok = await rcConfirm('Reset card?', 'Reset this card to New. Review history will be cleared.', 'Reset');
+    if (!ok) return;
+    c.reviewData = defaultReviewData(); c.updatedAt = nowMs();
+    _scheduleAutoSave(); rcToast('Progress reset', 'info');
+    rcRenderLibrary(); rcInitReviewSession();
   };
 
   window.rcDeleteCard = async function(id) {
     const ok = await rcConfirm('Delete flashcard?', 'Delete this flashcard? This cannot be undone.', 'Delete');
     if (!ok) return;
     delete _state.cards[id];
-    // Remove from custom deck if present
     if (_state.customDeck && _state.customDeck.cardIds) {
       _state.customDeck.cardIds = _state.customDeck.cardIds.filter(cid => cid !== id);
     }
-    _scheduleAutoSave();
-    rcToast('Card deleted');
-    _updateLimitUI();
-    _updateTagsCloud();
+    _bulkSelected.delete(id);
+    _scheduleAutoSave(); rcToast('Card deleted');
+    _updateLimitUI(); _refreshAllTagUI(); rcRenderLibrary(); rcInitReviewSession();
+  };
+
+  // ── BULK SELECTION ────────────────────────────────────────────
+  window.rcToggleCardSelect = function(id, checked) {
+    if (checked) _bulkSelected.add(id); else _bulkSelected.delete(id);
+    _updateBulkBar();
+  };
+  window.rcToggleSelectAll = function(checked) {
+    if (checked) _libFiltered.forEach(c => _bulkSelected.add(c.id));
+    else         _libFiltered.forEach(c => _bulkSelected.delete(c.id));
     rcRenderLibrary();
-    rcInitReviewSession();
+  };
+  function _updateBulkBar() {
+    const bar = _el('rc-bulk-bar'), cnt = _el('rc-bulk-count');
+    if (!bar) return;
+    const n = _bulkSelected.size;
+    bar.classList.toggle('visible', n > 0);
+    if (cnt) cnt.textContent = n;
+  }
+  window.rcClearBulkSelect = function() { _bulkSelected.clear(); rcRenderLibrary(); };
+  function _bulkIds() { return Array.from(_bulkSelected).filter(id => _state.cards[id]); }
+
+  window.rcBulkSuspend = function() {
+    _bulkIds().forEach(id => { const c = _state.cards[id]; if(c){ c.suspended=true; c.updatedAt=nowMs(); }});
+    _scheduleAutoSave(); rcToast('Suspended ' + _bulkIds().length + ' cards','info'); _bulkSelected.clear(); rcRenderLibrary(); rcInitReviewSession();
+  };
+  window.rcBulkUnsuspend = function() {
+    _bulkIds().forEach(id => { const c = _state.cards[id]; if(c){ c.suspended=false; c.updatedAt=nowMs(); }});
+    _scheduleAutoSave(); rcToast('Unsuspended','info'); _bulkSelected.clear(); rcRenderLibrary(); rcInitReviewSession();
+  };
+  window.rcBulkBury = function() {
+    _bulkIds().forEach(id => { const c = _state.cards[id]; if(c){ c.buriedUntil=tomorrowMs(); c.updatedAt=nowMs(); }});
+    _scheduleAutoSave(); rcToast('Buried until tomorrow','info'); _bulkSelected.clear(); rcRenderLibrary(); rcInitReviewSession();
+  };
+  window.rcBulkReset = async function() {
+    const ids = _bulkIds(); if (!ids.length) return;
+    const ok = await rcConfirm('Reset progress?', 'Reset ' + ids.length + ' card(s) to New. Review history will be cleared.','Reset');
+    if (!ok) return;
+    ids.forEach(id => { const c = _state.cards[id]; if(c){ c.reviewData=defaultReviewData(); c.updatedAt=nowMs(); }});
+    _scheduleAutoSave(); rcToast('Progress reset','info'); _bulkSelected.clear(); rcRenderLibrary(); rcInitReviewSession();
+  };
+  window.rcBulkFlag = function(flag) {
+    _bulkIds().forEach(id => { const c = _state.cards[id]; if(c){ c.flag=flag; c.updatedAt=nowMs(); }});
+    _scheduleAutoSave(); rcToast(flag ? 'Flagged ' + _bulkIds().length + ' cards' : 'Flags cleared','info'); rcRenderLibrary();
+  };
+  window.rcBulkDelete = async function() {
+    const ids = _bulkIds(); if (!ids.length) return;
+    const ok = await rcConfirm('Delete ' + ids.length + ' cards?','This cannot be undone.','Delete All');
+    if (!ok) return;
+    ids.forEach(id => { delete _state.cards[id]; if(_state.customDeck && _state.customDeck.cardIds) _state.customDeck.cardIds = _state.customDeck.cardIds.filter(cid => cid !== id); });
+    _scheduleAutoSave(); rcToast('Deleted ' + ids.length + ' cards'); _bulkSelected.clear();
+    _updateLimitUI(); _refreshAllTagUI(); rcRenderLibrary(); rcInitReviewSession();
+  };
+  window.rcBulkAddTag = async function() {
+    const ids = _bulkIds(); if (!ids.length) return;
+    const raw = prompt('Enter tag to add to ' + ids.length + ' card(s):');
+    if (!raw) return;
+    const tag = normalizeTag(raw);
+    if (!tag) { rcToast('Invalid tag', 'error'); return; }
+    ids.forEach(id => { const c = _state.cards[id]; if(!c) return; c.tags=c.tags||[]; if(!c.tags.includes(tag) && c.tags.length<10){c.tags.push(tag);c.updatedAt=nowMs();} });
+    _scheduleAutoSave(); rcToast('Added tag "' + tag + '"', 'info'); _refreshAllTagUI(); rcRenderLibrary();
+  };
+
+  // ── TAG MANAGER ───────────────────────────────────────────────
+  window.rcOpenTagManager = function() { _renderTagManagerList(); _el('rc-tagmgr-modal').classList.add('open'); };
+  window.rcCloseTagManager = function() { _el('rc-tagmgr-modal').classList.remove('open'); };
+
+  function _renderTagManagerList() {
+    const list   = _el('rc-tagmgr-list'); if (!list) return;
+    const counts = allTagsWithCounts();
+    const tags   = Object.keys(counts).sort();
+    if (!tags.length) { list.innerHTML = '<div style="color:var(--ink-3);font-size:0.84rem;text-align:center;padding:1.5rem 0;">No tags yet.</div>'; return; }
+    list.innerHTML = tags.map((tag, i) =>
+      '<div class="rc-tagmgr-row" id="rc-tm-row-' + i + '">' +
+        '<span class="rc-tagmgr-name">' + sanitize(tag) + '</span>' +
+        '<span class="rc-tagmgr-count">' + counts[tag] + ' card' + (counts[tag]!==1?'s':'') + '</span>' +
+        '<div class="rc-tagmgr-actions">' +
+          '<button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcTmFilter(\'' + sanitize(tag) + '\')">Browse</button>' +
+          '<button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcTmStartRename(\'' + sanitize(tag) + '\',' + i + ')">Rename</button>' +
+          '<button class="rc-btn rc-btn-danger rc-btn-sm" onclick="rcTmDelete(\'' + sanitize(tag) + '\')">Delete</button>' +
+        '</div>' +
+        '<div class="rc-tagmgr-edit-wrap" id="rc-tm-edit-' + i + '">' +
+          '<input type="text" class="rc-input" style="flex:1;" id="rc-tm-input-' + i + '" value="' + sanitize(tag) + '">' +
+          '<button class="rc-btn rc-btn-primary rc-btn-sm" onclick="rcTmConfirmRename(\'' + sanitize(tag) + '\',' + i + ')">Save</button>' +
+          '<button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcTmCancelRename(' + i + ')">Cancel</button>' +
+        '</div>' +
+      '</div>'
+    ).join('');
+  }
+
+  window.rcTmFilter = function(tag) { rcCloseTagManager(); const el = _el('rc-filter-tag'); if(el){el.value=tag;rcRenderLibrary();} rcShowTab('creator'); };
+  window.rcTmStartRename = function(tag, i) {
+    const w = _el('rc-tm-edit-' + i); if(w) w.classList.add('open');
+    const inp = _el('rc-tm-input-' + i); if(inp){inp.value=tag;inp.focus();inp.select();}
+  };
+  window.rcTmCancelRename = function(i) { const w = _el('rc-tm-edit-' + i); if(w) w.classList.remove('open'); };
+  window.rcTmConfirmRename = function(oldTag, i) {
+    const inp = _el('rc-tm-input-' + i); if(!inp) return;
+    const newTag = normalizeTag(inp.value);
+    if (!newTag) { rcToast('Invalid tag name', 'error'); return; }
+    if (newTag === oldTag) { rcTmCancelRename(i); return; }
+    allCards().filter(c => !c._deleted && (c.tags||[]).includes(oldTag)).forEach(c => {
+      c.tags = Array.from(new Set(c.tags.map(t => t === oldTag ? newTag : t)));
+      c.updatedAt = nowMs();
+    });
+    if (_state.customDeck && _state.customDeck.selectedTags) {
+      _state.customDeck.selectedTags = _state.customDeck.selectedTags.map(t => t === oldTag ? newTag : t);
+    }
+    _scheduleAutoSave(); rcToast('Renamed "' + oldTag + '" → "' + newTag + '"', 'info');
+    _refreshAllTagUI(); rcRenderLibrary(); _renderTagManagerList();
+  };
+  window.rcTmDelete = async function(tag) {
+    const n = (allTagsWithCounts()[tag] || 0);
+    const ok = await rcConfirm('Delete tag "' + tag + '"?', 'Removes the tag from ' + n + ' card(s). Cards are not deleted.', 'Delete Tag');
+    if (!ok) return;
+    allCards().filter(c => !c._deleted && (c.tags||[]).includes(tag)).forEach(c => { c.tags=c.tags.filter(t=>t!==tag); c.updatedAt=nowMs(); });
+    _scheduleAutoSave(); rcToast('Tag deleted from ' + n + ' card(s)', 'info');
+    _refreshAllTagUI(); rcRenderLibrary(); _renderTagManagerList();
   };
 
   // ── EDIT MODAL ────────────────────────────────────────────────
   window.rcOpenEditModal = function(id) {
-    const c = _state.cards[id];
-    if (!c) return;
-    _editCardId = id;
-    _editTags = [...(c.tags || [])];
-    const qEl = _el('rc-edit-question');
-    const aEl = _el('rc-edit-answer');
-    if (qEl) { qEl.value = c.question || ''; rcUpdateCharCount('rc-edit-question', 'rc-edit-q-count', 500); }
-    if (aEl) { aEl.value = c.answer || ''; rcUpdateCharCount('rc-edit-answer', 'rc-edit-a-count', 2000); }
+    const c = _state.cards[id]; if (!c) return;
+    _editCardId         = id;
+    _editTags           = [...(c.tags || [])];
+    _editExistingImages = [...(c.images || [])];
+    _editNewImages      = [];
+    _editFlag           = c.flag || null;
+
+    const qEl = _el('rc-edit-question'), aEl = _el('rc-edit-answer');
+    if (qEl) { qEl.value = c.question || ''; rcUpdateCharCount('rc-edit-question','rc-edit-q-count',500); }
+    if (aEl) { aEl.value = c.answer   || ''; rcUpdateCharCount('rc-edit-answer','rc-edit-a-count',2000); }
     _renderEditTags();
+    _renderEditExistingImages();
+    if (_el('rc-edit-new-imgs')) _el('rc-edit-new-imgs').innerHTML = '';
+
+    rcEditSetFlag(_editFlag);
+    const sc = _el('rc-edit-starred'),   sp = _el('rc-edit-suspended');
+    if (sc) sc.checked = !!c.starred;
+    if (sp) sp.checked = !!c.suspended;
+
+    const advFields = ['hint','mnemonic','pearl','source','chapter'];
+    advFields.forEach(f => { const el = _el('rc-edit-' + f); if(el) el.value = c[f] || ''; });
+
+    const hasAdv = advFields.some(f => c[f]);
+    if (hasAdv) {
+      const af = _el('rc-edit-adv-fields'), at = _el('rc-edit-adv-toggle');
+      if(af) af.classList.add('open');
+      if(at) { at.classList.add('open'); at.textContent = '↑ Advanced fields — hint, mnemonic, clinical pearl, source, chapter'; }
+    }
     _el('rc-edit-modal').classList.add('open');
   };
 
   window.rcCloseEditModal = function() {
     _el('rc-edit-modal').classList.remove('open');
-    _editCardId = null;
-    _editTags = [];
+    _editNewImages.forEach(img => { if(img.dataUrl && img.dataUrl.startsWith('blob:')) URL.revokeObjectURL(img.dataUrl); });
+    _editCardId = null; _editTags = []; _editExistingImages = []; _editNewImages = []; _editFlag = null;
+    const af = _el('rc-edit-adv-fields'), at = _el('rc-edit-adv-toggle');
+    if(af) af.classList.remove('open');
+    if(at) { at.classList.remove('open'); at.textContent = '↓ Advanced fields — hint, mnemonic, clinical pearl, source, chapter'; }
   };
 
   function _renderEditTags() {
-    const wrap = _el('rc-edit-tag-wrap');
-    const input = _el('rc-edit-tag-input');
+    const wrap = _el('rc-edit-tag-wrap'), input = _el('rc-edit-tag-input');
     if (!wrap || !input) return;
     wrap.querySelectorAll('.rc-tag-chip').forEach(c => c.remove());
     _editTags.forEach(tag => {
       const chip = document.createElement('span');
       chip.className = 'rc-tag-chip';
-      chip.innerHTML = sanitize(tag) + '<button onclick="rcRemoveEditTag(\'' + tag + '\')">×</button>';
+      chip.innerHTML = sanitize(tag) + '<button onclick="rcRemoveEditTag(\'' + sanitize(tag) + '\')">×</button>';
       wrap.insertBefore(chip, input);
     });
   }
@@ -2070,58 +2356,67 @@ document.write(`\n<!-- ═══════════════════
       e.preventDefault();
       const tag = normalizeTag(input.value);
       if (tag && !_editTags.includes(tag) && _editTags.length < 10) _editTags.push(tag);
-      input.value = '';
-      _renderEditTags();
+      input.value = ''; _renderEditTags();
     } else if (e.key === 'Backspace' && !input.value && _editTags.length) {
-      _editTags.pop();
-      _renderEditTags();
+      _editTags.pop(); _renderEditTags();
     }
   };
   window.rcEditTagInput = function(e) {
     const input = _el('rc-edit-tag-input');
-    if (input.value.endsWith(',')) {
-      const tag = normalizeTag(input.value.slice(0, -1));
-      if (tag && !_editTags.includes(tag) && _editTags.length < 10) _editTags.push(tag);
-      input.value = '';
-      _renderEditTags();
-    }
+    if (input.value.endsWith(',')) { const tag=normalizeTag(input.value.slice(0,-1)); if(tag&&!_editTags.includes(tag)&&_editTags.length<10)_editTags.push(tag); input.value=''; _renderEditTags(); }
   };
 
-  window.rcSaveEditCard = function() {
+  window.rcSaveEditCard = async function() {
     if (!_editCardId) return;
-    const c = _state.cards[_editCardId];
-    if (!c) return;
-    const q = (_el('rc-edit-question') ? _el('rc-edit-question').value : '').trim();
-    const a = (_el('rc-edit-answer') ? _el('rc-edit-answer').value : '').trim();
+    const c = _state.cards[_editCardId]; if (!c) return;
+    const qEl = _el('rc-edit-question'), aEl = _el('rc-edit-answer');
+    const q = qEl ? qEl.value.trim() : '', a = aEl ? aEl.value.trim() : '';
     if (!q) { rcToast('Question required', 'error'); return; }
-    if (!a) { rcToast('Answer required', 'error'); return; }
-    c.question = q;
-    c.answer = a;
-    c.tags = [..._editTags];
-    c.updatedAt = nowMs();
-    _scheduleAutoSave();
-    rcToast('Card updated');
-    rcCloseEditModal();
-    _updateTagsCloud();
-    rcRenderLibrary();
+    if (!a) { rcToast('Answer required',   'error'); return; }
+    if (q.length > 500)  { rcToast('Question too long', 'error'); return; }
+    if (a.length > 2000) { rcToast('Answer too long',   'error'); return; }
+
+    const saveBtn = _el('rc-edit-save-btn');
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = _editNewImages.length ? 'Uploading…' : 'Saving…'; }
+
+    let newUrls = [];
+    if (_editNewImages.length > 0) {
+      try {
+        newUrls = await _uploadFiles(_editNewImages);
+      } catch(err) {
+        rcToast('Image upload failed. ' + err.message, 'error');
+        if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save Changes';} return;
+      }
+    }
+
+    // Atomic update — reviewData is NOT touched
+    c.question = q; c.answer = a;
+    c.tags      = normalizeTags(_editTags);
+    c.images    = _editExistingImages.concat(newUrls);
+    c.flag      = _editFlag;
+    c.starred   = !!(_el('rc-edit-starred')   ? _el('rc-edit-starred').checked   : false);
+    c.suspended = !!(_el('rc-edit-suspended') ? _el('rc-edit-suspended').checked : false);
+    ['hint','mnemonic','pearl','source','chapter'].forEach(f => { const el = _el('rc-edit-' + f); c[f] = el ? el.value.trim() : ''; });
+    c.updatedAt    = nowMs();
+    c.lastEditedAt = nowMs();
+
+    _scheduleAutoSave(); rcToast('Card updated');
+    rcCloseEditModal(); _refreshAllTagUI(); rcRenderLibrary(); rcInitReviewSession();
+    if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save Changes';}
   };
 
   // ── STATS UI ──────────────────────────────────────────────────
   function _updateStatsUI() {
-    const now = nowMs();
-    const cards = allCards().filter(c => !c._deleted && !c.suspended);
-    const due = cards.filter(c => isDue(c) && c.reviewData && (c.reviewData.status === 'review' || c.reviewData.status === 'relearning')).length;
-    const newCards = cards.filter(c => c.reviewData && c.reviewData.status === 'new').length;
-    const learning = cards.filter(c => c.reviewData && (c.reviewData.status === 'learning')).length;
-    const streak = _state.stats.streakDays || 0;
-    const reviewed = _state.stats.reviewedTodayCount || 0;
-
-    const setTxt = (id, val) => { const el = _el(id); if (el) el.textContent = val; };
-    setTxt('rc-stat-due', due);
-    setTxt('rc-stat-new', newCards);
+    const active  = allCards().filter(c => !c._deleted && !c.suspended && !isBuried(c));
+    const due     = active.filter(c => isDue(c) && c.reviewData && (c.reviewData.status==='review'||c.reviewData.status==='relearning')).length;
+    const newCards= active.filter(c => c.reviewData && c.reviewData.status==='new').length;
+    const learning= active.filter(c => c.reviewData && c.reviewData.status==='learning').length;
+    const setTxt  = (id, val) => { const el=_el(id); if(el) el.textContent=val; };
+    setTxt('rc-stat-due',      due);
+    setTxt('rc-stat-new',      newCards);
     setTxt('rc-stat-learning', learning);
-    setTxt('rc-stat-reviewed', reviewed);
-    setTxt('rc-stat-streak', streak + '🔥');
+    setTxt('rc-stat-reviewed', _state.stats.reviewedTodayCount || 0);
+    setTxt('rc-stat-streak',   (_state.stats.streakDays||0) + '🔥');
   }
 
   // ── SPACED REPETITION ENGINE ──────────────────────────────────
@@ -2198,38 +2493,32 @@ document.write(`\n<!-- ═══════════════════
         next.easeFactor = Math.min(4.0, (rd.easeFactor || STARTING_EASE) + 0.15);
       }
     }
-    if (next.dueDate != null) next.dueAt = next.dueDate;
     return next;
   }
 
-  function _nextIntervalMs(rd, rating) {
-    if (!rd) return null;
+  function _ratingLabel(rd, rating) {
+    if (!rd) return '';
     const status = rd.status || 'new';
     if (status === 'new' || status === 'learning') {
-      if (rating === 'again') return LEARNING_STEPS_MIN[0] * MINUTE_MS;
-      if (rating === 'hard') return 5 * MINUTE_MS;
+      if (rating === 'again') return '1 min';
+      if (rating === 'hard') return '5 min';
       if (rating === 'good') {
         const nextStep = (rd.stepIndex || 0) + 1;
-        return nextStep >= LEARNING_STEPS_MIN.length ? GRADUATING_INTERVAL * 86400000 : LEARNING_STEPS_MIN[nextStep] * MINUTE_MS;
+        return nextStep >= LEARNING_STEPS_MIN.length ? '1 day' : LEARNING_STEPS_MIN[nextStep] + ' min';
       }
-      if (rating === 'easy') return EASY_INTERVAL * 86400000;
+      if (rating === 'easy') return '4 days';
     } else if (status === 'review') {
-      if (rating === 'again') return 1 * 86400000;
-      if (rating === 'hard') return roundDays((rd.intervalDays || 1) * 1.2) * 86400000;
-      if (rating === 'good') return roundDays((rd.intervalDays || 1) * (rd.easeFactor || STARTING_EASE)) * 86400000;
-      if (rating === 'easy') return roundDays((rd.intervalDays || 1) * (rd.easeFactor || STARTING_EASE) * 1.3) * 86400000;
+      if (rating === 'again') return '1 day';
+      if (rating === 'hard') { return roundDays((rd.intervalDays || 1) * 1.2) + 'd'; }
+      if (rating === 'good') { return roundDays((rd.intervalDays || 1) * (rd.easeFactor || STARTING_EASE)) + 'd'; }
+      if (rating === 'easy') { return roundDays((rd.intervalDays || 1) * (rd.easeFactor || STARTING_EASE) * 1.3) + 'd'; }
     } else if (status === 'relearning') {
-      if (rating === 'again') return LEARNING_STEPS_MIN[0] * MINUTE_MS;
-      if (rating === 'hard') return 5 * MINUTE_MS;
-      if (rating === 'good') return 1 * 86400000;
-      if (rating === 'easy') return EASY_INTERVAL * 86400000;
+      if (rating === 'again') return '1 min';
+      if (rating === 'hard') return '5 min';
+      if (rating === 'good') return '1 day';
+      if (rating === 'easy') return '4 days';
     }
-    return null;
-  }
-
-  function _ratingLabel(rd, rating) {
-    const intervalMs = _nextIntervalMs(rd, rating);
-    return intervalMs == null ? '' : formatReviewIntervalLabel(intervalMs);
+    return '';
   }
 
   // ── REVIEW SESSION ─────────────────────────────────────────────
@@ -2240,27 +2529,33 @@ document.write(`\n<!-- ═══════════════════
     _hideUndo();
 
     const now = nowMs();
-    const scoped = allCards();
-    scoped.forEach(_normalizeDueAt);
-    const queueResult = _buildReviewQueue(scoped, now);
-    _reviewQueueMode = queueResult.mode;
-    _reviewQueue = queueResult.items;
+    const todayNewCount = allCards().filter(c => !c._deleted && !c.suspended && c.reviewData && c.reviewData.status !== 'new' && c.reviewData.lastReviewedAt && c.reviewData.lastReviewedAt > (now - 86400000) && c.reviewData.reviewCount === 1).length;
+    const newCap = _state.settings.dailyNewCardLimit || DAILY_NEW_CAP;
+
+    // Priority: overdue review > due today review/relearning > learning due now > new cards (capped)
+    let queue = [];
+    const overdueReview = allCards().filter(c => !c._deleted && !c.suspended && !isBuried(c) && c.reviewData && (c.reviewData.status === 'review' || c.reviewData.status === 'relearning') && c.reviewData.dueDate < now - 86400000).sort((a,b) => a.reviewData.dueDate - b.reviewData.dueDate);
+    const dueToday = allCards().filter(c => !c._deleted && !c.suspended && !isBuried(c) && c.reviewData && (c.reviewData.status === 'review' || c.reviewData.status === 'relearning') && c.reviewData.dueDate >= now - 86400000 && c.reviewData.dueDate <= now).sort((a,b) => a.reviewData.dueDate - b.reviewData.dueDate);
+    const learning = allCards().filter(c => !c._deleted && !c.suspended && !isBuried(c) && c.reviewData && c.reviewData.status === 'learning' && c.reviewData.dueDate <= now).sort((a,b) => a.reviewData.dueDate - b.reviewData.dueDate);
+    const newC = allCards().filter(c => !c._deleted && !c.suspended && !isBuried(c) && c.reviewData && c.reviewData.status === 'new').slice(0, Math.max(0, newCap - todayNewCount));
+
+    queue = [...overdueReview, ...dueToday, ...learning, ...newC];
+    _reviewQueue = queue;
     _reviewIndex = 0;
 
     _updateStatsUI();
-    _showReviewUI(_reviewQueue.length > 0, _reviewQueueMode);
+    _showReviewUI(queue.length > 0);
 
-    if (_reviewQueue.length > 0) {
+    if (queue.length > 0) {
       _renderCurrentCard();
     }
   };
 
-  function _showReviewUI(hasCards, queueMode) {
+  function _showReviewUI(hasCards) {
     const area = _el('rc-review-area');
     const emptyNoCards = _el('rc-rev-empty-no-cards');
     const emptyDone = _el('rc-rev-empty-done');
     const summary = _el('rc-session-summary');
-    const queueNote = _el('rc-review-queue-note');
 
     if (!area) return;
 
@@ -2271,87 +2566,86 @@ document.write(`\n<!-- ═══════════════════
       area.style.display = '';
       if (emptyNoCards) emptyNoCards.style.display = 'none';
       if (emptyDone) emptyDone.style.display = 'none';
-      if (queueNote) {
-        if (queueMode === 'upcoming_short') {
-          queueNote.style.display = '';
-          queueNote.textContent = 'No cards are due right now. Showing cards returning within the next 6 hours.';
-        } else {
-          queueNote.style.display = 'none';
-          queueNote.textContent = '';
-        }
-      }
     } else if (!totalCards) {
       area.style.display = 'none';
       if (emptyNoCards) emptyNoCards.style.display = '';
       if (emptyDone) emptyDone.style.display = 'none';
-      if (queueNote) { queueNote.style.display = 'none'; queueNote.textContent = ''; }
     } else {
       area.style.display = 'none';
       if (emptyNoCards) emptyNoCards.style.display = 'none';
       if (emptyDone) emptyDone.style.display = '';
-      if (queueNote) { queueNote.style.display = 'none'; queueNote.textContent = ''; }
     }
   }
 
   function _renderCurrentCard() {
     const card = _reviewQueue[_reviewIndex];
     if (!card) return;
-
     _reviewFlipped = false;
     const inner = _el('rc-card-inner');
     if (inner) inner.classList.remove('flipped');
 
+    // Front
     const qEl = _el('rc-card-question');
-    const aEl = _el('rc-card-answer');
-    const imgEl = _el('rc-card-images');
-    const tagsEl = _el('rc-card-tags');
-
     if (qEl) qEl.textContent = card.question || '';
-    if (aEl) aEl.textContent = card.answer || '';
-    if (imgEl) {
-      imgEl.innerHTML = (card.images || []).map(src =>
-        '<img src="' + src + '" alt="card image" onclick="rcOpenLightbox(\'' + src.replace(/'/g, "\\'") + '\')">'
-      ).join('');
+
+    // Flag indicator
+    const flagInd = _el('rc-card-flag-indicator');
+    if (flagInd) {
+      if (card.flag) { flagInd.style.display=''; flagInd.innerHTML='<span class="rc-flag-dot rc-flag-'+card.flag+'" style="width:10px;height:10px;" title="'+card.flag+'"></span>'; }
+      else flagInd.style.display='none';
     }
-    if (tagsEl) {
-      tagsEl.innerHTML = (card.tags || []).map(t => '<span class="rc-card-tag-pill">' + sanitize(t) + '</span>').join('');
-    }
+    // Hint
+    const hintRow = _el('rc-card-hint-row'), hintText = _el('rc-card-hint-text');
+    if (hintRow && hintText) { if(card.hint){hintRow.style.display='';hintText.textContent=card.hint;}else hintRow.style.display='none'; }
+
+    // Back
+    const aEl = _el('rc-card-answer'), imgEl = _el('rc-card-images'), tagsEl = _el('rc-card-tags');
+    if (aEl)    aEl.textContent = card.answer || '';
+    if (imgEl)  imgEl.innerHTML = (card.images||[]).map(src => '<img src="'+sanitize(src)+'" alt="card image" onclick="rcOpenLightbox(\''+src.replace(/'/g,"\\'")+'\')">').join('');
+    if (tagsEl) tagsEl.innerHTML = (card.tags||[]).map(t => '<span class="rc-card-tag-pill">'+sanitize(t)+'</span>').join('');
+
+    // Mnemonic
+    const mnRow = _el('rc-card-mnemonic-row'), mnTxt = _el('rc-card-mnemonic-text');
+    if (mnRow && mnTxt) { if(card.mnemonic){mnRow.style.display='';mnTxt.textContent=card.mnemonic;}else mnRow.style.display='none'; }
+    // Pearl
+    const prRow = _el('rc-card-pearl-row'), prTxt = _el('rc-card-pearl-text');
+    if (prRow && prTxt) { if(card.pearl){prRow.style.display='';prTxt.textContent=card.pearl;}else prRow.style.display='none'; }
+    // Source / chapter
+    const srcRow = _el('rc-card-source-row'), srcTxt = _el('rc-card-source-text');
+    if (srcRow && srcTxt) { const s=[card.chapter,card.source].filter(Boolean).join(' · '); if(s){srcRow.style.display='';srcTxt.textContent=s;}else srcRow.style.display='none'; }
 
     // Rating labels
     const rd = card.reviewData || {};
-    ['again','hard','good','easy'].forEach(r => {
-      const lbl = _el('rc-lbl-' + r);
-      if (lbl) lbl.textContent = _ratingLabel(rd, r);
-    });
+    ['again','hard','good','easy'].forEach(r => { const lbl = _el('rc-lbl-'+r); if(lbl) lbl.textContent=_ratingLabel(rd,r); });
 
     // Progress
-    const total = _reviewQueue.length;
-    const done = _reviewIndex;
-    const pct = total ? (done / total * 100) : 0;
-    const progFill = _el('rc-rev-prog-fill');
-    const progLabel = _el('rc-rev-prog-label');
-    if (progFill) progFill.style.width = pct + '%';
-    if (progLabel) progLabel.textContent = done + ' / ' + total;
+    const pct = _reviewQueue.length ? (_reviewIndex/_reviewQueue.length*100) : 0;
+    const pf = _el('rc-rev-prog-fill'), pl = _el('rc-rev-prog-label');
+    if (pf) pf.style.width = pct + '%';
+    if (pl) pl.textContent = _reviewIndex + ' / ' + _reviewQueue.length;
 
-    // Show/hide buttons
-    const showBtn = _el('rc-show-answer-btn');
-    const rateRow = _el('rc-rating-row');
+    // Button state
+    const showBtn = _el('rc-show-answer-btn'), rateRow = _el('rc-rating-row'), actRow = _el('rc-review-card-actions');
     if (showBtn) showBtn.style.display = '';
     if (rateRow) rateRow.classList.remove('visible');
+    if (actRow)  actRow.classList.remove('visible');
 
-    // Keyboard
+    // Suspend button label
+    const suspBtn = _el('rc-rev-suspend-btn');
+    if (suspBtn) suspBtn.textContent = card.suspended ? '▶ Unsuspend' : '⏸ Suspend';
+
     _reviewMode = 'general';
   }
 
   window.rcFlipCard = function() {
     if (_reviewFlipped) return;
     _reviewFlipped = true;
-    const inner = _el('rc-card-inner');
-    if (inner) inner.classList.add('flipped');
-    const showBtn = _el('rc-show-answer-btn');
-    const rateRow = _el('rc-rating-row');
+    const inner = _el('rc-card-inner'), showBtn = _el('rc-show-answer-btn'),
+          rateRow = _el('rc-rating-row'), actRow = _el('rc-review-card-actions');
+    if (inner)   inner.classList.add('flipped');
     if (showBtn) showBtn.style.display = 'none';
     if (rateRow) rateRow.classList.add('visible');
+    if (actRow)  actRow.classList.add('visible');
   };
 
   window.rcRate = function(rating) {
@@ -2365,9 +2659,14 @@ document.write(`\n<!-- ═══════════════════
 
     // Apply SRS
     const newRD = _computeNextDue(card.reviewData, rating);
-    newRD.forceStudyNow = false;
     _state.cards[card.id].reviewData = newRD;
-    _state.cards[card.id].updatedAt = nowMs();
+    _state.cards[card.id].updatedAt  = nowMs();
+
+    // Leech detection — auto-flag red on reaching threshold
+    if (newRD.lapses >= LEECH_THRESHOLD && !_state.cards[card.id].flag) {
+      _state.cards[card.id].flag = 'red';
+      rcToast('🐛 Leech detected — card flagged red. Consider simplifying it.', 'info');
+    }
 
     // Session stats
     _sessionStats.reviewed++;
@@ -2383,18 +2682,121 @@ document.write(`\n<!-- ═══════════════════
     _scheduleAutoSave();
     _updateStatsUI();
 
-    const queueResult = _buildReviewQueue(allCards(), nowMs());
-    _reviewQueueMode = queueResult.mode;
-    _reviewQueue = queueResult.items;
-    _reviewIndex = 0;
-
-    if (_reviewQueue.length === 0) {
-      _showReviewUI(false, _reviewQueueMode);
+    _reviewIndex++;
+    if (_reviewIndex >= _reviewQueue.length) {
       _showSessionSummary();
     } else {
-      _showReviewUI(true, _reviewQueueMode);
       _renderCurrentCard();
     }
+  };
+
+  // ── QUICK ACTIONS FROM REVIEW ─────────────────────────────────
+  window.rcBuryFromReview = function() {
+    const card = _reviewQueue[_reviewIndex]; if (!card) return;
+    _state.cards[card.id].buriedUntil = tomorrowMs(); _state.cards[card.id].updatedAt = nowMs();
+    _scheduleAutoSave(); rcToast('Buried until tomorrow', 'info');
+    _reviewIndex++;
+    if (_reviewIndex >= _reviewQueue.length) _showSessionSummary(); else _renderCurrentCard();
+  };
+
+  window.rcSuspendFromReview = function() {
+    const card = _reviewQueue[_reviewIndex]; if (!card) return;
+    const c = _state.cards[card.id]; if (!c) return;
+    c.suspended = !c.suspended; c.updatedAt = nowMs();
+    _scheduleAutoSave(); rcToast(c.suspended ? 'Card suspended' : 'Card unsuspended', 'info');
+    const btn = _el('rc-rev-suspend-btn'); if (btn) btn.textContent = c.suspended ? '▶ Unsuspend' : '⏸ Suspend';
+    if (c.suspended) { _reviewIndex++; if (_reviewIndex >= _reviewQueue.length) _showSessionSummary(); else _renderCurrentCard(); }
+  };
+
+  window.rcFlagFromReview = function(flag) {
+    const card = _reviewQueue[_reviewIndex]; if (!card) return;
+    _state.cards[card.id].flag = flag; _state.cards[card.id].updatedAt = nowMs();
+    _scheduleAutoSave(); rcToast(flag ? 'Flagged ' + flag : 'Flag cleared', 'info');
+    // Update flag indicator on front face without re-rendering the whole card
+    const flagInd = _el('rc-card-flag-indicator');
+    if (flagInd) {
+      if (flag) { flagInd.style.display=''; flagInd.innerHTML='<span class="rc-flag-dot rc-flag-'+flag+'" style="width:10px;height:10px;"></span>'; }
+      else flagInd.style.display='none';
+    }
+  };
+
+  window.rcResetFromReview = async function() {
+    const card = _reviewQueue[_reviewIndex]; if (!card) return;
+    const ok = await rcConfirm('Reset card?', 'Reset this card to New status?', 'Reset');
+    if (!ok) return;
+    _state.cards[card.id].reviewData = defaultReviewData(); _state.cards[card.id].updatedAt = nowMs();
+    _scheduleAutoSave(); rcToast('Progress reset', 'info');
+    _reviewIndex++; if (_reviewIndex >= _reviewQueue.length) _showSessionSummary(); else _renderCurrentCard();
+  };
+
+  window.rcEditFromReview = function() {
+    const card = _reviewQueue[_reviewIndex]; if (!card) return;
+    rcOpenEditModal(card.id);
+  };
+
+  // ── CRAM MODE ─────────────────────────────────────────────────
+  window.rcStartCramDeck = function() {
+    const cramCards = allCards().filter(c => {
+      if (c._deleted || c.suspended || isBuried(c)) return false;
+      return isDue(c) || c.flag === 'red' || c.flag === 'orange';
+    });
+    if (!cramCards.length) { rcToast('No cards to cram right now!', 'info'); return; }
+    _deckQueue  = cramCards;
+    _deckIndex  = 0;
+    _deckFlipped= false;
+    const area = _el('rc-deck-review-area'); if (area) area.style.display = '';
+    const nameEl = _el('rc-deck-review-name'); if (nameEl) nameEl.textContent = '🚨 Cram Mode (' + cramCards.length + ' cards)';
+    rcShowTab('revise'); rcShowReviseTab('deck');
+    _renderCurrentDeckCard();
+    rcToast('Cram mode started: ' + cramCards.length + ' cards', 'info');
+  };
+
+  // ── SEARCH HINT ───────────────────────────────────────────────
+  window.rcShowSearchHint = function(show) { const h=_el('rc-search-hint'); if(h) h.classList.toggle('open',!!show); };
+  window.rcHideSearchHintDelayed = function() { setTimeout(() => rcShowSearchHint(false), 200); };
+
+  // ── ADVANCED FIELDS TOGGLES ───────────────────────────────────
+  window.rcToggleCreateAdvanced = function() {
+    const btn=_el('rc-create-adv-toggle'), fields=_el('rc-create-adv-fields'); if(!btn||!fields) return;
+    const open = fields.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    btn.textContent = (open ? '↑' : '↓') + ' Advanced — hint, mnemonic, clinical pearl, source, chapter, flag';
+  };
+  window.rcToggleEditAdvanced = function() {
+    const btn=_el('rc-edit-adv-toggle'), fields=_el('rc-edit-adv-fields'); if(!btn||!fields) return;
+    const open = fields.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    btn.textContent = (open ? '↑' : '↓') + ' Advanced fields — hint, mnemonic, clinical pearl, source, chapter';
+  };
+
+  // ── FLAG SETTERS ──────────────────────────────────────────────
+  window.rcCreateSetFlag = function(val) {
+    _createFlag = val;
+    ['none','red','orange','green','blue'].forEach(f => {
+      const btn = _el('rc-cflag-' + f); if(btn) btn.classList.toggle('active', val===null ? f==='none' : val===f);
+    });
+  };
+  window.rcEditSetFlag = function(val) {
+    _editFlag = val;
+    ['none','red','orange','green','blue'].forEach(f => {
+      const btn = _el('rc-eflag-' + f); if(btn) btn.classList.toggle('active', val===null ? f==='none' : val===f);
+    });
+  };
+
+  // ── PRESET TAGS ───────────────────────────────────────────────
+  window.rcAddPresetTag = function(raw) {
+    const tag = normalizeTag(raw);
+    if (!tag) return;
+    if (_pendingTags.includes(tag) || _pendingTags.length >= 10) { rcToast('Tag already added or limit reached', 'info'); return; }
+    _pendingTags.push(tag); _renderPendingTags();
+  };
+
+  // ── DUP WARNING ───────────────────────────────────────────────
+  window.rcCheckDupWarning = function() {
+    const q = (_el('rc-question') ? _el('rc-question').value : '').trim().toLowerCase();
+    if (!q) { _el('rc-dup-warning').style.display = 'none'; return; }
+    const dup = allCards().find(c => !c._deleted && c.question && c.question.trim().toLowerCase() === q);
+    _el('rc-dup-warning').style.display = dup ? '' : 'none';
   };
 
   // ── UNDO ──────────────────────────────────────────────────────
@@ -2470,11 +2872,12 @@ document.write(`\n<!-- ═══════════════════
 
     // Next due
     const upcoming = allCards()
-      .filter(c => !c._deleted && !c.suspended && c.reviewData && _dueAtMsFromCard(c) > nowMs())
-      .sort((a, b) => _dueAtMsFromCard(a) - _dueAtMsFromCard(b));
+      .filter(c => !c._deleted && !c.suspended && c.reviewData && c.reviewData.dueDate > nowMs())
+      .sort((a, b) => a.reviewData.dueDate - b.reviewData.dueDate);
     if (upcoming.length) {
-      const ms = _dueAtMsFromCard(upcoming[0]) - nowMs();
-      setTxt('rc-sum-next', formatReviewIntervalLabel(ms));
+      const ms = upcoming[0].reviewData.dueDate - nowMs();
+      const mins = Math.round(ms / 60000);
+      setTxt('rc-sum-next', mins < 60 ? mins + ' min' : Math.round(mins / 60) + 'h');
     } else {
       setTxt('rc-sum-next', '—');
     }
@@ -2498,7 +2901,7 @@ document.write(`\n<!-- ═══════════════════
     const sel = _el('rc-deck-tag-selector');
     if (!sel) return;
     const tags = allTags();
-    if (!tags.length) { sel.innerHTML = '<span style="font-size:0.82rem;color:rgba(170, 195, 225, 0.72);">No tags yet. Create cards with tags first.</span>'; return; }
+    if (!tags.length) { sel.innerHTML = '<span style="font-size:0.82rem;color:var(--ink-3);">No tags yet. Create cards with tags first.</span>'; return; }
     sel.innerHTML = tags.map(t =>
       '<button class="rc-tag-select-pill ' + (_deckSelectedTags.includes(t) ? 'selected' : '') + '" onclick="rcToggleDeckTag(\'' + sanitize(t) + '\')">' + sanitize(t) + '</button>'
     ).join('');
@@ -2621,17 +3024,9 @@ document.write(`\n<!-- ═══════════════════
       .filter(c => c && !c._deleted && !c.suspended);
     if (!cards.length) { rcToast('No reviewable cards in deck', 'error'); return; }
 
-    cards.forEach(_normalizeDueAt);
-    const deckQueueResult = _buildReviewQueue(cards, nowMs());
-    _deckQueueMode = deckQueueResult.mode;
-    _deckQueue = deckQueueResult.items;
+    _deckQueue = cards;
     _deckIndex = 0;
     _deckFlipped = false;
-
-    if (!_deckQueue.length) {
-      rcToast('No cards due right now. Nothing is returning within the next 6 hours.', 'info');
-      return;
-    }
 
     const area = _el('rc-deck-review-area');
     if (area) area.style.display = '';
@@ -2663,23 +3058,6 @@ document.write(`\n<!-- ═══════════════════
     if (aEl) aEl.textContent = card.answer || '';
     if (imgEl) imgEl.innerHTML = (card.images || []).map(src => '<img src="' + src + '" alt="card image" onclick="rcOpenLightbox(\'' + src.replace(/'/g, "\\'") + '\')">').join('');
     if (tagsEl) tagsEl.innerHTML = (card.tags || []).map(t => '<span class="rc-card-tag-pill">' + sanitize(t) + '</span>').join('');
-
-    const queueNote = _el('rc-deck-review-queue-note');
-    if (queueNote) {
-      if (_deckQueueMode === 'upcoming_short') {
-        queueNote.style.display = '';
-        queueNote.textContent = 'No cards are due right now. Showing cards returning within the next 6 hours.';
-      } else {
-        queueNote.style.display = 'none';
-        queueNote.textContent = '';
-      }
-    }
-
-    const rd = card.reviewData || {};
-    ['again','hard','good','easy'].forEach(r => {
-      const lbl = _el('rc-deck-lbl-' + r);
-      if (lbl) lbl.textContent = _ratingLabel(rd, r);
-    });
 
     const total = _deckQueue.length;
     const done = _deckIndex;
@@ -2720,14 +3098,8 @@ document.write(`\n<!-- ═══════════════════
     _scheduleAutoSave();
     _updateStatsUI();
 
-    const cards = _state.customDeck && _state.customDeck.cardIds ? _state.customDeck.cardIds.map(id => _state.cards[id]).filter(c => c && !c._deleted && !c.suspended) : [];
-    cards.forEach(_normalizeDueAt);
-    const deckQueueResult = _buildReviewQueue(cards, nowMs());
-    _deckQueueMode = deckQueueResult.mode;
-    _deckQueue = deckQueueResult.items;
-    _deckIndex = 0;
-
-    if (!_deckQueue.length) {
+    _deckIndex++;
+    if (_deckIndex >= _deckQueue.length) {
       rcToast('Deck review complete! 🎉');
       rcEndDeckReview();
     } else {
