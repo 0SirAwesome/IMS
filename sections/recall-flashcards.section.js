@@ -726,7 +726,7 @@ document.write(`\n<!-- ═══════════════════
       <div class="rc-char-count" id="rc-edit-a-count">0 / 2000</div>
     </div>
     <div class="rc-field">
-      <label class="rc-label">Tags <span>(Enter or comma · dots OK e.g. anatomy.upper_limb)</span></label>
+      <label class="rc-label">Tags <span>Press Enter or comma to save</span></label>
       <div class="rc-tag-input-wrap" id="rc-edit-tag-wrap" onclick="document.getElementById('rc-edit-tag-input').focus()">
         <input type="text" class="rc-tag-input" id="rc-edit-tag-input" placeholder="Add tag..." onkeydown="rcEditTagKeydown(event)" oninput="rcEditTagInput(event)">
       </div>
@@ -838,7 +838,7 @@ document.write(`\n<!-- ═══════════════════
             </div>
 
             <div class="rc-field">
-              <label class="rc-label">Tags <span>(Enter or comma · dots OK e.g. anatomy.upper_limb · max 10)</span></label>
+              <label class="rc-label">Tags <span>Press Enter or comma to save · max 10</span></label>
               <div class="rc-tag-input-wrap" id="rc-tag-wrap" onclick="document.getElementById('rc-tag-input').focus()">
                 <input type="text" class="rc-tag-input" id="rc-tag-input"
                   placeholder="Add a tag..."
@@ -1330,7 +1330,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.1</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.2</span>
 </footer>
 
 </div><!-- /#page-recall -->
