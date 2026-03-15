@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.30 -->
+<!-- IMS v0.5.31 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -13,6 +13,7 @@
   :root {
     /* IMS Brand Palette */
     --bg: #e6edf7;
+    --app-bg: linear-gradient(160deg,#04080f 0%,#060e1c 50%,#030710 100%);
     --surface: #f2f6fc;
     --surface-2: #dce7f5;
     --ink: #1c2333;
@@ -1991,7 +1992,7 @@
   /* ══════════════════════════════════════════════════════════
      THE WARD — Complete Hospital Study System
   ══════════════════════════════════════════════════════════ */
-  #page-ward { min-height:100vh; background:linear-gradient(160deg,#04080f 0%,#060e1c 50%,#030710 100%); color:#e0eeff; font-family:'DM Sans',sans-serif; position:relative; }
+  #page-ward { min-height:100vh; background:var(--app-bg); color:#e0eeff; font-family:'DM Sans',sans-serif; position:relative; }
   .ward-wrap { position:relative; z-index:2; min-height:100vh; display:flex; flex-direction:column; }
 
   /* AUTH */
