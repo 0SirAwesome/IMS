@@ -484,39 +484,92 @@ document.write(`\n<!-- ═══════════════════
 }
 .rc-rating-row.visible { opacity: 1; pointer-events: auto; }
 .rc-rate-btn {
-  display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
-  padding: 0.6rem 0.5rem; border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 68px;
+  padding: 0.7rem 0.8rem;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(120, 190, 255, 0.2);
   background: rgba(17, 32, 52, 0.88);
-  font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  overflow: hidden;
 }
-.rc-rate-btn .rc-rate-label { font-size: 0.85rem; font-weight: 700; }
-.rc-rate-btn .rc-rate-sub { font-size: 0.68rem; color: rgba(170, 195, 225, 0.86); }
-.rc-rate-btn:hover { transform: translateY(-2px); }
+.rc-rate-btn .rc-rate-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.rc-rate-btn .rc-rate-sub {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
+  font-size: 0.76rem;
+  line-height: 1.1;
+  transform: translateY(-4px);
+  transition:
+    max-height 0.18s ease,
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    margin-top 0.18s ease;
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .rc-rate-btn:hover .rc-rate-sub {
+    max-height: 20px;
+    opacity: 1;
+    margin-top: 0.2rem;
+    transform: translateY(0);
+  }
+}
+.rc-rate-btn:focus-visible .rc-rate-sub {
+  max-height: 20px;
+  opacity: 1;
+  margin-top: 0.2rem;
+  transform: translateY(0);
+}
+.rc-rate-btn:hover,
+.rc-rate-btn:focus-visible { transform: translateY(-2px); }
 .rc-rate-again {
   border-color: rgba(229,62,62,0.38);
   background: rgba(229,62,62,0.13);
 }
 .rc-rate-again:hover { background: rgba(229,62,62,0.08); border-color: rgba(229,62,62,0.6); }
 .rc-rate-again .rc-rate-label { color: #c53030; }
+.rc-rate-again .rc-rate-sub { color: #c53030; }
 .rc-rate-hard {
   border-color: rgba(237,125,49,0.42);
   background: rgba(237,125,49,0.13);
 }
 .rc-rate-hard:hover { background: rgba(237,125,49,0.08); border-color: rgba(237,125,49,0.6); }
 .rc-rate-hard .rc-rate-label { color: var(--orange); }
+.rc-rate-hard .rc-rate-sub { color: var(--orange); }
 .rc-rate-good {
   border-color: rgba(68,114,196,0.42);
   background: rgba(68,114,196,0.13);
 }
 .rc-rate-good:hover { background: rgba(68,114,196,0.08); border-color: rgba(68,114,196,0.6); }
 .rc-rate-good .rc-rate-label { color: var(--accent-light); }
+.rc-rate-good .rc-rate-sub { color: var(--accent-light); }
 .rc-rate-easy {
   border-color: rgba(22,101,52,0.45);
   background: rgba(22,101,52,0.16);
 }
 .rc-rate-easy:hover { background: rgba(22,101,52,0.08); border-color: rgba(22,101,52,0.6); }
 .rc-rate-easy .rc-rate-label { color: var(--green); }
+.rc-rate-easy .rc-rate-sub { color: var(--green); }
+@media (hover: none) {
+  .rc-rate-btn .rc-rate-sub {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    transform: translateY(-4px);
+  }
+}
 
 /* Show answer button */
 .rc-show-answer-btn {
@@ -1115,7 +1168,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.9</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.11</span>
 </footer>
 
 </div><!-- /#page-recall -->
