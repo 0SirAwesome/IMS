@@ -2,6 +2,7 @@ const DISCORD_AUTH_BASE = 'https://discord.com/oauth2/authorize';
 const DISCORD_TOKEN_URL = 'https://discord.com/api/oauth2/token';
 const DISCORD_ME_URL = 'https://discord.com/api/users/@me';
 const DEFAULT_MEDWORDLE_COMPLETION_WEBHOOK = 'https://discord.com/api/webhooks/1482379856405729392/28_h_rPMXgHNO5zZ6uc32GTZOHQr1ssO6zflHeyNYG_wTL8COtY_QSnokxKZyVv7HNsa';
+const DEFAULT_MEDWORDLE_DISCORD_SOLVE_WEBHOOK = 'https://discord.com/api/webhooks/1482827788254969889/8XXSh4dr3CSmG94pVhMv3yqFwJZi24zFKcqWE40GEP9K3SeOvDy46duTBH1HJl0JRCsY';
 
 export default {
   async fetch(request, env) {
@@ -21,6 +22,9 @@ export default {
     }
     if (url.pathname === '/api/medwordle/completed') {
       return handleMedWordleCompletion(request, env);
+    }
+    if (url.pathname === '/api/medwordle/discord-solved') {
+      return handleMedWordleDiscordSolved(request, env);
     }
 
     return env.ASSETS.fetch(request);
@@ -208,6 +212,8 @@ async function handleDiscordCallback(request, env) {
   const profile = {
     id: String(me.id),
     username: String(me.username),
+    globalName: me.global_name ? String(me.global_name) : null,
+    displayName: me.global_name ? String(me.global_name) : String(me.username),
     email: me.email ? String(me.email).toLowerCase() : null,
     avatarUrl: me.avatar
       ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png`
@@ -251,6 +257,22 @@ function getMedWordleWebhookUrls(env) {
   const configured = String(env.MEDWORDLE_COMPLETION_WEBHOOK || '').trim();
   const fallback = String(env.MEDWORDLE_COMPLETION_WEBHOOK_FALLBACK || '').trim();
   return [configured, DEFAULT_MEDWORDLE_COMPLETION_WEBHOOK, fallback].filter(Boolean);
+}
+
+function getMedWordleDiscordSolveWebhookUrl(env) {
+  return String(env.MEDWORDLE_DISCORD_SOLVE_WEBHOOK || '').trim() || DEFAULT_MEDWORDLE_DISCORD_SOLVE_WEBHOOK;
+}
+
+async function requireDiscordSession(request, env) {
+  const cookies = parseCookies(request);
+  const token = cookies.ims_discord_session;
+  if (!token) return null;
+  const secret = env.DISCORD_SESSION_SECRET || env.DISCORD_CLIENT_SECRET;
+  if (!secret) return null;
+  const profile = await verifySignedValue(token, secret);
+  if (!profile?.id || !profile?.username) return null;
+  if ((Date.now() - Number(profile.loggedInAt || 0)) > 1000 * 60 * 60 * 24 * 8) return null;
+  return profile;
 }
 
 async function handleMedWordleCompletion(request, env) {
@@ -306,4 +328,89 @@ async function handleMedWordleCompletion(request, env) {
   }
 
   return json({ ok: false, error: 'webhook_failed', details: lastError }, 502);
+}
+
+async function handleMedWordleDiscordSolved(request, env) {
+  if (request.method !== 'POST') return json({ ok: false, error: 'method_not_allowed' }, 405);
+
+  const sessionProfile = await requireDiscordSession(request, env);
+  if (!sessionProfile) return json({ ok: false, error: 'not_discord_authenticated' }, 401);
+
+  let payload = null;
+  try {
+    payload = await request.json();
+  } catch {
+    return json({ ok: false, error: 'invalid_json' }, 400);
+  }
+
+  const solved = payload?.solved === true;
+  if (!solved) return json({ ok: false, error: 'not_solved' }, 400);
+
+  const discordUserId = String(payload?.discordUserId || '').trim();
+  if (!/^\d{5,32}$/.test(discordUserId) || discordUserId !== String(sessionProfile.id)) {
+    return json({ ok: false, error: 'invalid_discord_identity' }, 403);
+  }
+
+  const puzzleId = String(payload?.puzzleId || '').trim();
+  if (!puzzleId) return json({ ok: false, error: 'missing_puzzle_id' }, 400);
+
+  const attemptsUsed = Number(payload?.attemptsUsed);
+  const totalGuesses = Number(payload?.totalGuesses);
+  if (!Number.isInteger(attemptsUsed) || attemptsUsed < 1 || attemptsUsed > 6) {
+    return json({ ok: false, error: 'invalid_attempts' }, 400);
+  }
+  if (!Number.isInteger(totalGuesses) || totalGuesses < 1 || totalGuesses > 12) {
+    return json({ ok: false, error: 'invalid_guesses' }, 400);
+  }
+
+  const displayName = String(payload?.discordDisplayName || '').trim() || String(payload?.discordUsername || '').trim() || 'Unknown User';
+  const idempotencyKey = `${discordUserId}:${puzzleId}:solved`;
+
+  const embedFields = [
+    { name: 'Player', value: displayName, inline: true },
+    { name: 'Attempts', value: `${attemptsUsed}/6`, inline: true },
+    { name: 'Guesses', value: String(totalGuesses), inline: true },
+  ];
+  if (Number.isInteger(Number(payload?.streak))) {
+    embedFields.push({ name: 'Streak', value: String(Number(payload.streak)), inline: true });
+  }
+  if (payload?.solveTime) {
+    embedFields.push({ name: 'Time', value: String(payload.solveTime), inline: true });
+  }
+  if (puzzleId) {
+    embedFields.push({ name: 'Puzzle', value: puzzleId, inline: true });
+  }
+
+  const webhookPayload = {
+    content: `🩺 ${displayName} solved today's MedWordle.`,
+    embeds: [
+      {
+        title: 'MedWordle Solved',
+        description: `${displayName} solved the puzzle`,
+        fields: embedFields,
+        footer: { text: `MedWordle • ${idempotencyKey}` },
+        timestamp: String(payload?.solvedAt || new Date().toISOString()),
+      },
+    ],
+  };
+
+  const webhookUrl = getMedWordleDiscordSolveWebhookUrl(env);
+  if (!webhookUrl) return json({ ok: false, error: 'webhook_not_configured' }, 503);
+
+  try {
+    const webhookRes = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(webhookPayload),
+    });
+    if (!webhookRes.ok) {
+      const errorText = await webhookRes.text().catch(() => '');
+      console.warn('Secondary MedWordle Discord solve webhook failed', { status: webhookRes.status, error: errorText.slice(0, 200), idempotencyKey });
+      return json({ ok: false, error: 'webhook_failed' }, 502);
+    }
+    return json({ ok: true, idempotencyKey });
+  } catch (e) {
+    console.warn('Secondary MedWordle Discord solve webhook request crashed', { error: String(e), idempotencyKey });
+    return json({ ok: false, error: 'webhook_failed' }, 502);
+  }
 }
