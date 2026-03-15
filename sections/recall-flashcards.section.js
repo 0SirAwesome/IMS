@@ -486,22 +486,35 @@ document.write(`\n<!-- ═══════════════════
 .rc-rate-btn {
   display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
   padding: 0.6rem 0.5rem; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); background: var(--surface-2);
+  border: 1px solid rgba(120, 190, 255, 0.2);
+  background: rgba(17, 32, 52, 0.88);
   font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s;
 }
 .rc-rate-btn .rc-rate-label { font-size: 0.85rem; font-weight: 700; }
-.rc-rate-btn .rc-rate-sub { font-size: 0.68rem; color: var(--ink-2); }
+.rc-rate-btn .rc-rate-sub { font-size: 0.68rem; color: rgba(170, 195, 225, 0.86); }
 .rc-rate-btn:hover { transform: translateY(-2px); }
-.rc-rate-again { border-color: rgba(229,62,62,0.3); }
+.rc-rate-again {
+  border-color: rgba(229,62,62,0.38);
+  background: rgba(229,62,62,0.13);
+}
 .rc-rate-again:hover { background: rgba(229,62,62,0.08); border-color: rgba(229,62,62,0.6); }
 .rc-rate-again .rc-rate-label { color: #c53030; }
-.rc-rate-hard { border-color: rgba(237,125,49,0.3); }
+.rc-rate-hard {
+  border-color: rgba(237,125,49,0.42);
+  background: rgba(237,125,49,0.13);
+}
 .rc-rate-hard:hover { background: rgba(237,125,49,0.08); border-color: rgba(237,125,49,0.6); }
 .rc-rate-hard .rc-rate-label { color: var(--orange); }
-.rc-rate-good { border-color: rgba(68,114,196,0.3); }
+.rc-rate-good {
+  border-color: rgba(68,114,196,0.42);
+  background: rgba(68,114,196,0.13);
+}
 .rc-rate-good:hover { background: rgba(68,114,196,0.08); border-color: rgba(68,114,196,0.6); }
 .rc-rate-good .rc-rate-label { color: var(--accent-light); }
-.rc-rate-easy { border-color: rgba(22,101,52,0.3); }
+.rc-rate-easy {
+  border-color: rgba(22,101,52,0.45);
+  background: rgba(22,101,52,0.16);
+}
 .rc-rate-easy:hover { background: rgba(22,101,52,0.08); border-color: rgba(22,101,52,0.6); }
 .rc-rate-easy .rc-rate-label { color: var(--green); }
 
@@ -1102,7 +1115,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.8</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.9</span>
 </footer>
 
 </div><!-- /#page-recall -->
