@@ -1,4 +1,4 @@
-document.write(`\n<!-- ════════════════════════ BRANCH: MedRecall ════════════════════════ -->
+document.write(`\n<!-- ════════════════════════ BRANCH: Exam Edge ════════════════════════ -->
 <div class="page" id="page-recall">
 
 <style>
@@ -736,7 +736,7 @@ document.write(`\n<!-- ═══════════════════
 <!-- ══ HERO ══ -->
 <div class="rc-hero">
   <div class="rc-hero-eyebrow">🧠 Personal Recall System</div>
-  <div class="rc-hero-title">MedRecall</div>
+  <div class="rc-hero-title">Exam Edge</div>
   <div class="rc-hero-sub">Save the facts that slip through the cracks.</div>
 </div>
 
@@ -1283,7 +1283,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">MedRecall · IMS v0.6.3</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Exam Edge · IMS v0.6.4</span>
 </footer>
 
 </div><!-- /#page-recall -->
