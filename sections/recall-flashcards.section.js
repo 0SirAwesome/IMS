@@ -9,17 +9,17 @@ document.write(`\n<!-- ═══════════════════
    them with dark values exactly as Ward and Pearls do. */
 #page-recall {
   /* Page */
-  --bg:          #070f1d;
-  --surface:     rgba(12,24,48,0.92);
-  --surface-2:   rgba(8,16,36,0.80);
+  --bg:          #070d12;
+  --surface:     rgba(9, 18, 25, 0.94);
+  --surface-2:   rgba(9, 21, 17, 0.88);
   /* Text */
-  --ink:         #c8dff8;
-  --ink-2:       rgba(160,195,240,0.78);
-  --ink-3:       rgba(140,175,220,0.44);
+  --ink:         #e4f3ff;
+  --ink-2:       rgba(205, 230, 247, 0.80);
+  --ink-3:       rgba(172, 205, 227, 0.52);
   /* Borders & accents */
-  --border:      rgba(68,114,196,0.22);
-  --accent:      #2a3a56;
-  --accent-light: #4472c4;
+  --border:      rgba(71, 142, 170, 0.24);
+  --accent:      #2e5d8a;
+  --accent-light: #4e90c5;
   /* Status colours — override the light-theme values */
   --green:       #2d9e57;
   --orange:      #ed7d31;
@@ -29,27 +29,62 @@ document.write(`\n<!-- ═══════════════════
   --radius-sm:   8px;
 
   min-height: 100vh;
-  background: linear-gradient(160deg, #06101e 0%, #0d1e35 40%, #112540 70%, #071325 100%);
+  position: relative;
+  overflow-x: hidden;
+  background:
+    radial-gradient(120% 120% at 18% 15%, rgba(10, 24, 35, 0.80) 0%, rgba(8, 18, 27, 0.68) 48%, rgba(6, 14, 21, 0) 74%),
+    radial-gradient(70% 54% at 52% 86%, rgba(1, 6, 11, 0.90) 0%, rgba(1, 5, 9, 0.78) 30%, rgba(1, 4, 7, 0.52) 54%, rgba(1, 4, 7, 0) 78%),
+    linear-gradient(165deg, #0c1f2e 0%, #0a1824 36%, #0f251c 66%, #0c2018 100%);
   font-family: 'DM Sans', sans-serif;
-  color: #c8dff8;
+  color: var(--ink);
+}
+
+#page-recall::before,
+#page-recall::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Soft pond glow and reflective ripples */
+#page-recall::before {
+  background:
+    radial-gradient(48% 18% at 52% 87%, rgba(1, 9, 17, 0.78) 0%, rgba(1, 9, 17, 0.42) 46%, rgba(1, 9, 17, 0) 76%),
+    radial-gradient(56% 20% at 52% 89%, rgba(34, 60, 79, 0.14) 0%, rgba(34, 60, 79, 0.06) 36%, rgba(34, 60, 79, 0) 70%),
+    radial-gradient(12% 12% at 78% 24%, rgba(20, 45, 14, 0.34) 0%, rgba(20, 45, 14, 0) 72%);
+}
+
+/* Abstract tree accents */
+#page-recall::after {
+  background:
+    radial-gradient(12% 18% at 14% 77%, rgba(3, 10, 7, 0.68) 0%, rgba(3, 10, 7, 0) 75%),
+    radial-gradient(18% 12% at 20% 64%, rgba(10, 30, 14, 0.58) 0%, rgba(10, 30, 14, 0) 74%),
+    radial-gradient(14% 10% at 9% 59%, rgba(14, 35, 18, 0.56) 0%, rgba(14, 35, 18, 0) 70%);
+}
+
+#page-recall > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Hero */
 .rc-hero {
-  background: linear-gradient(135deg, #0d1628 0%, #111e35 60%, #0a1220 100%);
-  border-bottom: 1px solid rgba(68,114,196,0.2);
+  background: linear-gradient(135deg, rgba(8, 18, 28, 0.97) 0%, rgba(7, 15, 24, 0.96) 52%, rgba(8, 18, 14, 0.95) 100%);
+  border-bottom: 1px solid rgba(71, 142, 170, 0.2);
   padding: 3rem 2rem 2.5rem;
   text-align: center;
 }
 .rc-hero-eyebrow {
   font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em;
-  color: rgba(160,195,240,0.55); text-transform: uppercase; margin-bottom: 0.5rem;
+  color: rgba(214, 234, 247, 0.78); text-transform: uppercase; margin-bottom: 0.5rem;
 }
 .rc-hero-title {
   font-family: 'Lora', serif; font-size: 2rem; font-weight: 700;
-  color: #c8dff8; margin-bottom: 0.4rem;
+  color: #edf8ff; margin-bottom: 0.4rem;
 }
-.rc-hero-sub { font-size: 0.9rem; color: rgba(160,195,240,0.5); }
+.rc-hero-sub { font-size: 0.9rem; color: rgba(206, 229, 244, 0.74); }
 
 /* Tab Bar */
 .rc-tabs {
@@ -1330,7 +1365,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">MedRecall · IMS v0.6.3</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.9</span>
 </footer>
 
 </div><!-- /#page-recall -->
