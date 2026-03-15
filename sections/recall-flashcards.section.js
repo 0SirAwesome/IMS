@@ -981,12 +981,13 @@ document.write(`\n<!-- ═══════════════════
             </div>
 
             <!-- Progress bar -->
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <div class="rc-review-progress-bar-bg" style="flex:1;">
-                <div class="rc-review-progress-bar-fill" id="rc-rev-prog-fill" style="width:0%"></div>
+              <div style="display:flex;align-items:center;gap:0.75rem;">
+                <div class="rc-review-progress-bar-bg" style="flex:1;">
+                  <div class="rc-review-progress-bar-fill" id="rc-rev-prog-fill" style="width:0%"></div>
+                </div>
+                <div style="font-size:0.78rem;color:var(--ink-3);white-space:nowrap;" id="rc-rev-prog-label">0 / 0</div>
               </div>
-              <div style="font-size:0.78rem;color:var(--ink-3);white-space:nowrap;" id="rc-rev-prog-label">0 / 0</div>
-            </div>
+              <div id="rc-review-queue-note" style="display:none;font-size:0.82rem;color:rgba(210,230,255,0.82);background:rgba(59,130,246,0.12);border:1px solid rgba(125,180,255,0.25);border-radius:10px;padding:0.45rem 0.65rem;margin-top:0.6rem;"></div>
 
             <!-- Card -->
             <div class="rc-card-scene" id="rc-card-scene">
@@ -1016,11 +1017,11 @@ document.write(`\n<!-- ═══════════════════
             <div class="rc-rating-row" id="rc-rating-row">
               <button class="rc-rate-btn rc-rate-again" onclick="rcRate('again')">
                 <span class="rc-rate-label">Again</span>
-                <span class="rc-rate-sub" id="rc-lbl-again">1 min</span>
+                <span class="rc-rate-sub" id="rc-lbl-again">&lt; 1 min</span>
               </button>
               <button class="rc-rate-btn rc-rate-hard" onclick="rcRate('hard')">
                 <span class="rc-rate-label">Hard</span>
-                <span class="rc-rate-sub" id="rc-lbl-hard">5 min</span>
+                <span class="rc-rate-sub" id="rc-lbl-hard">&lt; 5 min</span>
               </button>
               <button class="rc-rate-btn rc-rate-good" onclick="rcRate('good')">
                 <span class="rc-rate-label">Good</span>
@@ -1044,8 +1045,8 @@ document.write(`\n<!-- ═══════════════════
 
         <div id="rc-rev-empty-done" class="rc-empty" style="display:none;">
           <div class="rc-empty-icon">🎉</div>
-          <div class="rc-empty-msg">You're caught up. Nothing is due right now.</div>
-          <div class="rc-empty-sub">Come back later or review your custom deck.</div>
+          <div class="rc-empty-msg">No cards due right now.</div>
+          <div class="rc-empty-sub">Nothing in this review set is returning within the next 6 hours.</div>
         </div>
 
         <!-- Session summary -->
@@ -1129,6 +1130,7 @@ document.write(`\n<!-- ═══════════════════
               </div>
               <div style="font-size:0.78rem;color:rgba(170, 195, 225, 0.78);white-space:nowrap;" id="rc-deck-prog-label">0 / 0</div>
             </div>
+            <div id="rc-deck-review-queue-note" style="display:none;font-size:0.82rem;color:rgba(210,230,255,0.82);background:rgba(59,130,246,0.12);border:1px solid rgba(125,180,255,0.25);border-radius:10px;padding:0.45rem 0.65rem;margin-top:0.6rem;"></div>
             <div class="rc-card-scene">
               <div class="rc-card-inner" id="rc-deck-card-inner">
                 <div class="rc-card-face" id="rc-deck-card-front">
@@ -1149,10 +1151,10 @@ document.write(`\n<!-- ═══════════════════
             </div>
             <button class="rc-show-answer-btn" id="rc-deck-show-btn" onclick="rcDeckFlipCard()">Show Answer</button>
             <div class="rc-rating-row" id="rc-deck-rating-row">
-              <button class="rc-rate-btn rc-rate-again" onclick="rcDeckRate('again')"><span class="rc-rate-label">Again</span><span class="rc-rate-sub">1 min</span></button>
-              <button class="rc-rate-btn rc-rate-hard" onclick="rcDeckRate('hard')"><span class="rc-rate-label">Hard</span><span class="rc-rate-sub">5 min</span></button>
-              <button class="rc-rate-btn rc-rate-good" onclick="rcDeckRate('good')"><span class="rc-rate-label">Good</span><span class="rc-rate-sub">1 day</span></button>
-              <button class="rc-rate-btn rc-rate-easy" onclick="rcDeckRate('easy')"><span class="rc-rate-label">Easy</span><span class="rc-rate-sub">4 days</span></button>
+              <button class="rc-rate-btn rc-rate-again" onclick="rcDeckRate('again')"><span class="rc-rate-label">Again</span><span class="rc-rate-sub" id="rc-deck-lbl-again">&lt; 1 min</span></button>
+              <button class="rc-rate-btn rc-rate-hard" onclick="rcDeckRate('hard')"><span class="rc-rate-label">Hard</span><span class="rc-rate-sub" id="rc-deck-lbl-hard">&lt; 5 min</span></button>
+              <button class="rc-rate-btn rc-rate-good" onclick="rcDeckRate('good')"><span class="rc-rate-label">Good</span><span class="rc-rate-sub" id="rc-deck-lbl-good">1 day</span></button>
+              <button class="rc-rate-btn rc-rate-easy" onclick="rcDeckRate('easy')"><span class="rc-rate-label">Easy</span><span class="rc-rate-sub" id="rc-deck-lbl-easy">4 days</span></button>
             </div>
           </div>
         </div>
@@ -1168,7 +1170,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.11</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.12</span>
 </footer>
 
 </div><!-- /#page-recall -->
@@ -1193,6 +1195,9 @@ document.write(`\n<!-- ═══════════════════
   const MIN_EASE = 1.3;
   const DAILY_NEW_CAP = 20;
   const CARDS_PER_PAGE = 20;
+  const MINUTE_MS = 60 * 1000;
+  const HOUR_MS = 60 * MINUTE_MS;
+  const SIX_HOURS_MS = 6 * HOUR_MS;
 
   // ── STATE ──────────────────────────────────────────────────────
   let _state = {
@@ -1229,6 +1234,8 @@ document.write(`\n<!-- ═══════════════════
   let _undoSnapshot = null;  // { cardId, prevReviewData }
   let _undoTimer = null;
   let _reviewMode = 'general'; // 'general' | 'deck'
+  let _reviewQueueMode = 'empty'; // 'due' | 'upcoming_short' | 'empty'
+  let _deckQueueMode = 'empty'; // 'due' | 'upcoming_short' | 'empty'
   let _deckQueue = [];
   let _deckIndex = 0;
   let _deckFlipped = false;
@@ -1268,7 +1275,8 @@ document.write(`\n<!-- ═══════════════════
     if (card.suspended) return false;
     const rd = card.reviewData;
     if (rd.status === 'new') return true;
-    return rd.dueDate <= nowMs();
+    const dueAtMs = _dueAtMsFromCard(card);
+    return Number.isFinite(dueAtMs) && dueAtMs <= nowMs();
   }
 
   function getDifficultyLabel(card) {
@@ -1286,7 +1294,8 @@ document.write(`\n<!-- ═══════════════════
 
   function formatDue(card) {
     if (!card || !card.reviewData) return '—';
-    const { status, dueDate } = card.reviewData;
+    const status = card.reviewData.status;
+    const dueDate = _dueAtMsFromCard(card);
     if (status === 'new') return 'New';
     if (card.suspended) return 'Suspended';
     const diff = Math.round((dueDate - nowMs()) / 86400000);
@@ -1294,6 +1303,68 @@ document.write(`\n<!-- ═══════════════════
     if (diff === 0) return 'Today';
     if (diff === 1) return 'Tomorrow';
     return `In ${diff}d`;
+  }
+
+  function _formatLongInterval(durationMs) {
+    const mins = Math.round(durationMs / MINUTE_MS);
+    if (mins < 60) return mins + ' min';
+    const hours = Math.round(durationMs / HOUR_MS);
+    if (hours < 24) return hours + ' hr';
+    const days = Math.round(durationMs / 86400000);
+    if (days === 1) return '1 day';
+    return days + ' days';
+  }
+
+  function formatReviewIntervalLabel(durationMs) {
+    if (durationMs <= 1 * MINUTE_MS) return '< 1 min';
+    if (durationMs <= 5 * MINUTE_MS) return '< 5 min';
+    if (durationMs <= 10 * MINUTE_MS) return '< 10 min';
+    if (durationMs <= 30 * MINUTE_MS) return '< 30 min';
+    if (durationMs <= 1 * HOUR_MS) return '< 1 hr';
+    if (durationMs <= 3 * HOUR_MS) return '< 3 hr';
+    if (durationMs <= 6 * HOUR_MS) return '< 6 hr';
+    return _formatLongInterval(durationMs);
+  }
+
+  function _dueAtMsFromCard(card) {
+    if (!card || !card.reviewData) return NaN;
+    const dueAt = card.reviewData.dueAt != null ? card.reviewData.dueAt : card.reviewData.dueDate;
+    if (dueAt == null) return NaN;
+    const ms = typeof dueAt === 'number' ? dueAt : new Date(dueAt).getTime();
+    return Number.isFinite(ms) ? ms : NaN;
+  }
+
+  function _normalizeDueAt(card) {
+    if (!card || !card.reviewData) return;
+    if (card.reviewData.dueAt == null && card.reviewData.dueDate != null) {
+      card.reviewData.dueAt = card.reviewData.dueDate;
+    }
+  }
+
+  function _buildReviewQueue(cards, now) {
+    const eligible = cards.filter(card => {
+      if (!card || card._deleted || card.suspended || card.buried) return false;
+      if (!card.reviewData || card.reviewData.status === 'new') return false;
+      const dueAtMs = _dueAtMsFromCard(card);
+      if (!Number.isFinite(dueAtMs)) return false;
+      return true;
+    }).map(card => ({ card, dueAtMs: _dueAtMsFromCard(card), createdAtMs: card.createdAt || 0 }));
+
+    const dueNow = eligible
+      .filter(item => item.dueAtMs <= now)
+      .sort((a, b) => a.dueAtMs - b.dueAtMs || a.createdAtMs - b.createdAtMs || String(a.card.id).localeCompare(String(b.card.id)))
+      .map(item => item.card);
+
+    if (dueNow.length > 0) return { mode: 'due', items: dueNow };
+
+    const upcomingShort = eligible
+      .filter(item => item.dueAtMs > now && item.dueAtMs <= now + SIX_HOURS_MS)
+      .sort((a, b) => a.dueAtMs - b.dueAtMs || a.createdAtMs - b.createdAtMs || String(a.card.id).localeCompare(String(b.card.id)))
+      .map(item => item.card);
+
+    if (upcomingShort.length > 0) return { mode: 'upcoming_short', items: upcomingShort };
+
+    return { mode: 'empty', items: [] };
   }
 
   function allCards() { return Object.values(_state.cards || {}); }
@@ -1725,6 +1796,7 @@ document.write(`\n<!-- ═══════════════════
       starred: false,
       reviewData: {
         status: 'new',
+        dueAt: now,
         dueDate: now,
         lastReviewedAt: null,
         lastRating: null,
@@ -2093,32 +2165,38 @@ document.write(`\n<!-- ═══════════════════
         next.easeFactor = Math.min(4.0, (rd.easeFactor || STARTING_EASE) + 0.15);
       }
     }
+    if (next.dueDate != null) next.dueAt = next.dueDate;
     return next;
   }
 
-  function _ratingLabel(rd, rating) {
-    if (!rd) return '';
+  function _nextIntervalMs(rd, rating) {
+    if (!rd) return null;
     const status = rd.status || 'new';
     if (status === 'new' || status === 'learning') {
-      if (rating === 'again') return '1 min';
-      if (rating === 'hard') return '5 min';
+      if (rating === 'again') return LEARNING_STEPS_MIN[0] * MINUTE_MS;
+      if (rating === 'hard') return 5 * MINUTE_MS;
       if (rating === 'good') {
         const nextStep = (rd.stepIndex || 0) + 1;
-        return nextStep >= LEARNING_STEPS_MIN.length ? '1 day' : LEARNING_STEPS_MIN[nextStep] + ' min';
+        return nextStep >= LEARNING_STEPS_MIN.length ? GRADUATING_INTERVAL * 86400000 : LEARNING_STEPS_MIN[nextStep] * MINUTE_MS;
       }
-      if (rating === 'easy') return '4 days';
+      if (rating === 'easy') return EASY_INTERVAL * 86400000;
     } else if (status === 'review') {
-      if (rating === 'again') return '1 day';
-      if (rating === 'hard') { return roundDays((rd.intervalDays || 1) * 1.2) + 'd'; }
-      if (rating === 'good') { return roundDays((rd.intervalDays || 1) * (rd.easeFactor || STARTING_EASE)) + 'd'; }
-      if (rating === 'easy') { return roundDays((rd.intervalDays || 1) * (rd.easeFactor || STARTING_EASE) * 1.3) + 'd'; }
+      if (rating === 'again') return 1 * 86400000;
+      if (rating === 'hard') return roundDays((rd.intervalDays || 1) * 1.2) * 86400000;
+      if (rating === 'good') return roundDays((rd.intervalDays || 1) * (rd.easeFactor || STARTING_EASE)) * 86400000;
+      if (rating === 'easy') return roundDays((rd.intervalDays || 1) * (rd.easeFactor || STARTING_EASE) * 1.3) * 86400000;
     } else if (status === 'relearning') {
-      if (rating === 'again') return '1 min';
-      if (rating === 'hard') return '5 min';
-      if (rating === 'good') return '1 day';
-      if (rating === 'easy') return '4 days';
+      if (rating === 'again') return LEARNING_STEPS_MIN[0] * MINUTE_MS;
+      if (rating === 'hard') return 5 * MINUTE_MS;
+      if (rating === 'good') return 1 * 86400000;
+      if (rating === 'easy') return EASY_INTERVAL * 86400000;
     }
-    return '';
+    return null;
+  }
+
+  function _ratingLabel(rd, rating) {
+    const intervalMs = _nextIntervalMs(rd, rating);
+    return intervalMs == null ? '' : formatReviewIntervalLabel(intervalMs);
   }
 
   // ── REVIEW SESSION ─────────────────────────────────────────────
@@ -2129,33 +2207,27 @@ document.write(`\n<!-- ═══════════════════
     _hideUndo();
 
     const now = nowMs();
-    const todayNewCount = allCards().filter(c => !c._deleted && !c.suspended && c.reviewData && c.reviewData.status !== 'new' && c.reviewData.lastReviewedAt && c.reviewData.lastReviewedAt > (now - 86400000) && c.reviewData.reviewCount === 1).length;
-    const newCap = _state.settings.dailyNewCardLimit || DAILY_NEW_CAP;
-
-    // Priority: overdue review > due today review/relearning > learning due now > new cards (capped)
-    let queue = [];
-    const overdueReview = allCards().filter(c => !c._deleted && !c.suspended && c.reviewData && (c.reviewData.status === 'review' || c.reviewData.status === 'relearning') && c.reviewData.dueDate < now - 86400000).sort((a,b) => a.reviewData.dueDate - b.reviewData.dueDate);
-    const dueToday = allCards().filter(c => !c._deleted && !c.suspended && c.reviewData && (c.reviewData.status === 'review' || c.reviewData.status === 'relearning') && c.reviewData.dueDate >= now - 86400000 && c.reviewData.dueDate <= now).sort((a,b) => a.reviewData.dueDate - b.reviewData.dueDate);
-    const learning = allCards().filter(c => !c._deleted && !c.suspended && c.reviewData && c.reviewData.status === 'learning' && c.reviewData.dueDate <= now).sort((a,b) => a.reviewData.dueDate - b.reviewData.dueDate);
-    const newC = allCards().filter(c => !c._deleted && !c.suspended && c.reviewData && c.reviewData.status === 'new').slice(0, Math.max(0, newCap - todayNewCount));
-
-    queue = [...overdueReview, ...dueToday, ...learning, ...newC];
-    _reviewQueue = queue;
+    const scoped = allCards();
+    scoped.forEach(_normalizeDueAt);
+    const queueResult = _buildReviewQueue(scoped, now);
+    _reviewQueueMode = queueResult.mode;
+    _reviewQueue = queueResult.items;
     _reviewIndex = 0;
 
     _updateStatsUI();
-    _showReviewUI(queue.length > 0);
+    _showReviewUI(_reviewQueue.length > 0, _reviewQueueMode);
 
-    if (queue.length > 0) {
+    if (_reviewQueue.length > 0) {
       _renderCurrentCard();
     }
   };
 
-  function _showReviewUI(hasCards) {
+  function _showReviewUI(hasCards, queueMode) {
     const area = _el('rc-review-area');
     const emptyNoCards = _el('rc-rev-empty-no-cards');
     const emptyDone = _el('rc-rev-empty-done');
     const summary = _el('rc-session-summary');
+    const queueNote = _el('rc-review-queue-note');
 
     if (!area) return;
 
@@ -2166,14 +2238,25 @@ document.write(`\n<!-- ═══════════════════
       area.style.display = '';
       if (emptyNoCards) emptyNoCards.style.display = 'none';
       if (emptyDone) emptyDone.style.display = 'none';
+      if (queueNote) {
+        if (queueMode === 'upcoming_short') {
+          queueNote.style.display = '';
+          queueNote.textContent = 'No cards are due right now. Showing cards returning within the next 6 hours.';
+        } else {
+          queueNote.style.display = 'none';
+          queueNote.textContent = '';
+        }
+      }
     } else if (!totalCards) {
       area.style.display = 'none';
       if (emptyNoCards) emptyNoCards.style.display = '';
       if (emptyDone) emptyDone.style.display = 'none';
+      if (queueNote) { queueNote.style.display = 'none'; queueNote.textContent = ''; }
     } else {
       area.style.display = 'none';
       if (emptyNoCards) emptyNoCards.style.display = 'none';
       if (emptyDone) emptyDone.style.display = '';
+      if (queueNote) { queueNote.style.display = 'none'; queueNote.textContent = ''; }
     }
   }
 
@@ -2266,10 +2349,16 @@ document.write(`\n<!-- ═══════════════════
     _scheduleAutoSave();
     _updateStatsUI();
 
-    _reviewIndex++;
-    if (_reviewIndex >= _reviewQueue.length) {
+    const queueResult = _buildReviewQueue(allCards(), nowMs());
+    _reviewQueueMode = queueResult.mode;
+    _reviewQueue = queueResult.items;
+    _reviewIndex = 0;
+
+    if (_reviewQueue.length === 0) {
+      _showReviewUI(false, _reviewQueueMode);
       _showSessionSummary();
     } else {
+      _showReviewUI(true, _reviewQueueMode);
       _renderCurrentCard();
     }
   };
@@ -2347,12 +2436,11 @@ document.write(`\n<!-- ═══════════════════
 
     // Next due
     const upcoming = allCards()
-      .filter(c => !c._deleted && !c.suspended && c.reviewData && c.reviewData.dueDate > nowMs())
-      .sort((a, b) => a.reviewData.dueDate - b.reviewData.dueDate);
+      .filter(c => !c._deleted && !c.suspended && c.reviewData && _dueAtMsFromCard(c) > nowMs())
+      .sort((a, b) => _dueAtMsFromCard(a) - _dueAtMsFromCard(b));
     if (upcoming.length) {
-      const ms = upcoming[0].reviewData.dueDate - nowMs();
-      const mins = Math.round(ms / 60000);
-      setTxt('rc-sum-next', mins < 60 ? mins + ' min' : Math.round(mins / 60) + 'h');
+      const ms = _dueAtMsFromCard(upcoming[0]) - nowMs();
+      setTxt('rc-sum-next', formatReviewIntervalLabel(ms));
     } else {
       setTxt('rc-sum-next', '—');
     }
@@ -2499,9 +2587,17 @@ document.write(`\n<!-- ═══════════════════
       .filter(c => c && !c._deleted && !c.suspended);
     if (!cards.length) { rcToast('No reviewable cards in deck', 'error'); return; }
 
-    _deckQueue = cards;
+    cards.forEach(_normalizeDueAt);
+    const deckQueueResult = _buildReviewQueue(cards, nowMs());
+    _deckQueueMode = deckQueueResult.mode;
+    _deckQueue = deckQueueResult.items;
     _deckIndex = 0;
     _deckFlipped = false;
+
+    if (!_deckQueue.length) {
+      rcToast('No cards due right now. Nothing is returning within the next 6 hours.', 'info');
+      return;
+    }
 
     const area = _el('rc-deck-review-area');
     if (area) area.style.display = '';
@@ -2533,6 +2629,23 @@ document.write(`\n<!-- ═══════════════════
     if (aEl) aEl.textContent = card.answer || '';
     if (imgEl) imgEl.innerHTML = (card.images || []).map(src => '<img src="' + src + '" alt="card image" onclick="rcOpenLightbox(\'' + src.replace(/'/g, "\\'") + '\')">').join('');
     if (tagsEl) tagsEl.innerHTML = (card.tags || []).map(t => '<span class="rc-card-tag-pill">' + sanitize(t) + '</span>').join('');
+
+    const queueNote = _el('rc-deck-review-queue-note');
+    if (queueNote) {
+      if (_deckQueueMode === 'upcoming_short') {
+        queueNote.style.display = '';
+        queueNote.textContent = 'No cards are due right now. Showing cards returning within the next 6 hours.';
+      } else {
+        queueNote.style.display = 'none';
+        queueNote.textContent = '';
+      }
+    }
+
+    const rd = card.reviewData || {};
+    ['again','hard','good','easy'].forEach(r => {
+      const lbl = _el('rc-deck-lbl-' + r);
+      if (lbl) lbl.textContent = _ratingLabel(rd, r);
+    });
 
     const total = _deckQueue.length;
     const done = _deckIndex;
@@ -2573,8 +2686,14 @@ document.write(`\n<!-- ═══════════════════
     _scheduleAutoSave();
     _updateStatsUI();
 
-    _deckIndex++;
-    if (_deckIndex >= _deckQueue.length) {
+    const cards = _state.customDeck && _state.customDeck.cardIds ? _state.customDeck.cardIds.map(id => _state.cards[id]).filter(c => c && !c._deleted && !c.suspended) : [];
+    cards.forEach(_normalizeDueAt);
+    const deckQueueResult = _buildReviewQueue(cards, nowMs());
+    _deckQueueMode = deckQueueResult.mode;
+    _deckQueue = deckQueueResult.items;
+    _deckIndex = 0;
+
+    if (!_deckQueue.length) {
       rcToast('Deck review complete! 🎉');
       rcEndDeckReview();
     } else {
