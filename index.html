@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.41 -->
+<!-- IMS v0.5.42 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2930,7 +2930,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.41</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.42</span>
   </footer>
 
 </div>
@@ -5255,13 +5255,90 @@ function submitGuess() {
 }
 
 // ── RECORD + SHOW POST-GAME ───────────────────────────────────
-async function notifyMedWordleCompletion(won, guessCount) {
+const MEDWORDLE_SOLVE_WEBHOOK_SENT_KEY = 'ims_medwordle_discord_solve_sent';
+
+function getDiscordDisplayName(user) {
+  if (!user) return 'Unknown User';
+  return String(
+    user.discordGlobalName
+    || user.discordDisplayName
+    || user.discordServerNickname
+    || user.discordUsername
+    || 'Unknown User'
+  ).trim() || 'Unknown User';
+}
+
+function getSolveWebhookStore() {
+  try {
+    return JSON.parse(localStorage.getItem(MEDWORDLE_SOLVE_WEBHOOK_SENT_KEY) || '{}');
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveSolveWebhookStore(store) {
+  try {
+    localStorage.setItem(MEDWORDLE_SOLVE_WEBHOOK_SENT_KEY, JSON.stringify(store || {}));
+  } catch (e) {}
+}
+
+function hasAlreadySentSolveWebhook(puzzleId, userId) {
+  const key = `${userId}:${puzzleId}:solved`;
+  const store = getSolveWebhookStore();
+  return store[key] === true;
+}
+
+function markSolveWebhookSent(puzzleId, userId) {
+  const key = `${userId}:${puzzleId}:solved`;
+  const store = getSolveWebhookStore();
+  store[key] = true;
+  saveSolveWebhookStore(store);
+}
+
+function buildMedWordleSolveWebhookPayload(solveData) {
+  return {
+    solved: true,
+    discordUserId: solveData.discordUserId,
+    discordDisplayName: solveData.discordDisplayName,
+    discordUsername: solveData.discordUsername,
+    puzzleId: solveData.puzzleId,
+    attemptsUsed: solveData.attemptsUsed,
+    totalGuesses: solveData.totalGuesses,
+    streak: solveData.streak,
+    solveTime: solveData.solveTime,
+    solvedAt: solveData.solvedAt,
+  };
+}
+
+async function sendSecondarySolveWebhook(solveData) {
+  const payload = buildMedWordleSolveWebhookPayload(solveData);
+  try {
+    const res = await fetch('/api/medwordle/discord-solved', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const details = await res.text().catch(() => '');
+      console.warn('Secondary MedWordle solve webhook returned non-OK response:', res.status, details.slice(0, 200));
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.warn('Secondary MedWordle solve webhook failed:', e);
+    return false;
+  }
+}
+
+async function notifyMedWordleCompletion(won, guessCount, medWordleData) {
   const username = getUsername();
   if (!username || username === '__guest__') return;
 
+  let user = null;
   let discordId = null;
   try {
-    const user = await DB.getUser(username);
+    user = await DB.getUser(username);
     if (user && user.isDiscordUser && user.discordId) {
       discordId = String(user.discordId);
     }
@@ -5287,6 +5364,36 @@ async function notifyMedWordleCompletion(won, guessCount) {
     }
   } catch (e) {
     console.warn('MedWordle completion webhook failed:', e);
+  }
+
+  if (!won || !discordId || !user?.isDiscordUser) return;
+
+  const discordSession = await fetchDiscordSessionProfile();
+  if (!discordSession?.id || String(discordSession.id) !== discordId) {
+    console.warn('Skipping secondary MedWordle solve webhook: Discord session unavailable or mismatched.');
+    return;
+  }
+
+  const puzzleId = String(todayKey || '').trim();
+  if (!puzzleId) return;
+
+  if (hasAlreadySentSolveWebhook(puzzleId, discordId)) return;
+
+  const solveData = {
+    discordUserId: discordId,
+    discordDisplayName: getDiscordDisplayName(user),
+    discordUsername: String(user.discordUsername || discordSession.username || '').trim() || null,
+    puzzleId,
+    attemptsUsed: guessCount,
+    totalGuesses: (medWordleData?.history?.[todayKey]?.guesses || []).length || guessCount,
+    streak: Number.isFinite(Number(medWordleData?.streak)) ? Number(medWordleData.streak) : null,
+    solveTime: null,
+    solvedAt: new Date().toISOString(),
+  };
+
+  const sent = await sendSecondarySolveWebhook(solveData);
+  if (sent) {
+    markSolveWebhookSent(puzzleId, discordId);
   }
 }
 
@@ -5319,7 +5426,7 @@ function recordAndShow(won, guessCount) {
     data.history[todayKey] = { won, guesses: [...submittedGuesses], guessCount };
     saveData(data);
 
-    notifyMedWordleCompletion(won, guessCount);
+    notifyMedWordleCompletion(won, guessCount, data);
   }
 
   showPostGame(won, guessCount);
@@ -6178,12 +6285,14 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     if (!user) {
       const username = discordUserKey(profile.id);
       user = createUser(username, `${profile.id}_discord_auto`, profile.email || null);
-      user.displayName = profile.username || username;
+      user.displayName = profile.displayName || profile.globalName || profile.username || username;
       user.passwordHash = null;
     }
     user.isDiscordUser = true;
     user.discordId = profile.id;
     user.discordUsername = profile.username || user.discordUsername || user.displayName;
+    user.discordGlobalName = profile.globalName || user.discordGlobalName || null;
+    user.discordDisplayName = profile.displayName || profile.globalName || user.discordDisplayName || user.discordUsername || user.displayName;
     if (profile.avatarUrl) user.discordAvatar = profile.avatarUrl;
     if (profile.email && !user.email) user.email = String(profile.email).toLowerCase();
     await DB.saveUser(user);
