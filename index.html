@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- IMS v0.5.34 -->
+<!-- IMS v0.5.35 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -2674,6 +2674,15 @@
       </svg>
       <span>Continue with Discord</span>
     </button>
+    <button onclick="loginWithGoogle()" style="width:100%;padding:0.64rem;border-radius:99px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);color:#e8eaed;font-family:'DM Sans',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:0.45rem;display:flex;align-items:center;justify-content:center;gap:0.45rem;" onmouseover="this.style.background='rgba(255,255,255,0.10)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+      <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      <span>Continue with Google</span>
+    </button>
     <button onclick="navContinueAsGuest()" style="width:100%;padding:0.6rem;border-radius:99px;background:rgba(140,170,220,0.07);border:1px solid rgba(140,170,220,0.22);color:rgba(160,195,240,0.65);font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(140,170,220,0.14)';this.style.borderColor='rgba(140,170,220,0.38)';this.style.color='rgba(160,195,240,0.9)'" onmouseout="this.style.background='rgba(140,170,220,0.07)';this.style.borderColor='rgba(140,170,220,0.22)';this.style.color='rgba(160,195,240,0.65)'">
       Continue as Guest
     </button>
@@ -2904,7 +2913,7 @@
       <span>Made by medical students, for medical students</span>
       <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
     </div>
-    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.30</span>
+    <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Made with 🩵 by 0SirAwesome · v0.5.35</span>
   </footer>
 
 </div>
@@ -2926,6 +2935,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
 // ── FIREBASE INIT ─────────────────────────────────────────────
 const firebaseConfig = {
@@ -2943,6 +2953,7 @@ try {
   firebase.initializeApp(firebaseConfig);
   _rtdb = firebase.database();
   window._rtdb = _rtdb; // exposed for admin reset handler
+  window._firebaseAuth = firebase.auth();
 } catch(e) {
   console.warn('Firebase failed to initialise — falling back to localStorage.', e);
 }
@@ -4638,6 +4649,32 @@ window.navDiscordLogin = function() {
   window.location.href = '/api/auth/discord/start';
 };
 
+window.loginWithGoogle = async function() {
+  const msg = document.getElementById('nav-auth-msg');
+  if (msg) { msg.textContent = 'Opening Google sign-in…'; msg.className = 'ward-auth-msg'; }
+  try {
+    if (!window._firebaseAuth) throw new Error('Firebase Auth is unavailable.');
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const result = await window._firebaseAuth.signInWithPopup(provider);
+    const user = await resolveAppUserFromGoogleAuth(result.user);
+    if (!user) throw new Error('Account setup incomplete.');
+    document.getElementById('nav-auth-overlay')?.classList.remove('open');
+    await initializeAppForUser(user, 'google');
+    return user;
+  } catch (e) {
+    if (e?.code === 'auth/popup-closed-by-user' || e?.code === 'auth/cancelled-popup-request') {
+      if (msg) { msg.textContent = ''; msg.className = 'ward-auth-msg'; }
+      return null;
+    }
+    console.error('Google login error:', e);
+    if (msg) {
+      msg.textContent = 'Google sign-in failed: ' + (e?.message || 'Unknown error');
+      msg.className = 'ward-auth-msg error';
+    }
+    return null;
+  }
+};
+
 // ── MOBILE NAV ───────────────────────────────────────────────
 function toggleMobileNav() {
   const drawer   = document.getElementById('mobile-nav-drawer');
@@ -5957,6 +5994,24 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
           return Object.values(_localAll()).find(u => (u?.email || '').toLowerCase() === normalized) || null;
         }
       },
+      getUserByGoogleId: async (googleId) => {
+        const normalized = String(googleId || '').trim();
+        if (!normalized) return null;
+        if (!_rtdb) {
+          return Object.values(_localAll()).find(u => String(u?.googleId || '') === normalized) || null;
+        }
+        try {
+          const query = _rtdb.ref('users').orderByChild('googleId').equalTo(normalized).limitToFirst(1).once('value');
+          const snap = await withFirebaseTimeout(query, () => ({ val: () => _localAll() }));
+          const users = snap.val() || {};
+          const first = Object.values(users)[0] || null;
+          return first ? normalizeUserStats(first) : null;
+        }
+        catch(e){
+          console.error('DB.getUserByGoogleId', e);
+          return Object.values(_localAll()).find(u => String(u?.googleId || '') === normalized) || null;
+        }
+      },
       // Async: find one user by Discord identity (for Discord-only and linked accounts)
       getUserByDiscordId: async (discordId) => {
         const normalized = String(discordId || '').trim();
@@ -6024,6 +6079,34 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
       h = Math.imul(h, 0x01000193) >>> 0;
     }
     return `dc_${h.toString(16).padStart(8, '0')}`;
+  }
+
+  function googleUserKey(googleUid) {
+    return ('g_' + String(googleUid || '').replace(/[^a-z0-9]/gi, '').toLowerCase()).slice(0, 14);
+  }
+
+  async function resolveAppUserFromGoogleAuth(firebaseUser) {
+    if (!firebaseUser?.uid) return null;
+    let user = await DB.getUserByGoogleId(firebaseUser.uid);
+    if (!user && firebaseUser.email) {
+      user = await DB.getUserByEmail(firebaseUser.email);
+    }
+    if (!user) {
+      const username = googleUserKey(firebaseUser.uid);
+      user = createUser(username, `${firebaseUser.uid}_google_auto`, firebaseUser.email || null);
+      user.displayName = firebaseUser.displayName || username;
+      user.passwordHash = null;
+      user.email = firebaseUser.email ? String(firebaseUser.email).toLowerCase() : null;
+    }
+
+    user.isGoogleUser = true;
+    user.googleId = firebaseUser.uid;
+    if (firebaseUser.email && !user.email) user.email = String(firebaseUser.email).toLowerCase();
+    if (firebaseUser.displayName && !user.displayName) user.displayName = firebaseUser.displayName;
+    if (firebaseUser.photoURL) user.googleAvatar = firebaseUser.photoURL;
+
+    await DB.saveUser(user);
+    return normalizeUserStats(user);
   }
 
   const AUTH_SESSION_METHOD_KEY = 'ims_auth_method';
@@ -6192,12 +6275,20 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     const savedUsername = DB.getCurrentUser();
     const savedMethod = getSessionMethod();
 
-    const [legacyUser, discordProfile] = await Promise.all([
+    const firebaseUserPromise = new Promise((resolve) => {
+      const auth = window._firebaseAuth;
+      if (!auth) return resolve(null);
+      const unsub = auth.onAuthStateChanged((u) => { unsub(); resolve(u); });
+    });
+
+    const [legacyUser, discordProfile, firebaseUser] = await Promise.all([
       savedUsername ? DB.getUser(savedUsername, { preferFirebase: true }) : Promise.resolve(null),
       fetchDiscordSessionProfile(),
+      firebaseUserPromise,
     ]);
 
     const discordUser = discordProfile ? await resolveAppUserFromDiscordAuth(discordProfile) : null;
+    const googleUser = firebaseUser ? await resolveAppUserFromGoogleAuth(firebaseUser) : null;
 
     let selectedUser = null;
     let selectedMethod = null;
@@ -6208,9 +6299,15 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     } else if (savedMethod === 'discord' && discordUser) {
       selectedUser = discordUser;
       selectedMethod = 'discord';
+    } else if (savedMethod === 'google' && googleUser) {
+      selectedUser = googleUser;
+      selectedMethod = 'google';
     } else if (discordUser) {
       selectedUser = discordUser;
       selectedMethod = 'discord';
+    } else if (googleUser) {
+      selectedUser = googleUser;
+      selectedMethod = 'google';
     } else if (legacyUser) {
       selectedUser = legacyUser;
       selectedMethod = 'legacy';
@@ -6234,6 +6331,9 @@ document.addEventListener('DOMContentLoaded', fcPickNext);
     DB.clearCurrentUser();
     try {
       await fetch('/api/auth/discord/logout', { method: 'POST', credentials: 'include' });
+    } catch (e) {}
+    try {
+      if (window._firebaseAuth) await window._firebaseAuth.signOut();
     } catch (e) {}
   }
 
