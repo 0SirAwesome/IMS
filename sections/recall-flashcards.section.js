@@ -1,4 +1,4 @@
-document.write(`\n<!-- ════════════════════════ BRANCH: Recall Flashcards ════════════════════════ -->
+document.write(`\n<!-- ════════════════════════ BRANCH: MedRecall ════════════════════════ -->
 <div class="page" id="page-recall">
 
 <style>
@@ -783,7 +783,7 @@ document.write(`\n<!-- ═══════════════════
 <!-- ══ HERO ══ -->
 <div class="rc-hero">
   <div class="rc-hero-eyebrow">🧠 Personal Recall System</div>
-  <div class="rc-hero-title">Recall Flashcards</div>
+  <div class="rc-hero-title">MedRecall</div>
   <div class="rc-hero-sub">Save the facts that slip through the cracks.</div>
 </div>
 
@@ -1058,10 +1058,10 @@ document.write(`\n<!-- ═══════════════════
     <!-- Revise main -->
     <div id="rc-revise-main" style="display:none;">
       <div class="rc-revise-tabs" style="margin-bottom:1rem;">
-        <button class="rc-revise-tab active" id="rc-rtab-general" onclick="rcShowReviseTab('general')">📖 General Revision</button>
+        <button class="rc-revise-tab active" id="rc-rtab-general" onclick="rcShowReviseTab('general')">📖 Daily Revision</button>
         <button class="rc-revise-tab" id="rc-rtab-deck" onclick="rcShowReviseTab('deck')">🗂️ Custom Deck</button>
       </div>
-      <!-- General Revision -->
+      <!-- Daily Revision -->
       <div id="rc-rev-general">
 
         <!-- Stats -->
@@ -1330,7 +1330,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.2</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">MedRecall · IMS v0.6.3</span>
 </footer>
 
 </div><!-- /#page-recall -->
