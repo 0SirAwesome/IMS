@@ -1170,7 +1170,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.13</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.14</span>
 </footer>
 
 </div><!-- /#page-recall -->
@@ -1355,7 +1355,37 @@ document.write(`\n<!-- ═══════════════════
       .sort((a, b) => a.dueAtMs - b.dueAtMs || a.createdAtMs - b.createdAtMs || String(a.card.id).localeCompare(String(b.card.id)))
       .map(item => item.card);
 
-    if (dueNow.length > 0) return { mode: 'due', items: dueNow };
+    const todayNewCount = _state.stats.reviewedTodayCount || 0;
+    const newCap = _state.settings.dailyNewCardLimit || DAILY_NEW_CAP;
+    const freshNewCards = cards
+      .filter(card => (
+        card &&
+        !card._deleted &&
+        !card.suspended &&
+        !card.buried &&
+        card.reviewData &&
+        card.reviewData.status === 'new' &&
+        card.reviewData.reviewCount === 0 &&
+        card.reviewData.forceStudyNow === true
+      ))
+      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0) || String(a.id).localeCompare(String(b.id)));
+
+    const backlogNewCards = cards
+      .filter(card => (
+        card &&
+        !card._deleted &&
+        !card.suspended &&
+        !card.buried &&
+        card.reviewData &&
+        card.reviewData.status === 'new' &&
+        card.reviewData.forceStudyNow !== true
+      ))
+      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0) || String(a.id).localeCompare(String(b.id)));
+
+    const cappedBacklogNewCards = backlogNewCards.slice(0, Math.max(0, newCap - todayNewCount));
+    const dueAndNewQueue = [...dueNow, ...freshNewCards, ...cappedBacklogNewCards];
+
+    if (dueAndNewQueue.length > 0) return { mode: 'due', items: dueAndNewQueue };
 
     const upcomingShort = eligible
       .filter(item => item.dueAtMs > now && item.dueAtMs <= now + SIX_HOURS_MS)
@@ -1808,6 +1838,7 @@ document.write(`\n<!-- ═══════════════════
         lapses: 0,
         reviewCount: 0,
         graduated: false,
+        forceStudyNow: true,
       }
     };
 
@@ -2334,6 +2365,7 @@ document.write(`\n<!-- ═══════════════════
 
     // Apply SRS
     const newRD = _computeNextDue(card.reviewData, rating);
+    newRD.forceStudyNow = false;
     _state.cards[card.id].reviewData = newRD;
     _state.cards[card.id].updatedAt = nowMs();
 
