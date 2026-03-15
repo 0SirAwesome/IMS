@@ -5,7 +5,7 @@ document.write(`\n<!-- ═══════════════════
 /* ── RECALL FLASHCARDS PAGE STYLES ── */
 #page-recall {
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--app-bg);
   font-family: 'DM Sans', sans-serif;
   color: var(--ink);
 }
@@ -985,7 +985,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.1</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.2</span>
 </footer>
 
 </div><!-- /#page-recall -->
