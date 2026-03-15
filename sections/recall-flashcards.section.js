@@ -326,14 +326,14 @@ document.write(`\n<!-- ═══════════════════
 .rc-card-inner.flipped { transform: rotateY(180deg); }
 .rc-card-face {
   position: absolute; width: 100%; backface-visibility: hidden;
-  background: var(--surface); border: 1px solid var(--border);
+  background: var(--surface-2); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 1.75rem;
   min-height: 200px; display: flex; flex-direction: column; justify-content: center;
 }
 .rc-card-back { transform: rotateY(180deg); }
 .rc-card-front-label {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-  color: var(--ink-3); text-transform: uppercase; margin-bottom: 0.75rem;
+  color: var(--ink-2); text-transform: uppercase; margin-bottom: 0.75rem;
 }
 .rc-card-question {
   font-family: 'Lora', serif; font-size: 1.15rem; font-weight: 600; color: var(--ink);
@@ -341,12 +341,12 @@ document.write(`\n<!-- ═══════════════════
 }
 .rc-card-show-hint {
   margin-top: auto; padding-top: 1rem;
-  font-size: 0.78rem; color: var(--ink-3); text-align: center;
+  font-size: 0.78rem; color: var(--ink-2); text-align: center;
   display: flex; align-items: center; justify-content: center; gap: 0.35rem;
 }
 .rc-card-answer-label {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-  color: rgba(68,114,196,0.7); text-transform: uppercase; margin-bottom: 0.75rem;
+  color: var(--ink-2); text-transform: uppercase; margin-bottom: 0.75rem;
 }
 .rc-card-answer {
   font-size: 0.95rem; color: var(--ink); line-height: 1.7; white-space: pre-wrap;
@@ -376,11 +376,11 @@ document.write(`\n<!-- ═══════════════════
 .rc-rate-btn {
   display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
   padding: 0.6rem 0.5rem; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); background: var(--surface);
+  border: 1px solid var(--border); background: var(--surface-2);
   font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s;
 }
 .rc-rate-btn .rc-rate-label { font-size: 0.85rem; font-weight: 700; }
-.rc-rate-btn .rc-rate-sub { font-size: 0.68rem; color: var(--ink-3); }
+.rc-rate-btn .rc-rate-sub { font-size: 0.68rem; color: var(--ink-2); }
 .rc-rate-btn:hover { transform: translateY(-2px); }
 .rc-rate-again { border-color: rgba(229,62,62,0.3); }
 .rc-rate-again:hover { background: rgba(229,62,62,0.08); border-color: rgba(229,62,62,0.6); }
@@ -985,7 +985,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.0</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.1</span>
 </footer>
 
 </div><!-- /#page-recall -->
