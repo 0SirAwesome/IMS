@@ -4,6 +4,35 @@ document.write(`\n<!-- ═══════════════════
 <style>
 /* ── RECALL FLASHCARDS PAGE STYLES ── */
 #page-recall {
+  --bg-main: #0A2A47;
+  --bg-panel: #0F3558;
+  --bg-panel-hover: #154167;
+  --border-soft: rgba(255,255,255,0.16);
+  --border-strong: rgba(255,255,255,0.28);
+
+  --text-primary: #F4F8FC;
+  --text-secondary: #B8C7D9;
+  --text-muted: #88A0B8;
+
+  --accent-blue: #6EA8FF;
+  --accent-cyan: #7FD4FF;
+
+  --success-bg: rgba(34, 197, 94, 0.18);
+  --success-text: #4ADE80;
+
+  --info-bg: rgba(59, 130, 246, 0.18);
+  --info-text: #7CB7FF;
+
+  --warning-bg: rgba(251, 146, 60, 0.18);
+  --warning-text: #FDBA74;
+
+  --danger-bg: rgba(239, 68, 68, 0.14);
+  --danger-text: #FF6B6B;
+
+  --input-bg: rgba(255,255,255,0.08);
+  --input-text: #F4F8FC;
+  --input-placeholder: #88A0B8;
+
   min-height: 100vh;
   background:
     radial-gradient(circle at 12% 18%, rgba(255, 212, 122, 0.22) 0%, rgba(255, 212, 122, 0) 34%),
@@ -237,62 +266,73 @@ document.write(`\n<!-- ═══════════════════
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;
 }
-.rc-library-title { font-family:'Lora',serif; font-size:1rem; font-weight:700; color:#eaf4ff; }
+.rc-library-title {
+  font-family:'Lora',serif;
+  font-size:1rem;
+  font-weight:600;
+  color:var(--text-primary);
+}
 .rc-library-controls {
   display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
 }
 .rc-search {
   padding: 0.45rem 0.85rem; border-radius: 99px;
-  border: 1px solid rgba(120, 190, 255, 0.22); background: rgba(15, 23, 42, 0.8);
-  font-family: 'DM Sans', sans-serif; font-size: 0.84rem; color: rgba(210, 230, 255, 0.92);
+  border: 1px solid var(--border-soft); background: var(--input-bg);
+  font-family: 'DM Sans', sans-serif; font-size: 0.84rem; color: var(--input-text);
   width: 200px; transition: border-color 0.2s, background 0.2s;
 }
 .rc-search:focus {
   outline: none;
-  border-color: rgba(120, 190, 255, 0.4);
-  background: rgba(11, 19, 32, 0.94);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(127, 212, 255, 0.15);
 }
-.rc-search::placeholder { color: rgba(170, 195, 225, 0.76); }
+.rc-search::placeholder { color: var(--input-placeholder); }
 .rc-select {
   padding: 0.45rem 0.75rem; border-radius: 99px;
-  border: 1px solid rgba(120, 190, 255, 0.22); background: rgba(15, 23, 42, 0.8);
-  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: rgba(210, 230, 255, 0.9);
+  border: 1px solid var(--border-soft); background: var(--input-bg);
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--input-text);
   cursor: pointer;
 }
 .rc-select:focus {
   outline: none;
-  border-color: rgba(120, 190, 255, 0.4);
-  background: rgba(11, 19, 32, 0.94);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(127, 212, 255, 0.15);
 }
 
 /* Card table */
 .rc-card-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
 .rc-card-table th {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
-  color: var(--ink-3); text-transform: uppercase; text-align: left;
-  padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border);
+  color: var(--text-secondary); text-transform: uppercase; text-align: left;
+  padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border-strong);
 }
 .rc-card-table td {
-  padding: 0.65rem 0.75rem; border-bottom: 1px solid rgba(200,214,235,0.4);
-  font-size: 0.85rem; color: var(--ink); vertical-align: middle;
+  padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border-soft);
+  font-size: 0.85rem; color: var(--text-primary); vertical-align: middle;
 }
-.rc-card-table tr:hover td { background: rgba(68,114,196,0.04); }
+.rc-card-table tr:hover td { background: rgba(255,255,255,0.03); }
 .rc-card-table .rc-q-cell {
   max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.rc-muted-cell { color: var(--text-muted); font-size: 0.75rem; }
 .rc-badge {
   display: inline-block; padding: 0.15rem 0.55rem; border-radius: 99px;
   font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
+  border: 1px solid transparent;
 }
-.rc-badge-new { background: rgba(68,114,196,0.15); color: var(--accent-light); }
+.rc-badge-new { background: var(--info-bg); color: var(--info-text); border-color: rgba(124, 183, 255, 0.22); }
 .rc-badge-learning { background: rgba(255,192,0,0.15); color: #b8860b; }
 .rc-badge-review { background: rgba(22,101,52,0.15); color: var(--green); }
 .rc-badge-relearning { background: rgba(237,125,49,0.15); color: var(--orange); }
 .rc-badge-suspended { background: rgba(122,143,166,0.15); color: var(--ink-3); }
-.rc-badge-easy { background: rgba(22,101,52,0.1); color: var(--green); }
+.rc-badge-easy { background: var(--success-bg); color: var(--success-text); border-color: rgba(74, 222, 128, 0.2); }
 .rc-badge-medium { background: rgba(255,192,0,0.12); color: #b8860b; }
 .rc-badge-hard { background: rgba(229,62,62,0.12); color: #c53030; }
-.rc-badge-due { background: rgba(237,125,49,0.15); color: var(--orange); }
+.rc-badge-due {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-color: rgba(253, 186, 116, 0.2);
+}
 .rc-star { cursor: pointer; font-size: 1rem; transition: transform 0.15s; user-select:none; }
 .rc-star:hover { transform: scale(1.25); }
 
@@ -307,14 +347,34 @@ document.write(`\n<!-- ═══════════════════
 /* Pagination */
 .rc-pagination { display:flex; gap:0.5rem; align-items:center; justify-content:center; margin-top:1rem; }
 .rc-page-btn {
-  background: var(--surface); border: 1px solid var(--border);
+  background: rgba(255,255,255,0.12); border: 1px solid transparent;
   border-radius: var(--radius-sm); padding: 0.3rem 0.65rem;
   font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer;
-  color: var(--ink-2); transition: all 0.15s;
+  color: var(--text-secondary); transition: all 0.15s;
 }
-.rc-page-btn:hover { background: var(--surface-2); }
-.rc-page-btn.active { background: var(--accent-light); color: #fff; border-color: var(--accent-light); }
+.rc-page-btn:hover { background: rgba(255,255,255,0.18); color: var(--text-primary); }
+.rc-page-btn.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); font-weight: 600; }
 .rc-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.rc-action-btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-strong);
+}
+.rc-action-btn-secondary:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-primary);
+  border-color: rgba(255,255,255,0.38);
+}
+.rc-action-btn-danger {
+  background: transparent;
+  color: var(--danger-text);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+}
+.rc-action-btn-danger:hover {
+  background: rgba(255, 107, 107, 0.08);
+  border-color: rgba(255, 107, 107, 0.65);
+}
 
 /* ── REVISE PANEL ── */
 .rc-revise-tabs {
@@ -1042,7 +1102,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.7</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.8</span>
 </footer>
 
 </div><!-- /#page-recall -->
@@ -1745,19 +1805,19 @@ document.write(`\n<!-- ═══════════════════
     const due = formatDue(card);
     const isDueNow = isDue(card);
     const starIcon = card.starred ? '⭐' : '☆';
-    const tagHtml = (card.tags || []).slice(0, 3).map(t => '<span class="rc-badge rc-badge-new" style="margin:1px;">' + sanitize(t) + '</span>').join('') + ((card.tags || []).length > 3 ? '<span style="font-size:0.7rem;color:var(--ink-3);">+' + ((card.tags || []).length - 3) + '</span>' : '');
+    const tagHtml = (card.tags || []).slice(0, 3).map(t => '<span class="rc-badge rc-badge-new" style="margin:1px;">' + sanitize(t) + '</span>').join('') + ((card.tags || []).length > 3 ? '<span class="rc-muted-cell">+' + ((card.tags || []).length - 3) + '</span>' : '');
 
     return '<tr>' +
       '<td><span class="rc-star" onclick="rcToggleStar(\'' + card.id + '\')" title="Star">' + starIcon + '</span></td>' +
       '<td class="rc-q-cell" title="' + sanitize(card.question) + '">' + sanitize(card.question.slice(0, 80)) + (card.question.length > 80 ? '…' : '') + (card.suspended ? ' <span class="rc-badge rc-badge-suspended">Suspended</span>' : '') + '</td>' +
-      '<td>' + (tagHtml || '<span style="color:var(--ink-3);font-size:0.75rem;">—</span>') + '</td>' +
+      '<td>' + (tagHtml || '<span class="rc-muted-cell">—</span>') + '</td>' +
       '<td><span class="rc-badge ' + getStatusBadgeClass(rd.status || 'new') + '">' + (rd.status || 'new') + '</span></td>' +
       '<td><span class="rc-badge rc-badge-' + diff + '">' + diff + '</span></td>' +
-      '<td style="' + (isDueNow ? 'color:var(--orange);font-weight:600;' : '') + '">' + due + '</td>' +
+      '<td>' + (isDueNow ? '<span class="rc-badge rc-badge-due">' + due + '</span>' : '<span class="rc-muted-cell">' + due + '</span>') + '</td>' +
       '<td style="white-space:nowrap;display:flex;gap:0.35rem;align-items:center;">' +
-        '<button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcOpenEditModal(\'' + card.id + '\')">Edit</button>' +
-        '<button class="rc-btn rc-btn-ghost rc-btn-sm" onclick="rcToggleSuspend(\'' + card.id + '\')">' + (card.suspended ? 'Unsuspend' : 'Suspend') + '</button>' +
-        '<button class="rc-btn rc-btn-danger rc-btn-sm" onclick="rcDeleteCard(\'' + card.id + '\')">Delete</button>' +
+        '<button class="rc-btn rc-btn-sm rc-action-btn-secondary" onclick="rcOpenEditModal(\'' + card.id + '\')">Edit</button>' +
+        '<button class="rc-btn rc-btn-sm rc-action-btn-secondary" onclick="rcToggleSuspend(\'' + card.id + '\')">' + (card.suspended ? 'Unsuspend' : 'Suspend') + '</button>' +
+        '<button class="rc-btn rc-btn-sm rc-action-btn-danger" onclick="rcDeleteCard(\'' + card.id + '\')">Delete</button>' +
       '</td>' +
     '</tr>';
   }
