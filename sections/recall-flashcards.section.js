@@ -355,7 +355,10 @@ document.write(`\n<!-- ═══════════════════
 /* Both faces use position:absolute so they stack; inner height is kept by min-height */
 .rc-card-face {
   position: absolute; width: 100%; backface-visibility: hidden;
-  background: linear-gradient(145deg, rgba(13,28,58,0.92), rgba(8,18,38,0.96));
+  background:
+    radial-gradient(circle at 18% 16%, rgba(140, 218, 255, 0.2) 0%, rgba(140, 218, 255, 0) 48%),
+    radial-gradient(circle at 82% 85%, rgba(150, 232, 193, 0.22) 0%, rgba(150, 232, 193, 0) 54%),
+    linear-gradient(145deg, rgba(20,42,78,0.9), rgba(16,34,63,0.95));
   border: 1px solid rgba(68,114,196,0.25);
   border-radius: var(--radius); padding: 1.75rem;
   min-height: 200px; height: 100%; display: flex; flex-direction: column; justify-content: center;
@@ -365,7 +368,10 @@ document.write(`\n<!-- ═══════════════════
 /* Back face: align top, allow content to grow, cap height and scroll */
 .rc-card-back {
   transform: rotateY(180deg);
-  background: linear-gradient(145deg, rgba(15,32,68,0.95), rgba(10,22,50,0.98));
+  background:
+    radial-gradient(circle at 14% 14%, rgba(156, 224, 255, 0.24) 0%, rgba(156, 224, 255, 0) 46%),
+    radial-gradient(circle at 84% 82%, rgba(171, 236, 199, 0.26) 0%, rgba(171, 236, 199, 0) 58%),
+    linear-gradient(145deg, rgba(25,50,88,0.94), rgba(18,39,72,0.98));
   border-color: rgba(68,114,196,0.35);
   justify-content: flex-start;
   max-height: 340px;
@@ -1330,7 +1336,7 @@ document.write(`\n<!-- ═══════════════════
     <span>Made by medical students, for medical students</span>
     <a href="https://discord.gg/eKevY6F2pa" target="_blank" class="blossom-footer-link">Join Discord ↗</a>
   </div>
-  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.2</span>
+  <span style="font-size:0.72rem;opacity:0.38;font-family:'DM Sans',sans-serif;">Recall Flashcards · IMS v0.6.3</span>
 </footer>
 
 </div><!-- /#page-recall -->
